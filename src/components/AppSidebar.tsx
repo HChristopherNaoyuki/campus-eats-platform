@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/sidebar";
 
 const items = [
-  { title: "Dashboard", url: "/", icon: LayoutDashboard },
+  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "User Management", url: "/users", icon: Users },
   { title: "Vendor Management", url: "/vendors", icon: Store },
   { title: "Menu Management", url: "/menu", icon: UtensilsCrossed },
@@ -23,7 +23,7 @@ const items = [
 
 export function AppSidebar() {
   const { pathname } = useLocation();
-  const isActive = (path: string) => (path === "/" ? pathname === "/" : pathname.startsWith(path));
+  const isActive = (path: string) => pathname === path || pathname.startsWith(path + "/");
 
   return (
     <Sidebar collapsible="icon">
