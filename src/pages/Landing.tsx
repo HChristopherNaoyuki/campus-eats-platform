@@ -41,8 +41,8 @@ export default function Landing() {
             <a href="#vendors" className="text-muted-foreground hover:text-foreground">Vendors</a>
           </nav>
           <div className="flex items-center gap-2">
-            <Button asChild variant="ghost" size="sm"><Link to="/users">Sign in</Link></Button>
-            <Button asChild size="sm"><Link to="/dashboard">Open app <ArrowRight className="h-4 w-4" /></Link></Button>
+            <Button asChild variant="ghost" size="sm"><Link to="/login">Sign in</Link></Button>
+            <Button asChild size="sm"><Link to="/signup">Get started <ArrowRight className="h-4 w-4" /></Link></Button>
           </div>
         </div>
       </header>
@@ -60,8 +60,8 @@ export default function Landing() {
             Campus Eats is the on-campus pickup network — order ahead from your favorite student vendors, then grab it on the way to class. No delivery fees, no waiting.
           </p>
           <div className="flex flex-wrap gap-3">
-            <Button asChild size="lg"><Link to="/orders">Order now <ArrowRight className="h-4 w-4" /></Link></Button>
-            <Button asChild size="lg" variant="outline"><Link to="/vendors">List your stall</Link></Button>
+            <Button asChild size="lg"><Link to="/student">Order now <ArrowRight className="h-4 w-4" /></Link></Button>
+            <Button asChild size="lg" variant="outline"><Link to="/vendor">List your stall</Link></Button>
           </div>
           <div className="flex gap-6 pt-4 text-sm">
             <Stat n={vendors.length} label="Campus vendors" />
