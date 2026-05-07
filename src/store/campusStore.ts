@@ -14,6 +14,7 @@ interface State {
   registerUser: (u: Omit<User, "id">) => User;
   login: (email: string, password: string) => User | null;
   logout: () => void;
+  resetPassword: (email: string, newPassword: string) => boolean;
 
   addVendor: (v: Omit<Vendor, "id">) => void;
   updateVendor: (id: string, patch: Partial<Omit<Vendor, "id">>) => void;
@@ -31,6 +32,8 @@ export const useCampus = create<State>()(
     (set, get) => ({
       users: [
         { id: "u-admin", name: "Admin", email: "admin@campus.edu", password: "admin", role: "Admin" as Role },
+        { id: "u-stud", name: "Sam Student", email: "student@campus.edu", password: "student", role: "Student" as Role },
+        { id: "u-vend", name: "Pizza Owner", email: "vendor@campus.edu", password: "vendor", role: "Vendor" as Role, vendorId: "v-1" },
       ],
       vendors: [
         { id: "v-1", name: "Pizza Corner", location: "Block A", contact: "555-0101" },
@@ -55,6 +58,12 @@ export const useCampus = create<State>()(
         return user ?? null;
       },
       logout: () => set({ currentUserId: null }),
+      resetPassword: (email, newPassword) => {
+        const exists = get().users.find((u) => u.email === email);
+        if (!exists) return false;
+        set({ users: get().users.map((u) => (u.email === email ? { ...u, password: newPassword } : u)) });
+        return true;
+      },
 
       addVendor: (v) => set({ vendors: [...get().vendors, { ...v, id: uid() }] }),
       updateVendor: (id, patch) =>
