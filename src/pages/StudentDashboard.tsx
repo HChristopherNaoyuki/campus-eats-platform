@@ -5,12 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Plus, Minus, ShoppingBag, LogOut, Clock, CheckCircle2, ChefHat } from "lucide-react";
+import { Plus, Minus, ShoppingBag, Clock, CheckCircle2, ChefHat } from "lucide-react";
 import { toast } from "sonner";
-import { Link } from "react-router-dom";
 
 export default function StudentDashboard() {
-  const { currentUserId, users, vendors, menu, orders, placeOrder, logout } = useCampus();
+  const { currentUserId, users, vendors, menu, orders, placeOrder } = useCampus();
   const user = users.find((u) => u.id === currentUserId);
   const [cart, setCart] = useState<Record<string, number>>({});
   const [search, setSearch] = useState("");
@@ -45,24 +44,7 @@ export default function StudentDashboard() {
     s === "Pending" ? <Clock className="h-3 w-3" /> : s === "Preparing" ? <ChefHat className="h-3 w-3" /> : <CheckCircle2 className="h-3 w-3" />;
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-10 border-b bg-card">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-primary to-primary-glow text-primary-foreground font-bold flex items-center justify-center">CE</div>
-            <span className="font-bold">Campus Eats</span>
-          </Link>
-          <div className="flex items-center gap-3">
-            <div className="text-right hidden sm:block">
-              <div className="text-sm font-medium">{user.name}</div>
-              <div className="text-xs text-muted-foreground">Student</div>
-            </div>
-            <Button variant="ghost" size="sm" onClick={logout}><LogOut className="h-4 w-4" /></Button>
-          </div>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-8 grid lg:grid-cols-3 gap-6">
+    <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <div>
             <h1 className="text-3xl font-bold">Hey {user.name.split(" ")[0]} 👋</h1>
@@ -152,7 +134,6 @@ export default function StudentDashboard() {
             </CardContent>
           </Card>
         </div>
-      </main>
     </div>
   );
 }

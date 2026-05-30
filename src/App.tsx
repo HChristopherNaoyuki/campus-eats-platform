@@ -31,10 +31,10 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/student" element={<StudentDashboard />} />
-          <Route path="/vendor" element={<VendorDashboard />} />
           <Route element={<AppLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/student" element={<StudentDashboard />} />
+            <Route path="/vendor" element={<VendorDashboard />} />
             <Route path="/users" element={<UsersPage />} />
             <Route path="/vendors" element={<VendorsPage />} />
             <Route path="/menu" element={<MenuPage />} />

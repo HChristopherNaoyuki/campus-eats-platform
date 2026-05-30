@@ -9,12 +9,8 @@ export default function AppLayout() {
   const { currentUserId, users, logout } = useCampus();
   const user = users.find((u) => u.id === currentUserId);
 
-  // Admin-only area. Redirect anonymous users to login and non-admins to
-  // their role-appropriate dashboard.
+  // Any authenticated user can use the shell; pages enforce their own role.
   if (!user) return <Navigate to="/login" replace />;
-  if (user.role !== "Admin") {
-    return <Navigate to={user.role === "Vendor" ? "/vendor" : "/student"} replace />;
-  }
 
   return (
     <SidebarProvider>
