@@ -42,7 +42,7 @@ export default function Login() {
           New here? <Link to="/signup" className="text-primary hover:underline">Create account</Link>
         </p>
         <p className="text-xs text-center text-muted-foreground pt-2">
-          Demo: student@campus.edu / student · vendor@campus.edu / vendor
+          Demo: admin@campus.edu / admin · student@campus.edu / student · vendor@campus.edu / vendor
         </p>
       </form>
     </AuthShell>
