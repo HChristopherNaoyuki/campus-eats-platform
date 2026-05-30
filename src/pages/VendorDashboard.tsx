@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useCampus } from "@/store/campusStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,12 +8,12 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { LogOut, Plus, Trash2, ShoppingBag, DollarSign, UtensilsCrossed } from "lucide-react";
+import { Plus, Trash2, ShoppingBag, DollarSign, UtensilsCrossed } from "lucide-react";
 import { toast } from "sonner";
 import type { OrderStatus } from "@/types/campus";
 
 export default function VendorDashboard() {
-  const { currentUserId, users, vendors, menu, orders, addMenuItem, removeMenuItem, updateMenuItem, updateOrderStatus, logout } = useCampus();
+  const { currentUserId, users, vendors, menu, orders, addMenuItem, removeMenuItem, updateMenuItem, updateOrderStatus } = useCampus();
   const user = users.find((u) => u.id === currentUserId);
   const vendor = vendors.find((v) => v.id === user?.vendorId) ?? vendors[0];
 
@@ -52,24 +52,11 @@ export default function VendorDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-10 border-b bg-card">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-primary to-primary-glow text-primary-foreground font-bold flex items-center justify-center">CE</div>
-            <span className="font-bold">Campus Eats · Vendor</span>
-          </Link>
-          <div className="flex items-center gap-3">
-            <div className="text-right hidden sm:block">
-              <div className="text-sm font-medium">{vendor?.name ?? user.name}</div>
-              <div className="text-xs text-muted-foreground">{vendor?.location}</div>
-            </div>
-            <Button variant="ghost" size="sm" onClick={logout}><LogOut className="h-4 w-4" /></Button>
-          </div>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-8 space-y-6">
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold">{vendor?.name ?? user.name}</h1>
+        <p className="text-sm text-muted-foreground">{vendor?.location}</p>
+      </div>
         <div className="grid sm:grid-cols-3 gap-4">
           <Stat label="Menu items" value={myMenu.length} icon={UtensilsCrossed} />
           <Stat label="Orders" value={myOrders.length} icon={ShoppingBag} />
@@ -138,7 +125,6 @@ export default function VendorDashboard() {
             </CardContent>
           </Card>
         </div>
-      </main>
     </div>
   );
 }
