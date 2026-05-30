@@ -30,8 +30,11 @@ interface State {
 export const useCampus = create<State>()(
   persist(
     (set, get) => ({
+      // NOTE: Seed users exist in-memory only and are NOT persisted. The
+      // partialize config below strips the users array (and therefore all
+      // passwords) from localStorage so plaintext credentials are never
+      // written to disk. Accounts registered at runtime are session-scoped.
       users: [
-        { id: "u-admin", name: "Admin", email: "admin@campus.edu", password: "admin", role: "Admin" as Role },
         { id: "u-stud", name: "Sam Student", email: "student@campus.edu", password: "student", role: "Student" as Role },
         { id: "u-vend", name: "Pizza Owner", email: "vendor@campus.edu", password: "vendor", role: "Vendor" as Role, vendorId: "v-1" },
       ],
@@ -84,6 +87,14 @@ export const useCampus = create<State>()(
       updateOrderStatus: (id, status) =>
         set({ orders: get().orders.map((o) => (o.id === id ? { ...o, status } : o)) }),
     }),
-    { name: "campus-eats-store" }
+    {
+      name: "campus-eats-store",
+      // Never persist users (passwords) or the active session id to storage.
+      partialize: (state) => ({
+        vendors: state.vendors,
+        menu: state.menu,
+        orders: state.orders,
+      }) as unknown as State,
+    }
   )
 );

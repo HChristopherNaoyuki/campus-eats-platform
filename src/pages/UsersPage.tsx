@@ -15,6 +15,7 @@ export default function UsersPage() {
   const { users, registerUser, login, currentUserId } = useCampus();
   const [reg, setReg] = useState({ name: "", email: "", password: "", role: "Student" as Role });
   const [creds, setCreds] = useState({ email: "", password: "" });
+  const adminExists = users.some((u) => u.role === "Admin");
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,7 +59,7 @@ export default function UsersPage() {
                     <SelectContent>
                       <SelectItem value="Student">Student</SelectItem>
                       <SelectItem value="Vendor">Vendor</SelectItem>
-                      <SelectItem value="Admin">Admin</SelectItem>
+                      {!adminExists && <SelectItem value="Admin">Admin (bootstrap)</SelectItem>}
                     </SelectContent>
                   </Select>
                 </div>
@@ -70,7 +71,6 @@ export default function UsersPage() {
                 <div><Label>Email</Label><Input type="email" value={creds.email} onChange={(e) => setCreds({ ...creds, email: e.target.value })} /></div>
                 <div><Label>Password</Label><Input type="password" value={creds.password} onChange={(e) => setCreds({ ...creds, password: e.target.value })} /></div>
                 <Button type="submit" className="w-full">Login</Button>
-                <p className="text-xs text-muted-foreground">Try admin@campus.edu / admin</p>
               </form>
             </TabsContent>
           </CardContent>
