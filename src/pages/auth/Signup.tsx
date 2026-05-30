@@ -21,11 +21,15 @@ export default function Signup() {
     e.preventDefault();
     if (password.length < 4) return toast.error("Password must be at least 4 characters");
     if (users.some((u) => u.email === email.trim())) return toast.error("Email already registered");
-    registerUser({ name: name.trim(), email: email.trim(), password, role });
+    const adminExists = users.some((u) => u.role === "Admin");
+    // Never trust a client-supplied Admin role unless no admin exists yet
+    // (initial bootstrap). All other self-registrations are forced to Student.
+    const safeRole: Role = role === "Admin" && !adminExists ? "Admin" : role === "Vendor" ? "Vendor" : "Student";
+    registerUser({ name: name.trim(), email: email.trim(), password, role: safeRole });
     login(email.trim(), password);
     toast.success("Account created");
-    if (role === "Admin") navigate("/dashboard");
-    else if (role === "Vendor") navigate("/vendor");
+    if (safeRole === "Admin") navigate("/dashboard");
+    else if (safeRole === "Vendor") navigate("/vendor");
     else navigate("/student");
   };
 
@@ -51,7 +55,6 @@ export default function Signup() {
             <SelectContent>
               <SelectItem value="Student">Student</SelectItem>
               <SelectItem value="Vendor">Vendor</SelectItem>
-              <SelectItem value="Admin">Admin</SelectItem>
             </SelectContent>
           </Select>
         </div>

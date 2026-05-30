@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { useCampus } from "@/store/campusStore";
@@ -8,6 +8,13 @@ import { LogOut } from "lucide-react";
 export default function AppLayout() {
   const { currentUserId, users, logout } = useCampus();
   const user = users.find((u) => u.id === currentUserId);
+
+  // Admin-only area. Redirect anonymous users to login and non-admins to
+  // their role-appropriate dashboard.
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role !== "Admin") {
+    return <Navigate to={user.role === "Vendor" ? "/vendor" : "/student"} replace />;
+  }
 
   return (
     <SidebarProvider>
