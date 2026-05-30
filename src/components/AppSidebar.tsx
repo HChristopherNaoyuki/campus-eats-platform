@@ -1,5 +1,6 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { Users, Store, UtensilsCrossed, ShoppingBag, LayoutDashboard, FileBarChart } from "lucide-react";
+import { useCampus } from "@/store/campusStore";
 import {
   Sidebar,
   SidebarContent,
@@ -12,7 +13,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-const items = [
+const adminItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "User Management", url: "/users", icon: Users },
   { title: "Vendor Management", url: "/vendors", icon: Store },
@@ -21,8 +22,21 @@ const items = [
   { title: "Reports", url: "/reports", icon: FileBarChart },
 ];
 
+const studentItems = [
+  { title: "Browse & Order", url: "/student", icon: UtensilsCrossed },
+];
+
+const vendorItems = [
+  { title: "Vendor Dashboard", url: "/vendor", icon: LayoutDashboard },
+];
+
 export function AppSidebar() {
   const { pathname } = useLocation();
+  const { currentUserId, users } = useCampus();
+  const user = users.find((u) => u.id === currentUserId);
+  const role = user?.role ?? "Admin";
+  const items = role === "Admin" ? adminItems : role === "Vendor" ? vendorItems : studentItems;
+  const subtitle = role === "Admin" ? "Admin Console" : role === "Vendor" ? "Vendor Portal" : "Student Portal";
   const isActive = (path: string) => pathname === path || pathname.startsWith(path + "/");
 
   return (
@@ -34,7 +48,7 @@ export function AppSidebar() {
           </div>
           <div className="flex flex-col leading-tight group-data-[collapsible=icon]:hidden">
             <span className="font-bold text-sidebar-foreground">Campus Eats</span>
-            <span className="text-xs text-sidebar-foreground/60">Admin Console</span>
+            <span className="text-xs text-sidebar-foreground/60">{subtitle}</span>
           </div>
         </div>
       </SidebarHeader>
