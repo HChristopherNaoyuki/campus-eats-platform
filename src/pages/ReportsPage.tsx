@@ -11,7 +11,7 @@ import type { OrderStatus } from "@/types/campus";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Printer } from "lucide-react";
 
-const fmt = (n: number) => `$${n.toFixed(2)}`;
+const fmt = (n: number) => `R${n.toFixed(2)}`;
 const dateOnly = (iso: string) => iso.slice(0, 10);
 
 export default function ReportsPage() {
@@ -45,7 +45,7 @@ export default function ReportsPage() {
   // ----- Report 2: Order Summary -----
   const [statusFilter, setStatusFilter] = useState<OrderStatus | "All">("All");
   const orderSummary = useMemo(() => {
-    const all: OrderStatus[] = ["Pending", "Preparing", "Completed"];
+    const all: OrderStatus[] = ["Pending", "Accepted", "Rejected", "Preparing", "Ready", "Completed"];
     const counts = all.map((s) => ({ status: s, count: orders.filter((o) => o.status === s).length }));
     return statusFilter === "All" ? counts : counts.filter((c) => c.status === statusFilter);
   }, [orders, statusFilter]);
@@ -167,9 +167,9 @@ export default function ReportsPage() {
                   <SelectTrigger className="w-[200px]"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="All">All</SelectItem>
-                    <SelectItem value="Pending">Pending</SelectItem>
-                    <SelectItem value="Preparing">Preparing</SelectItem>
-                    <SelectItem value="Completed">Completed</SelectItem>
+                    {(["Pending","Accepted","Rejected","Preparing","Ready","Completed"] as OrderStatus[]).map((s) => (
+                      <SelectItem key={s} value={s}>{s}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
