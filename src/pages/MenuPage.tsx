@@ -81,7 +81,7 @@ export default function MenuPage() {
                         {editId === m.id ? <Input value={edit.name} onChange={(e) => setEdit({ ...edit, name: e.target.value })} /> : <span className="font-medium">{m.name}</span>}
                       </TableCell>
                       <TableCell>
-                        {editId === m.id ? <Input type="number" step="0.01" value={edit.price} onChange={(e) => setEdit({ ...edit, price: e.target.value })} /> : `$${m.price.toFixed(2)}`}
+                        {editId === m.id ? <Input type="number" step="0.01" value={edit.price} onChange={(e) => setEdit({ ...edit, price: e.target.value })} /> : `R${m.price.toFixed(2)}`}
                       </TableCell>
                       <TableCell>{vendor?.name ?? "—"}</TableCell>
                       <TableCell>

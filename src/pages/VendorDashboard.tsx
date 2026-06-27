@@ -61,7 +61,7 @@ export default function VendorDashboard() {
         <div className="grid sm:grid-cols-3 gap-4">
           <Stat label="Menu items" value={myMenu.length} icon={UtensilsCrossed} />
           <Stat label="Orders" value={myOrders.length} icon={ShoppingBag} />
-          <Stat label="Revenue" value={`$${revenue.toFixed(2)}`} icon={DollarSign} />
+          <Stat label="Revenue" value={`R${revenue.toFixed(2)}`} icon={DollarSign} />
         </div>
 
         <div className="grid lg:grid-cols-2 gap-6">
