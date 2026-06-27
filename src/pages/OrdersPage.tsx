@@ -13,9 +13,14 @@ import { Plus, Trash2 } from "lucide-react";
 
 const statusVariant: Record<OrderStatus, string> = {
   Pending: "bg-amber-500/15 text-amber-700 dark:text-amber-400",
+  Accepted: "bg-sky-500/15 text-sky-700 dark:text-sky-400",
+  Rejected: "bg-red-500/15 text-red-700 dark:text-red-400",
   Preparing: "bg-blue-500/15 text-blue-700 dark:text-blue-400",
+  Ready: "bg-violet-500/15 text-violet-700 dark:text-violet-400",
   Completed: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400",
 };
+
+const ALL_STATUSES: OrderStatus[] = ["Pending", "Accepted", "Rejected", "Preparing", "Ready", "Completed"];
 
 export default function OrdersPage() {
   const { orders, users, menu, placeOrder, updateOrderStatus } = useCampus();
@@ -110,16 +115,16 @@ export default function OrdersPage() {
                           })}
                         </div>
                       </TableCell>
-                      <TableCell>${total.toFixed(2)}</TableCell>
+                      <TableCell>R{(o.total ?? total).toFixed(2)}</TableCell>
                       <TableCell>
                         <Select value={o.status} onValueChange={(v) => updateOrderStatus(o.id, v as OrderStatus)}>
-                          <SelectTrigger className="w-[140px] h-8">
+                          <SelectTrigger className="w-[160px] h-8">
                             <Badge className={statusVariant[o.status]} variant="outline">{o.status}</Badge>
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="Pending">Pending</SelectItem>
-                            <SelectItem value="Preparing">Preparing</SelectItem>
-                            <SelectItem value="Completed">Completed</SelectItem>
+                            {ALL_STATUSES.map((s) => (
+                              <SelectItem key={s} value={s}>{s}</SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </TableCell>
