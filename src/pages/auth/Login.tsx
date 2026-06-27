@@ -10,13 +10,13 @@ import { toast } from "sonner";
 export default function Login() {
   const { login } = useCampus();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const u = login(email.trim(), password);
-    if (!u) return toast.error("Invalid email or password");
+    const u = login(identifier.trim(), password);
+    if (!u) return toast.error("Invalid credentials");
     toast.success(`Welcome back, ${u.name}`);
     if (u.role === "Admin") navigate("/dashboard");
     else if (u.role === "Vendor") navigate("/vendor");
@@ -27,13 +27,13 @@ export default function Login() {
     <AuthShell title="Sign in" subtitle="Welcome back to Campus Eats">
       <form onSubmit={onSubmit} className="space-y-4">
         <div className="space-y-2">
-          <Label>Email</Label>
-          <Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@campus.edu" />
+          <Label>User ID or Email</Label>
+          <Input required value={identifier} onChange={(e) => setIdentifier(e.target.value)} placeholder="16-char User ID or you@campus.edu" />
         </div>
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <Label>Password</Label>
-            <Link to="/forgot-password" className="text-xs text-primary hover:underline">Forgot password?</Link>
+            <Link to="/forgot-password" className="text-xs text-primary hover:underline">Recover account</Link>
           </div>
           <Input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
         </div>
@@ -41,9 +41,13 @@ export default function Login() {
         <p className="text-sm text-center text-muted-foreground">
           New here? <Link to="/signup" className="text-primary hover:underline">Create account</Link>
         </p>
-        <p className="text-xs text-center text-muted-foreground pt-2">
-          Demo: admin@campus.edu / admin · student@campus.edu / student · vendor@campus.edu / vendor
-        </p>
+        <div className="text-xs text-center text-muted-foreground pt-2 space-y-0.5">
+          <p className="font-medium">Demo accounts (8)</p>
+          <p>student01–02@campus.edu / student</p>
+          <p>standard01–02@campus.edu / standard</p>
+          <p>vendor01–02@campus.edu / vendor</p>
+          <p>admin01–02@campus.edu / admin</p>
+        </div>
       </form>
     </AuthShell>
   );

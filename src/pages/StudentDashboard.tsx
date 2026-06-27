@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { useCampus } from "@/store/campusStore";
+import { useCampus, priceOrder } from "@/store/campusStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,12 +15,20 @@ export default function StudentDashboard() {
   const [search, setSearch] = useState("");
 
   if (!user) return <Navigate to="/login" replace />;
-  if (user.role !== "Student") return <Navigate to={user.role === "Vendor" ? "/vendor" : "/dashboard"} replace />;
+  if (user.role !== "Student" && user.role !== "Standard")
+    return <Navigate to={user.role === "Vendor" ? "/vendor" : "/dashboard"} replace />;
 
-  const filtered = menu.filter((m) => m.name.toLowerCase().includes(search.toLowerCase()));
-  const cartTotal = useMemo(
-    () => Object.entries(cart).reduce((sum, [id, q]) => sum + (menu.find((m) => m.id === id)?.price ?? 0) * q, 0),
-    [cart, menu]
+  const filtered = menu.filter(
+    (m) => m.available !== false && m.name.toLowerCase().includes(search.toLowerCase())
+  );
+  const pricing = useMemo(
+    () =>
+      priceOrder(
+        Object.entries(cart).map(([itemId, quantity]) => ({ itemId, quantity })),
+        menu,
+        user.role
+      ),
+    [cart, menu, user.role]
   );
   const cartCount = Object.values(cart).reduce((a, b) => a + b, 0);
   const myOrders = orders.filter((o) => o.userId === user.id).slice().reverse();
@@ -41,7 +49,9 @@ export default function StudentDashboard() {
   };
 
   const statusIcon = (s: string) =>
-    s === "Pending" ? <Clock className="h-3 w-3" /> : s === "Preparing" ? <ChefHat className="h-3 w-3" /> : <CheckCircle2 className="h-3 w-3" />;
+    s === "Pending" || s === "Accepted" ? <Clock className="h-3 w-3" />
+      : s === "Preparing" ? <ChefHat className="h-3 w-3" />
+      : <CheckCircle2 className="h-3 w-3" />;
 
   return (
     <div className="grid lg:grid-cols-3 gap-6">
@@ -68,7 +78,7 @@ export default function StudentDashboard() {
                     <div key={m.id} className="flex justify-between items-center p-3 rounded-lg border">
                       <div>
                         <div className="font-medium">{m.name}</div>
-                        <div className="text-sm text-muted-foreground">${m.price.toFixed(2)}</div>
+                        <div className="text-sm text-muted-foreground">R{m.price.toFixed(2)}</div>
                       </div>
                       <div className="flex items-center gap-2">
                         {cart[m.id] ? (
@@ -104,14 +114,19 @@ export default function StudentDashboard() {
                   return (
                     <div key={id} className="flex justify-between text-sm">
                       <span>{m.name} × {q}</span>
-                      <span className="font-medium">${(m.price * q).toFixed(2)}</span>
+                      <span className="font-medium">R{(m.price * q).toFixed(2)}</span>
                     </div>
                   );
                 })
               )}
-              <div className="border-t pt-3 flex justify-between font-semibold">
-                <span>Total</span>
-                <span>${cartTotal.toFixed(2)}</span>
+              <div className="border-t pt-3 space-y-1 text-sm">
+                <div className="flex justify-between text-muted-foreground"><span>Subtotal</span><span>R{pricing.subtotal.toFixed(2)}</span></div>
+                <div className="flex justify-between text-muted-foreground"><span>Tax (20%)</span><span>R{pricing.tax.toFixed(2)}</span></div>
+                <div className="flex justify-between text-muted-foreground"><span>Rounded to next R5</span><span>R{(pricing.subtotal + pricing.tax > 0 ? Math.ceil((pricing.subtotal + pricing.tax) / 5) * 5 : 0).toFixed(2)}</span></div>
+                {pricing.discount > 0 && (
+                  <div className="flex justify-between text-emerald-600"><span>Student discount (2.5%)</span><span>-R{pricing.discount.toFixed(2)}</span></div>
+                )}
+                <div className="flex justify-between font-semibold text-base pt-1 border-t"><span>Total</span><span>R{pricing.total.toFixed(2)}</span></div>
               </div>
               <Button className="w-full" onClick={checkout}>Confirm order</Button>
             </CardContent>

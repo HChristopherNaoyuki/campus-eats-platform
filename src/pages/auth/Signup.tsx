@@ -16,22 +16,41 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<Role>("Student");
+  const [createdId, setCreatedId] = useState<string | null>(null);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (password.length < 4) return toast.error("Password must be at least 4 characters");
     if (users.some((u) => u.email === email.trim())) return toast.error("Email already registered");
     const adminExists = users.some((u) => u.role === "Admin");
-    // Never trust a client-supplied Admin role unless no admin exists yet
-    // (initial bootstrap). All other self-registrations are forced to Student.
-    const safeRole: Role = role === "Admin" && !adminExists ? "Admin" : role === "Vendor" ? "Vendor" : "Student";
-    registerUser({ name: name.trim(), email: email.trim(), password, role: safeRole });
-    login(email.trim(), password);
-    toast.success("Account created");
-    if (safeRole === "Admin") navigate("/dashboard");
-    else if (safeRole === "Vendor") navigate("/vendor");
-    else navigate("/student");
+    const allowed: Role[] = ["Student", "Standard", "Vendor"];
+    const safeRole: Role =
+      role === "Admin" && !adminExists ? "Admin" : allowed.includes(role) ? role : "Student";
+    const user = registerUser({ name: name.trim(), email: email.trim(), password, role: safeRole });
+    setCreatedId(user.id);
+    toast.success("Account created — save your User ID");
   };
+
+  if (createdId) {
+    return (
+      <AuthShell title="Save your User ID" subtitle="This 16-character ID is your account recovery key">
+        <div className="space-y-4">
+          <div className="rounded-lg border-2 border-dashed border-primary p-4 text-center">
+            <div className="text-xs uppercase text-muted-foreground mb-1">Your User ID</div>
+            <div className="font-mono text-lg font-bold tracking-wider break-all">{createdId}</div>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Store this somewhere safe. You'll need it together with your password to sign in
+            or recover your account.
+          </p>
+          <Button className="w-full" onClick={() => {
+            login(email.trim(), password);
+            navigate("/student");
+          }}>Continue</Button>
+        </div>
+      </AuthShell>
+    );
+  }
 
   return (
     <AuthShell title="Create account" subtitle="Join the campus pickup network">
@@ -54,6 +73,7 @@ export default function Signup() {
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="Student">Student</SelectItem>
+              <SelectItem value="Standard">Standard</SelectItem>
               <SelectItem value="Vendor">Vendor</SelectItem>
             </SelectContent>
           </Select>

@@ -1,5 +1,11 @@
-export type Role = "Student" | "Vendor" | "Admin";
-export type OrderStatus = "Pending" | "Preparing" | "Completed";
+export type Role = "Student" | "Standard" | "Vendor" | "Admin";
+export type OrderStatus =
+  | "Pending"
+  | "Accepted"
+  | "Rejected"
+  | "Preparing"
+  | "Ready"
+  | "Completed";
 
 export interface User {
   id: string;
@@ -22,6 +28,8 @@ export interface MenuItem {
   name: string;
   price: number;
   vendorId: string;
+  available?: boolean;
+  stock?: number;
 }
 
 export interface OrderLine {
@@ -34,5 +42,25 @@ export interface Order {
   userId: string;
   lines: OrderLine[];
   status: OrderStatus;
+  createdAt: string;
+  subtotal: number;
+  tax: number;
+  discount: number;
+  total: number;
+}
+
+export interface Feedback {
+  id: string;
+  userId: string;
+  type: "Compliment" | "Complaint";
+  message: string;
+  createdAt: string;
+}
+
+export interface SecurityLog {
+  id: string;
+  userId: string | null;
+  action: string;
+  detail?: string;
   createdAt: string;
 }

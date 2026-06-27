@@ -10,7 +10,7 @@ import { AuthShell } from "./Login";
 export default function ForgotPassword() {
   const { resetPassword } = useCampus();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
 
@@ -18,18 +18,18 @@ export default function ForgotPassword() {
     e.preventDefault();
     if (password.length < 4) return toast.error("Password must be at least 4 characters");
     if (password !== confirm) return toast.error("Passwords do not match");
-    const ok = resetPassword(email.trim(), password);
-    if (!ok) return toast.error("No account with that email");
-    toast.success("Password reset. Please sign in.");
+    const ok = resetPassword(identifier.trim(), password);
+    if (!ok) return toast.error("No account with that User ID or email");
+    toast.success("Account recovered. Please sign in.");
     navigate("/login");
   };
 
   return (
-    <AuthShell title="Reset password" subtitle="Enter your email and a new password">
+    <AuthShell title="Recover account" subtitle="Use your 16-character User ID (or email) to set a new password">
       <form onSubmit={onSubmit} className="space-y-4">
         <div className="space-y-2">
-          <Label>Email</Label>
-          <Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+          <Label>User ID or Email</Label>
+          <Input required value={identifier} onChange={(e) => setIdentifier(e.target.value)} placeholder="16-char User ID or you@campus.edu" />
         </div>
         <div className="space-y-2">
           <Label>New password</Label>
