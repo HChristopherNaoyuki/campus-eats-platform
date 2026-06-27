@@ -8,9 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Trash2, ShoppingBag, DollarSign, UtensilsCrossed } from "lucide-react";
+import { Plus, Trash2, ShoppingBag, DollarSign, UtensilsCrossed, Check, X } from "lucide-react";
 import { toast } from "sonner";
 import type { OrderStatus } from "@/types/campus";
+import { Switch } from "@/components/ui/switch";
 
 export default function VendorDashboard() {
   const { currentUserId, users, vendors, menu, orders, addMenuItem, removeMenuItem, updateMenuItem, updateOrderStatus } = useCampus();
@@ -77,7 +78,7 @@ export default function VendorDashboard() {
                   <TableBody>
                     {myOrders.map((o) => (
                       <TableRow key={o.id}>
-                        <TableCell className="font-mono text-xs">#{o.id.slice(0, 6)}</TableCell>
+                        <TableCell className="font-mono text-[10px]">{o.id}</TableCell>
                         <TableCell className="text-sm">
                           {o.lines.filter((l) => myItemIds.has(l.itemId)).map((l) => {
                             const it = menu.find((m) => m.id === l.itemId);
@@ -85,14 +86,23 @@ export default function VendorDashboard() {
                           })}
                         </TableCell>
                         <TableCell>
-                          <Select value={o.status} onValueChange={(v) => updateOrderStatus(o.id, v as OrderStatus)}>
-                            <SelectTrigger className="h-8 w-[130px]"><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Pending">Pending</SelectItem>
-                              <SelectItem value="Preparing">Preparing</SelectItem>
-                              <SelectItem value="Completed">Completed</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          {o.status === "Pending" ? (
+                            <div className="flex gap-1">
+                              <Button size="sm" variant="outline" className="h-8" onClick={() => updateOrderStatus(o.id, "Accepted")}><Check className="h-3 w-3 mr-1" />Accept</Button>
+                              <Button size="sm" variant="ghost" className="h-8 text-red-600" onClick={() => updateOrderStatus(o.id, "Rejected")}><X className="h-3 w-3 mr-1" />Reject</Button>
+                            </div>
+                          ) : (
+                            <Select value={o.status} onValueChange={(v) => updateOrderStatus(o.id, v as OrderStatus)}>
+                              <SelectTrigger className="h-8 w-[150px]"><SelectValue /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Accepted">Accepted</SelectItem>
+                                <SelectItem value="Preparing">Preparing</SelectItem>
+                                <SelectItem value="Ready">Ready for pickup</SelectItem>
+                                <SelectItem value="Completed">Completed</SelectItem>
+                                <SelectItem value="Rejected">Rejected</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          )}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -111,12 +121,14 @@ export default function VendorDashboard() {
                 <Button type="submit"><Plus className="h-4 w-4" /></Button>
               </form>
               <Table>
-                <TableHeader><TableRow><TableHead>Item</TableHead><TableHead>Price</TableHead><TableHead></TableHead></TableRow></TableHeader>
+                <TableHeader><TableRow><TableHead>Item</TableHead><TableHead>Price (R)</TableHead><TableHead>Stock</TableHead><TableHead>Available</TableHead><TableHead></TableHead></TableRow></TableHeader>
                 <TableBody>
                   {myMenu.map((m) => (
                     <TableRow key={m.id}>
                       <TableCell><Input defaultValue={m.name} onBlur={(e) => updateMenuItem(m.id, { name: e.target.value })} /></TableCell>
                       <TableCell><Input type="number" step="0.01" defaultValue={m.price} onBlur={(e) => updateMenuItem(m.id, { price: parseFloat(e.target.value) || 0 })} /></TableCell>
+                      <TableCell><Input type="number" className="w-20" defaultValue={m.stock ?? 0} onBlur={(e) => updateMenuItem(m.id, { stock: parseInt(e.target.value) || 0 })} /></TableCell>
+                      <TableCell><Switch checked={m.available !== false} onCheckedChange={(v) => updateMenuItem(m.id, { available: v })} /></TableCell>
                       <TableCell><Button size="icon" variant="ghost" onClick={() => removeMenuItem(m.id)}><Trash2 className="h-4 w-4" /></Button></TableCell>
                     </TableRow>
                   ))}
