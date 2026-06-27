@@ -1,6 +1,8 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Users, Store, UtensilsCrossed, ShoppingBag, LayoutDashboard, FileBarChart } from "lucide-react";
+import { Users, Store, UtensilsCrossed, ShoppingBag, LayoutDashboard, FileBarChart, MessageSquare, ShieldAlert, LogOut } from "lucide-react";
 import { useCampus } from "@/store/campusStore";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -20,10 +22,12 @@ const adminItems = [
   { title: "Menu Management", url: "/menu", icon: UtensilsCrossed },
   { title: "Order Management", url: "/orders", icon: ShoppingBag },
   { title: "Reports", url: "/reports", icon: FileBarChart },
+  { title: "Security Log", url: "/security-log", icon: ShieldAlert },
 ];
 
 const studentItems = [
   { title: "Browse & Order", url: "/student", icon: UtensilsCrossed },
+  { title: "Feedback", url: "/feedback", icon: MessageSquare },
 ];
 
 const vendorItems = [
@@ -32,11 +36,16 @@ const vendorItems = [
 
 export function AppSidebar() {
   const { pathname } = useLocation();
-  const { currentUserId, users } = useCampus();
+  const { currentUserId, users, logout } = useCampus();
+  const navigate = useNavigate();
   const user = users.find((u) => u.id === currentUserId);
   const role = user?.role ?? "Admin";
   const items = role === "Admin" ? adminItems : role === "Vendor" ? vendorItems : studentItems;
-  const subtitle = role === "Admin" ? "Admin Console" : role === "Vendor" ? "Vendor Portal" : "Student Portal";
+  const subtitle =
+    role === "Admin" ? "Admin Console"
+    : role === "Vendor" ? "Vendor Portal"
+    : role === "Standard" ? "Standard Portal"
+    : "Student Portal";
   const isActive = (path: string) => pathname === path || pathname.startsWith(path + "/");
 
   return (
@@ -70,6 +79,19 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        {user && (
+          <SidebarGroup>
+            <SidebarGroupContent className="p-2 space-y-2 group-data-[collapsible=icon]:hidden">
+              <div className="text-xs text-sidebar-foreground/70 px-2">
+                <div className="font-medium text-sidebar-foreground">{user.name}</div>
+                <div className="font-mono text-[10px] break-all">{user.id}</div>
+              </div>
+              <Button variant="ghost" size="sm" className="w-full justify-start" onClick={() => { logout(); navigate("/login"); }}>
+                <LogOut className="h-4 w-4 mr-2" /> Sign out
+              </Button>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
     </Sidebar>
   );
