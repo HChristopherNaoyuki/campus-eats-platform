@@ -41,12 +41,20 @@ export default function Login() {
         <p className="text-sm text-center text-muted-foreground">
           New here? <Link to="/signup" className="text-primary hover:underline">Create account</Link>
         </p>
-        <div className="text-xs text-center text-muted-foreground pt-2 space-y-0.5">
-          <p className="font-medium">Demo accounts (8)</p>
-          <p>student01–02@campus.edu / student</p>
-          <p>standard01–02@campus.edu / standard</p>
-          <p>vendor01–02@campus.edu / vendor</p>
-          <p>admin01–02@campus.edu / admin</p>
+        <div className="pt-4">
+          <div className="rounded-lg border bg-muted/40 p-3">
+            <p className="text-xs font-semibold text-center mb-2">Demo accounts (all 8 work)</p>
+            <div className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 text-xs font-mono">
+              <span>student01@campus.edu</span><span className="text-muted-foreground">student</span>
+              <span>student02@campus.edu</span><span className="text-muted-foreground">student</span>
+              <span>standard01@campus.edu</span><span className="text-muted-foreground">standard</span>
+              <span>standard02@campus.edu</span><span className="text-muted-foreground">standard</span>
+              <span>vendor01@campus.edu</span><span className="text-muted-foreground">vendor</span>
+              <span>vendor02@campus.edu</span><span className="text-muted-foreground">vendor</span>
+              <span>admin01@campus.edu</span><span className="text-muted-foreground">admin</span>
+              <span>admin02@campus.edu</span><span className="text-muted-foreground">admin</span>
+            </div>
+          </div>
         </div>
       </form>
     </AuthShell>
