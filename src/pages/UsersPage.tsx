@@ -17,17 +17,21 @@ export default function UsersPage() {
   const [creds, setCreds] = useState({ email: "", password: "" });
   const adminExists = users.some((u) => u.role === "Admin");
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!reg.name || !reg.email || !reg.password) return toast.error("Fill all fields");
-    registerUser(reg);
-    toast.success("User registered");
-    setReg({ name: "", email: "", password: "", role: "Student" });
+    try {
+      await registerUser(reg);
+      toast.success("User registered");
+      setReg({ name: "", email: "", password: "", role: "Student" });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Registration failed");
+    }
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const u = login(creds.email, creds.password);
+    const u = await login(creds.email, creds.password).catch(() => null);
     u ? toast.success(`Welcome, ${u.name}`) : toast.error("Invalid credentials");
   };
 

@@ -18,7 +18,7 @@ export default function Signup() {
   const [role, setRole] = useState<Role>("Student");
   const [createdId, setCreatedId] = useState<string | null>(null);
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password.length < 4) return toast.error("Password must be at least 4 characters");
     if (users.some((u) => u.email === email.trim())) return toast.error("Email already registered");
@@ -26,9 +26,13 @@ export default function Signup() {
     const allowed: Role[] = ["Student", "Standard", "Vendor"];
     const safeRole: Role =
       role === "Admin" && !adminExists ? "Admin" : allowed.includes(role) ? role : "Student";
-    const user = registerUser({ name: name.trim(), email: email.trim(), password, role: safeRole });
-    setCreatedId(user.id);
-    toast.success("Account created — save your User ID");
+    try {
+      const user = await registerUser({ name: name.trim(), email: email.trim(), password, role: safeRole });
+      setCreatedId(user.id);
+      toast.success("Account created — save your User ID");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Registration failed");
+    }
   };
 
   if (createdId) {
@@ -43,8 +47,8 @@ export default function Signup() {
             Store this somewhere safe. You'll need it together with your password to sign in
             or recover your account.
           </p>
-          <Button className="w-full" onClick={() => {
-            login(email.trim(), password);
+          <Button className="w-full" onClick={async () => {
+            await login(email.trim(), password);
             navigate("/student");
           }}>Continue</Button>
         </div>
