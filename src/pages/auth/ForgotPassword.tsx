@@ -14,11 +14,11 @@ export default function ForgotPassword() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password.length < 4) return toast.error("Password must be at least 4 characters");
     if (password !== confirm) return toast.error("Passwords do not match");
-    const ok = resetPassword(identifier.trim(), password);
+    const ok = await resetPassword(identifier.trim(), password).catch(() => false);
     if (!ok) return toast.error("No account with that User ID or email");
     toast.success("Account recovered. Please sign in.");
     navigate("/login");

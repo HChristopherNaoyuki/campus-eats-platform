@@ -9,10 +9,11 @@ import { Plus, Minus, ShoppingBag, Clock, CheckCircle2, ChefHat } from "lucide-r
 import { toast } from "sonner";
 
 export default function StudentDashboard() {
-  const { currentUserId, users, vendors, menu, orders, placeOrder } = useCampus();
+  const { currentUserId, users, vendors, menu, orders, placeOrder, catalogLoading, catalogError } = useCampus();
   const user = users.find((u) => u.id === currentUserId);
   const [cart, setCart] = useState<Record<string, number>>({});
   const [search, setSearch] = useState("");
+  const [placing, setPlacing] = useState(false);
 
   if (!user) return <Navigate to="/login" replace />;
   if (user.role !== "Student" && user.role !== "Standard")
@@ -40,12 +41,19 @@ export default function StudentDashboard() {
     setCart(next);
   };
 
-  const checkout = () => {
+  const checkout = async () => {
     const lines = Object.entries(cart).map(([itemId, quantity]) => ({ itemId, quantity }));
     if (lines.length === 0) return toast.error("Your cart is empty");
-    placeOrder(user.id, lines);
-    setCart({});
-    toast.success("Order placed! Vendor will start preparing soon.");
+    setPlacing(true);
+    try {
+      await placeOrder(user.id, lines);
+      setCart({});
+      toast.success("Order placed! Vendor will start preparing soon.");
+    } catch {
+      toast.error("Could not place the order. Please try again.");
+    } finally {
+      setPlacing(false);
+    }
   };
 
   const statusIcon = (s: string) =>
@@ -61,6 +69,8 @@ export default function StudentDashboard() {
             <p className="text-muted-foreground">What are you eating today?</p>
           </div>
           <Input placeholder="Search menu items…" value={search} onChange={(e) => setSearch(e.target.value)} />
+          {catalogLoading && <p className="text-sm text-muted-foreground">Loading restaurants and menus…</p>}
+          {catalogError && <p className="text-sm text-destructive">Menu service unavailable: {catalogError}</p>}
 
           {vendors.map((v) => {
             const items = filtered.filter((m) => m.vendorId === v.id);
@@ -128,7 +138,7 @@ export default function StudentDashboard() {
                 )}
                 <div className="flex justify-between font-semibold text-base pt-1 border-t"><span>Total</span><span>R{pricing.total.toFixed(2)}</span></div>
               </div>
-              <Button className="w-full" onClick={checkout}>Confirm order</Button>
+              <Button className="w-full" onClick={checkout} disabled={placing}>{placing ? "Placing order…" : "Confirm order"}</Button>
             </CardContent>
           </Card>
 

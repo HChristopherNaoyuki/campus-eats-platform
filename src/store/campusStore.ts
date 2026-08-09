@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import * as api from "@/lib/restaurantApi";
 import type {
   Feedback,
   MenuItem,
@@ -17,6 +18,10 @@ const uid = () => Math.random().toString(36).slice(2, 9);
 const ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 const genUserId = () =>
   Array.from({ length: 16 }, () => ALPHA[Math.floor(Math.random() * ALPHA.length)]).join("");
+
+// Deterministic 16-char User ID derived from the API usercode (UUID).
+const idFromUsercode = (usercode: string) =>
+  usercode.replace(/[^a-z0-9]/gi, "").toUpperCase().slice(0, 16).padEnd(16, "0");
 
 // Order ID format: ORD-YYYYMMDD-XXXXXXXX
 const genOrderId = () => {
@@ -49,6 +54,19 @@ export const priceOrder = (
   };
 };
 
+// 8 demo accounts (process document section 12). They are provisioned on the
+// Fake Restaurant API on first sign-in so their usercode/apikey is real.
+const DEMO_ACCOUNTS: Omit<User, "usercode">[] = [
+  { id: "STUDENT000000001", name: "Student_01", email: "student01@campus.edu", password: "student", role: "Student" },
+  { id: "STUDENT000000002", name: "Student_02", email: "student02@campus.edu", password: "student", role: "Student" },
+  { id: "STANDARD00000001", name: "Standard_01", email: "standard01@campus.edu", password: "standard", role: "Standard" },
+  { id: "STANDARD00000002", name: "Standard_02", email: "standard02@campus.edu", password: "standard", role: "Standard" },
+  { id: "VENDOR0000000001", name: "Vendor_01", email: "vendor01@campus.edu", password: "vendor", role: "Vendor" },
+  { id: "VENDOR0000000002", name: "Vendor_02", email: "vendor02@campus.edu", password: "vendor", role: "Vendor" },
+  { id: "ADMIN00000000001", name: "Admin_01", email: "admin01@campus.edu", password: "admin", role: "Admin" },
+  { id: "ADMIN00000000002", name: "Admin_02", email: "admin02@campus.edu", password: "admin", role: "Admin" },
+];
+
 interface State {
   users: User[];
   vendors: Vendor[];
@@ -57,11 +75,16 @@ interface State {
   feedback: Feedback[];
   logs: SecurityLog[];
   currentUserId: string | null;
+  apiKey: string | null;
+  catalogLoading: boolean;
+  catalogLoaded: boolean;
+  catalogError: string | null;
 
-  registerUser: (u: Omit<User, "id">) => User;
-  login: (identifier: string, password: string) => User | null;
+  loadCatalog: (force?: boolean) => Promise<void>;
+  registerUser: (u: Omit<User, "id">) => Promise<User>;
+  login: (identifier: string, password: string) => Promise<User | null>;
   logout: () => void;
-  resetPassword: (userIdOrEmail: string, newPassword: string) => boolean;
+  resetPassword: (userIdOrEmail: string, newPassword: string) => Promise<boolean>;
 
   addVendor: (v: Omit<Vendor, "id">) => void;
   updateVendor: (id: string, patch: Partial<Omit<Vendor, "id">>) => void;
@@ -70,7 +93,8 @@ interface State {
   updateMenuItem: (id: string, patch: Partial<Omit<MenuItem, "id">>) => void;
   removeMenuItem: (id: string) => void;
 
-  placeOrder: (userId: string, lines: { itemId: string; quantity: number }[]) => void;
+  placeOrder: (userId: string, lines: { itemId: string; quantity: number }[]) => Promise<void>;
+  syncOrders: () => Promise<void>;
   updateOrderStatus: (id: string, status: OrderStatus) => void;
 
   addFeedback: (f: Omit<Feedback, "id" | "createdAt">) => void;
@@ -80,61 +104,165 @@ interface State {
 export const useCampus = create<State>()(
   persist(
     (set, get) => ({
-      // 8 demo accounts (process document section 12). Seed users are
-      // in-memory only — partialize strips them from localStorage so no
-      // plaintext credentials are written to disk.
-      users: [
-        { id: "STUDENT000000001", name: "Student_01", email: "student01@campus.edu", password: "student", role: "Student" },
-        { id: "STUDENT000000002", name: "Student_02", email: "student02@campus.edu", password: "student", role: "Student" },
-        { id: "STANDARD00000001", name: "Standard_01", email: "standard01@campus.edu", password: "standard", role: "Standard" },
-        { id: "STANDARD00000002", name: "Standard_02", email: "standard02@campus.edu", password: "standard", role: "Standard" },
-        { id: "VENDOR0000000001", name: "Vendor_01", email: "vendor01@campus.edu", password: "vendor", role: "Vendor", vendorId: "v-1" },
-        { id: "VENDOR0000000002", name: "Vendor_02", email: "vendor02@campus.edu", password: "vendor", role: "Vendor", vendorId: "v-2" },
-        { id: "ADMIN00000000001", name: "Admin_01", email: "admin01@campus.edu", password: "admin", role: "Admin" },
-        { id: "ADMIN00000000002", name: "Admin_02", email: "admin02@campus.edu", password: "admin", role: "Admin" },
-      ],
-      vendors: [
-        { id: "v-1", name: "Pizza Corner", location: "Block A", contact: "555-0101" },
-        { id: "v-2", name: "Sushi Express", location: "Block B", contact: "555-0202" },
-      ],
-      menu: [
-        { id: "m-1", name: "Margherita Pizza", price: 65, vendorId: "v-1", available: true, stock: 20 },
-        { id: "m-2", name: "Pepperoni Slice", price: 25, vendorId: "v-1", available: true, stock: 40 },
-        { id: "m-3", name: "Salmon Roll", price: 95, vendorId: "v-2", available: true, stock: 15 },
-      ],
+      // Seed users are in-memory only — partialize strips them from
+      // localStorage so no plaintext credentials are written to disk.
+      users: DEMO_ACCOUNTS.map((u) => ({ ...u })),
+      vendors: [],
+      menu: [],
       orders: [],
       feedback: [],
       logs: [],
       currentUserId: null,
+      apiKey: null,
+      catalogLoading: false,
+      catalogLoaded: false,
+      catalogError: null,
 
-      registerUser: (u) => {
-        const user: User = { ...u, id: genUserId() };
-        set({ users: [...get().users, user] });
+      // Pull restaurants + menu items from the Fake Restaurant API.
+      loadCatalog: async (force = false) => {
+        if (get().catalogLoading) return;
+        if (get().catalogLoaded && !force) return;
+        set({ catalogLoading: true, catalogError: null });
+        try {
+          const [restaurants, items] = await Promise.all([
+            api.getRestaurants(),
+            api.getAllItems(),
+          ]);
+          const vendors: Vendor[] = restaurants
+            .map((r) => ({
+              id: String(r.restaurantID),
+              name: r.restaurantName,
+              location: r.address,
+              contact: r.type,
+            }))
+            .sort((a, b) => a.name.localeCompare(b.name));
+
+          const existing = get().menu;
+          const menu: MenuItem[] = items.map((i) => {
+            const prev = existing.find((m) => m.id === String(i.itemID));
+            return {
+              id: String(i.itemID),
+              name: i.itemName,
+              price: i.itemPrice,
+              vendorId: String(i.restaurantID),
+              description: i.itemDescription,
+              imageUrl: i.imageUrl,
+              available: prev?.available ?? true,
+              stock: prev?.stock ?? 25,
+            };
+          });
+          // Keep locally created items that the API does not know about.
+          const localOnly = existing.filter((m) => m.id.startsWith("local-"));
+
+          // Bind the two demo vendor accounts to real restaurants.
+          const users = get().users.map((u) => {
+            if (u.role !== "Vendor" || u.vendorId) return u;
+            const idx = u.email === "vendor01@campus.edu" ? 0 : u.email === "vendor02@campus.edu" ? 1 : -1;
+            return idx >= 0 && vendors[idx] ? { ...u, vendorId: vendors[idx].id } : u;
+          });
+
+          set({
+            vendors,
+            menu: [...menu, ...localOnly],
+            users,
+            catalogLoaded: true,
+            catalogLoading: false,
+          });
+          get().log("CATALOG_SYNCED", `${vendors.length} vendors / ${menu.length} items`);
+        } catch (e) {
+          set({
+            catalogLoading: false,
+            catalogError: e instanceof Error ? e.message : "Failed to load catalog",
+          });
+        }
+      },
+
+      registerUser: async (u) => {
+        const email = u.email.trim();
+        let usercode: string | undefined;
+        try {
+          const created = await api.registerUser(email, u.password);
+          usercode = created.usercode;
+        } catch {
+          // Email may already exist on the API — fall back to fetching its code.
+          usercode = (await api.getUserCode(email, u.password)) ?? undefined;
+        }
+        if (!usercode) throw new Error("Registration failed — that email may already be taken.");
+        const user: User = { ...u, email, id: idFromUsercode(usercode) || genUserId(), usercode };
+        set({ users: [...get().users.filter((x) => x.email !== email), user] });
         get().log("USER_REGISTERED", `${user.role}:${user.email}`, user.id);
         return user;
       },
-      login: (identifier, password) => {
+
+      login: async (identifier, password) => {
         const key = identifier.trim();
-        const user = get().users.find(
-          (u) => (u.email === key || u.id === key.toUpperCase()) && u.password === password
+        const local = get().users.find(
+          (u) => u.email.toLowerCase() === key.toLowerCase() || u.id === key.toUpperCase()
         );
-        if (user) {
-          set({ currentUserId: user.id });
-          get().log("LOGIN_SUCCESS", user.email, user.id);
-        } else {
-          get().log("LOGIN_FAILED", key, null);
+        const email = local?.email ?? key;
+
+        let usercode = await api.getUserCode(email, password);
+        if (!usercode) {
+          // Demo accounts are provisioned on the API on first use.
+          const demo = DEMO_ACCOUNTS.find((d) => d.email === email && d.password === password);
+          if (demo) {
+            try {
+              usercode = (await api.registerUser(email, password)).usercode;
+            } catch {
+              usercode = await api.getUserCode(email, password);
+            }
+          }
         }
-        return user ?? null;
+        if (!usercode) {
+          get().log("LOGIN_FAILED", key, null);
+          return null;
+        }
+
+        let user = local
+          ? { ...local, usercode }
+          : {
+              id: idFromUsercode(usercode),
+              name: email.split("@")[0],
+              email,
+              password: "",
+              role: "Standard" as Role,
+              usercode,
+            };
+        // Newly created vendor bindings survive catalog reloads.
+        if (user.role === "Vendor" && !user.vendorId) {
+          const idx = email === "vendor02@campus.edu" ? 1 : 0;
+          user = { ...user, vendorId: get().vendors[idx]?.id };
+        }
+        set({
+          users: [...get().users.filter((u) => u.id !== user.id), user],
+          currentUserId: user.id,
+          apiKey: usercode,
+        });
+        get().log("LOGIN_SUCCESS", user.email, user.id);
+        void get().syncOrders();
+        return user;
       },
+
       logout: () => {
         const id = get().currentUserId;
         get().log("LOGOUT", undefined, id);
-        set({ currentUserId: null });
+        set({ currentUserId: null, apiKey: null });
       },
-      resetPassword: (userIdOrEmail, newPassword) => {
+
+      resetPassword: async (userIdOrEmail, newPassword) => {
         const key = userIdOrEmail.trim();
-        const exists = get().users.find((u) => u.email === key || u.id === key.toUpperCase());
+        const exists = get().users.find(
+          (u) => u.email.toLowerCase() === key.toLowerCase() || u.id === key.toUpperCase()
+        );
         if (!exists) return false;
+        const usercode =
+          exists.usercode ?? (exists.password ? await api.getUserCode(exists.email, exists.password) : null);
+        if (!usercode) return false;
+        try {
+          await api.updateUserPassword(usercode, newPassword);
+        } catch {
+          return false;
+        }
         set({
           users: get().users.map((u) =>
             u.id === exists.id ? { ...u, password: newPassword } : u
@@ -144,37 +272,103 @@ export const useCampus = create<State>()(
         return true;
       },
 
-      addVendor: (v) => set({ vendors: [...get().vendors, { ...v, id: uid() }] }),
+      addVendor: (v) => set({ vendors: [...get().vendors, { ...v, id: `local-${uid()}` }] }),
       updateVendor: (id, patch) =>
         set({ vendors: get().vendors.map((v) => (v.id === id ? { ...v, ...patch } : v)) }),
 
       addMenuItem: (m) =>
-        set({ menu: [...get().menu, { available: true, stock: 0, ...m, id: uid() }] }),
+        set({ menu: [...get().menu, { available: true, stock: 0, ...m, id: `local-${uid()}` }] }),
       updateMenuItem: (id, patch) =>
         set({ menu: get().menu.map((m) => (m.id === id ? { ...m, ...patch } : m)) }),
       removeMenuItem: (id) => set({ menu: get().menu.filter((m) => m.id !== id) }),
 
-      placeOrder: (userId, lines) => {
-        const { menu, users } = get();
+      placeOrder: async (userId, lines) => {
+        const { menu, users, apiKey } = get();
         const user = users.find((u) => u.id === userId);
         const pricing = priceOrder(lines, menu, user?.role ?? "Standard");
+
+        // Send one API master order per restaurant (vendor).
+        const byVendor = new Map<string, { itemName: string; quantity: number }[]>();
+        for (const l of lines) {
+          const item = menu.find((m) => m.id === l.itemId);
+          if (!item) continue;
+          const list = byVendor.get(item.vendorId) ?? [];
+          list.push({ itemName: item.name, quantity: l.quantity });
+          byVendor.set(item.vendorId, list);
+        }
+        const masterIds: number[] = [];
+        if (apiKey) {
+          for (const [vendorId, items] of byVendor) {
+            if (vendorId.startsWith("local-")) continue;
+            try {
+              const res = await api.makeOrder(vendorId, apiKey, items);
+              const masterId = res.fullorder?.[0]?.masterID;
+              if (typeof masterId === "number") masterIds.push(masterId);
+            } catch (e) {
+              get().log("ORDER_API_FAILED", e instanceof Error ? e.message : "unknown", userId);
+            }
+          }
+        }
+
         const order: Order = {
           id: genOrderId(),
           userId,
           lines,
           status: "Pending",
           createdAt: new Date().toISOString(),
+          masterIds,
           ...pricing,
         };
-        // Decrement local inventory.
         const nextMenu = menu.map((m) => {
           const line = lines.find((l) => l.itemId === m.id);
           if (!line || m.stock === undefined) return m;
           return { ...m, stock: Math.max(0, m.stock - line.quantity) };
         });
         set({ orders: [...get().orders, order], menu: nextMenu });
-        get().log("ORDER_PLACED", order.id, userId);
+        get().log("ORDER_PLACED", `${order.id}${masterIds.length ? ` (API #${masterIds.join(",")})` : ""}`, userId);
       },
+
+      // Pull the signed-in user's master orders back from the API and add any
+      // that this device does not have a local record for.
+      syncOrders: async () => {
+        const { apiKey, currentUserId, orders, menu } = get();
+        if (!apiKey || !currentUserId) return;
+        try {
+          const masters = await api.getOrders(apiKey);
+          const known = new Set(orders.flatMap((o) => o.masterIds ?? []));
+          const missing = masters.filter((m) => !known.has(m.masterID));
+          if (missing.length === 0) return;
+          const imported: Order[] = [];
+          for (const m of missing) {
+            const detail = await api.getOrderByMasterId(m.masterID, apiKey);
+            const lines = detail.map((d) => ({
+              itemId:
+                menu.find((mi) => mi.name === d.itemName && mi.vendorId === String(m.restaurantID))?.id ??
+                d.itemName,
+              quantity: d.quantity,
+            }));
+            const subtotal = detail.reduce((s, d) => s + d.totalPrice, 0);
+            const taxed = subtotal * 1.2;
+            const rounded = Math.ceil(taxed / 5) * 5;
+            imported.push({
+              id: genOrderId(),
+              userId: currentUserId,
+              lines,
+              status: "Pending",
+              createdAt: new Date().toISOString(),
+              masterIds: [m.masterID],
+              subtotal: +subtotal.toFixed(2),
+              tax: +(taxed - subtotal).toFixed(2),
+              discount: 0,
+              total: +rounded.toFixed(2),
+            });
+          }
+          set({ orders: [...get().orders, ...imported] });
+        } catch {
+          /* offline / API unavailable — local orders still work */
+        }
+      },
+
       updateOrderStatus: (id, status) => {
         set({ orders: get().orders.map((o) => (o.id === id ? { ...o, status } : o)) });
         get().log("ORDER_STATUS", `${id} -> ${status}`, get().currentUserId);
@@ -203,17 +397,16 @@ export const useCampus = create<State>()(
     }),
     {
       name: "campus-eats-store",
-      version: 5,
-      // Never persist users (passwords) or the active session id.
+      version: 6,
+      // Never persist users (passwords), the active session id, or the API key.
       partialize: (state) =>
         ({
           vendors: state.vendors,
           menu: state.menu,
-          orders: [
-            ...state.orders.map((o) => ({ ...o })),
-          ],
+          orders: state.orders,
           feedback: state.feedback,
           logs: state.logs,
+          catalogLoaded: state.catalogLoaded,
         }) as unknown as State,
     }
   )
