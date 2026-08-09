@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -19,14 +20,25 @@ import StudentDashboard from "./pages/StudentDashboard";
 import VendorDashboard from "./pages/VendorDashboard";
 import FeedbackPage from "./pages/FeedbackPage";
 import SecurityLogPage from "./pages/SecurityLogPage";
+import { useCampus } from "./store/campusStore";
 
 const queryClient = new QueryClient();
+
+/** Pulls restaurants + menu items from the Fake Restaurant API on boot. */
+const CatalogLoader = () => {
+  const loadCatalog = useCampus((s) => s.loadCatalog);
+  useEffect(() => {
+    void loadCatalog();
+  }, [loadCatalog]);
+  return null;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <CatalogLoader />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
