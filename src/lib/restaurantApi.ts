@@ -1,9 +1,13 @@
 /**
  * Fake Restaurant API client.
- * Base: https://fakerestaurantapi.runasp.net
+ * Upstream: https://fakerestaurantapi.runasp.net
+ * The upstream sends no CORS headers, so every call is routed through the
+ * `restaurant-api` backend function which proxies the request verbatim.
  * Auth: "usercode" (UUID) passed as the `apikey` query parameter.
  */
-export const API_BASE = "https://fakerestaurantapi.runasp.net";
+const FUNCTIONS_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/restaurant-api`;
+const ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+export const API_BASE = FUNCTIONS_URL;
 
 export interface ApiRestaurant {
   restaurantID: number;
@@ -48,9 +52,14 @@ export interface ApiOrderLine {
 }
 
 async function request<T>(path: string, method = "GET", body?: unknown): Promise<T> {
+  const headers: Record<string, string> = {
+    apikey: ANON_KEY,
+    Authorization: `Bearer ${ANON_KEY}`,
+  };
+  if (body !== undefined) headers["Content-Type"] = "application/json";
   const res = await fetch(`${API_BASE}${path}`, {
     method,
-    headers: body !== undefined ? { "Content-Type": "application/json" } : undefined,
+    headers,
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
   const text = await res.text();
