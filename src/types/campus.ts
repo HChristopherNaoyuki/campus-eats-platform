@@ -14,6 +14,8 @@ export interface User {
   password: string;
   role: Role;
   vendorId?: string;
+  /** Fake Restaurant API usercode / apikey (UUID). */
+  usercode?: string;
 }
 
 export interface Vendor {
@@ -30,6 +32,8 @@ export interface MenuItem {
   vendorId: string;
   available?: boolean;
   stock?: number;
+  description?: string;
+  imageUrl?: string;
 }
 
 export interface OrderLine {
@@ -47,6 +51,8 @@ export interface Order {
   tax: number;
   discount: number;
   total: number;
+  /** Master order IDs returned by the Fake Restaurant API. */
+  masterIds?: number[];
 }
 
 export interface Feedback {

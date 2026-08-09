@@ -12,10 +12,13 @@ export default function Login() {
   const navigate = useNavigate();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const u = login(identifier.trim(), password);
+    setBusy(true);
+    const u = await login(identifier.trim(), password).catch(() => null);
+    setBusy(false);
     if (!u) return toast.error("Invalid credentials");
     toast.success(`Welcome back, ${u.name}`);
     if (u.role === "Admin") navigate("/dashboard");
@@ -37,7 +40,7 @@ export default function Login() {
           </div>
           <Input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
         </div>
-        <Button type="submit" className="w-full">Sign in</Button>
+        <Button type="submit" className="w-full" disabled={busy}>{busy ? "Signing in…" : "Sign in"}</Button>
         <p className="text-sm text-center text-muted-foreground">
           New here? <Link to="/signup" className="text-primary hover:underline">Create account</Link>
         </p>
