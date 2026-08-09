@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { Pencil, Check, X } from "lucide-react";
 
 export default function VendorsPage() {
-  const { vendors, addVendor, updateVendor } = useCampus();
+  const { vendors, addVendor, updateVendor, loadCatalog, catalogLoading } = useCampus();
   const [form, setForm] = useState({ name: "", location: "", contact: "" });
   const [editId, setEditId] = useState<string | null>(null);
   const [edit, setEdit] = useState({ name: "", location: "" });
@@ -36,9 +36,14 @@ export default function VendorsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Vendor Management</h1>
-        <p className="text-muted-foreground text-sm">Register and update campus food vendors.</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold">Vendor Management</h1>
+          <p className="text-muted-foreground text-sm">Vendors are synced live from the Restaurant API.</p>
+        </div>
+        <Button variant="outline" disabled={catalogLoading} onClick={() => loadCatalog(true)}>
+          {catalogLoading ? "Syncing…" : "Sync from API"}
+        </Button>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[420px_1fr]">
