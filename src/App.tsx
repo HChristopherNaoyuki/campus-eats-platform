@@ -5,6 +5,15 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Landing from "./pages/Landing";
+import MarketingLayout from "./layouts/MarketingLayout";
+import About from "./pages/marketing/About";
+import Services from "./pages/marketing/Services";
+import Contact from "./pages/marketing/Contact";
+import FAQ from "./pages/marketing/FAQ";
+import Blog from "./pages/marketing/Blog";
+import Donate from "./pages/marketing/Donate";
+import Privacy from "./pages/marketing/Privacy";
+import Terms from "./pages/marketing/Terms";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound.tsx";
 import AppLayout from "./layouts/AppLayout";
@@ -41,7 +50,17 @@ const App = () => (
       <CatalogLoader />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Landing />} />
+          <Route element={<MarketingLayout />}>
+            <Route path="/" element={<Landing />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/donate" element={<Donate />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+          </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
