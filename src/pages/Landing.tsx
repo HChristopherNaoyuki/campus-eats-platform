@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCampus } from "@/store/campusStore";
+import CryptoDonations from "@/components/marketing/CryptoDonations";
 import {
   ShoppingBag,
   Clock,
@@ -27,26 +28,7 @@ export default function Landing() {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Nav */}
-      <header className="sticky top-0 z-20 backdrop-blur bg-background/80 border-b">
-        <div className="container mx-auto flex items-center justify-between h-16 px-4">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-primary to-primary-glow text-primary-foreground font-bold flex items-center justify-center">CE</div>
-            <span className="font-bold text-lg">Campus Eats</span>
-          </Link>
-          <nav className="hidden md:flex items-center gap-6 text-sm">
-            <a href="#how" className="text-muted-foreground hover:text-foreground">How it works</a>
-            <a href="#modules" className="text-muted-foreground hover:text-foreground">Modules</a>
-            <a href="#vendors" className="text-muted-foreground hover:text-foreground">Vendors</a>
-          </nav>
-          <div className="flex items-center gap-2">
-            <Button asChild variant="ghost" size="sm"><Link to="/login">Sign in</Link></Button>
-            <Button asChild size="sm"><Link to="/signup">Get started <ArrowRight className="h-4 w-4" /></Link></Button>
-          </div>
-        </div>
-      </header>
-
+    <div className="bg-background text-foreground">
       {/* Hero */}
       <section className="container mx-auto px-4 py-16 md:py-24 grid lg:grid-cols-2 gap-10 items-center">
         <div className="space-y-6">
@@ -118,7 +100,7 @@ export default function Landing() {
           <Button asChild variant="outline"><Link to="/dashboard">Go to dashboard <ArrowRight className="h-4 w-4" /></Link></Button>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {modules.map((m) => (
+            {modules.map((m) => (
             <Link key={m.title} to={m.to}>
               <Card className="h-full hover:-translate-y-1 hover:shadow-[var(--shadow-glow)] transition">
                 <CardContent className="p-6 space-y-3">
@@ -169,16 +151,8 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t">
-        <div className="container mx-auto px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-muted-foreground">
-          <div>© {new Date().getFullYear()} Campus Eats — student pickup network.</div>
-          <div className="flex gap-4">
-            <Link to="/dashboard" className="hover:text-foreground">Dashboard</Link>
-            <Link to="/reports" className="hover:text-foreground">Reports</Link>
-          </div>
-        </div>
-      </footer>
+      {/* Crypto donations */}
+      <CryptoDonations />
     </div>
   );
 }
