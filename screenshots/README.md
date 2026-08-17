@@ -1,0 +1,1 @@
+Store all screenshots and other visual media for Campus Eats in this folder. Images must never be embedded in the README file. Use descriptive lower case file names separated by hyphens, for example student-dashboard-cart.png.
