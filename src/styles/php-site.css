@@ -35,9 +35,9 @@
     --gray-950: #1C1C1E;
 
     
-    --primary: var(--orange);
-    --primary-dark: var(--orange-dark);
-    --primary-light: var(--orange-light);
+    --ce-primary: var(--orange);
+    --ce-primary-dark: var(--orange-dark);
+    --ce-primary-light: var(--orange-light);
     --success: var(--green);
     --success-bg: #E8F5E9;
     --success-text: #1B7A3D;
