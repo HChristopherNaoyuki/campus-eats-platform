@@ -1,167 +1,185 @@
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { useCampus } from "@/store/campusStore";
-import CryptoDonations from "@/components/marketing/CryptoDonations";
-import {
-  ShoppingBag,
-  Clock,
-  MapPin,
-  Users,
-  Store,
-  UtensilsCrossed,
-  ClipboardList,
-  ArrowRight,
-  CheckCircle2,
-  GraduationCap,
-} from "lucide-react";
-import heroImg from "@/assets/landing-hero.jpg";
 
-export default function Landing() {
-  const { vendors, menu } = useCampus();
+/**
+ * Home page, a direct port of the reference `index.php`.
+ *
+ * Section order, copy, icons and markup mirror the PHP landing page: hero,
+ * stats band, "Pickup in three steps", the four core modules, the featured
+ * vendor card fed by the live API catalogue, and the vendor call to action.
+ */
+export default function Landing()
+{
+    const { vendors, menu } = useCampus();
 
-  const modules = [
-    { title: "User Management", desc: "Register & sign in as Student, Vendor, or Admin.", icon: Users, to: "/users" },
-    { title: "Vendor Management", desc: "Onboard campus vendors with location & contact.", icon: Store, to: "/vendors" },
-    { title: "Menu Management", desc: "Add, update, and remove menu items per vendor.", icon: UtensilsCrossed, to: "/menu" },
-    { title: "Order Management", desc: "Place orders and track Pending → Preparing → Completed.", icon: ClipboardList, to: "/orders" },
-  ];
+    const featured = vendors.find((vendor) => menu.some((item) => item.vendorId === vendor.id));
+    const featuredMenu = featured
+        ? menu.filter((item) => item.vendorId === featured.id).slice(0, 4)
+        : [];
 
-  return (
-    <div className="bg-background text-foreground">
-      {/* Hero */}
-      <section className="container mx-auto px-4 py-16 md:py-24 grid lg:grid-cols-2 gap-10 items-center">
-        <div className="space-y-6">
-          <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-wider uppercase text-primary bg-primary/10 px-3 py-1 rounded-full">
-            <GraduationCap className="h-3.5 w-3.5" /> Built for students
-          </span>
-          <h1 className="text-4xl md:text-6xl font-extrabold leading-[1.05] tracking-tight">
-            Skip the line. <span className="bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">Pick up on campus.</span>
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-xl">
-            Campus Eats is the on-campus pickup network — order ahead from your favorite student vendors, then grab it on the way to class. No delivery fees, no waiting.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <Button asChild size="lg"><Link to="/student">Order now <ArrowRight className="h-4 w-4" /></Link></Button>
-            <Button asChild size="lg" variant="outline"><Link to="/vendor">List your stall</Link></Button>
-          </div>
-          <div className="flex gap-6 pt-4 text-sm">
-            <Stat n={vendors.length} label="Campus vendors" />
-            <Stat n={menu.length} label="Menu items" />
-            <Stat n="<5m" label="Avg pickup" />
-          </div>
-        </div>
-        <div className="relative">
-          <div className="absolute -inset-4 bg-gradient-to-br from-primary/30 to-primary-glow/20 blur-3xl rounded-full" />
-          <img
-            src={heroImg}
-            alt="Campus food spread for student pickup"
-            width={1536}
-            height={1024}
-            className="relative rounded-3xl shadow-[var(--shadow-glow)] object-cover aspect-[4/3]"
-          />
-        </div>
-      </section>
+    const steps =
+    [
+        { number: "1", title: "Browse & order", text: "Pick items from any campus vendor and confirm your order." },
+        { number: "2", title: "Vendor prepares", text: "Track status as it moves from Pending → Preparing → Completed." },
+        { number: "3", title: "Pick it up", text: "Walk over to the vendor's stall and grab your bag. Done." },
+    ];
 
-      {/* How it works */}
-      <section id="how" className="bg-secondary/40 border-y">
-        <div className="container mx-auto px-4 py-16 md:py-20">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold">Pickup in three steps</h2>
-            <p className="text-muted-foreground mt-3">Designed around the campus rhythm — between lectures, before practice, after the library.</p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              { i: ShoppingBag, t: "1. Browse & order", d: "Pick items from any campus vendor and confirm your order." },
-              { i: Clock, t: "2. Vendor prepares", d: "Track status as it moves from Pending → Preparing → Completed." },
-              { i: MapPin, t: "3. Pick it up", d: "Walk over to the vendor's stall and grab your bag. Done." },
-            ].map((s) => (
-              <Card key={s.t} className="border-0 shadow-[var(--shadow-soft)]">
-                <CardContent className="p-6 space-y-3">
-                  <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-primary to-primary-glow text-primary-foreground flex items-center justify-center">
-                    <s.i className="h-5 w-5" />
-                  </div>
-                  <h3 className="font-semibold text-lg">{s.t}</h3>
-                  <p className="text-sm text-muted-foreground">{s.d}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
+    const features =
+    [
+        { icon: "fa-users", title: "User Management", text: "Register & sign in as Student, Vendor, or Admin." },
+        { icon: "fa-store", title: "Vendor Management", text: "Onboard campus vendors with location & contact." },
+        { icon: "fa-utensils", title: "Menu Management", text: "Add, update, and remove menu items per vendor." },
+        { icon: "fa-clipboard-list", title: "Order Management", text: "Place orders and track Pending → Preparing → Completed." },
+    ];
 
-      {/* Modules */}
-      <section id="modules" className="container mx-auto px-4 py-16 md:py-20">
-        <div className="flex items-end justify-between flex-wrap gap-4 mb-10">
-          <div>
-            <h2 className="text-3xl md:text-4xl font-bold">Everything the system manages</h2>
-            <p className="text-muted-foreground mt-2">Four core modules, exactly as defined in the process spec.</p>
-          </div>
-          <Button asChild variant="outline"><Link to="/dashboard">Go to dashboard <ArrowRight className="h-4 w-4" /></Link></Button>
-        </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {modules.map((m) => (
-            <Link key={m.title} to={m.to}>
-              <Card className="h-full hover:-translate-y-1 hover:shadow-[var(--shadow-glow)] transition">
-                <CardContent className="p-6 space-y-3">
-                  <div className="h-10 w-10 rounded-lg bg-accent/10 text-accent flex items-center justify-center">
-                    <m.icon className="h-5 w-5" />
-                  </div>
-                  <h3 className="font-semibold">{m.title}</h3>
-                  <p className="text-sm text-muted-foreground">{m.desc}</p>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </div>
-      </section>
+    return (
+        <>
+            <section id="home" className="hero">
+                <div className="container">
+                    <h1>Skip the line.<br /><span>Pick up on campus.</span></h1>
+                    <p>
+                        Campus Eats is the on-campus pickup network. Order ahead from your favorite campus vendor,
+                        then grab it on the way to class. No delivery fee, no waiting.
+                    </p>
+                    <div className="hero-buttons">
+                        <Link to="/signup" className="btn btn-ce-primary btn-primary">Order now</Link>
+                        <a href="#how-it-works" className="btn btn-outline">Learn more</a>
+                    </div>
+                </div>
+            </section>
 
-      {/* Vendors */}
-      <section id="vendors" className="bg-foreground text-background">
-        <div className="container mx-auto px-4 py-16 md:py-20 grid lg:grid-cols-2 gap-10 items-center">
-          <div className="space-y-5">
-            <h2 className="text-3xl md:text-4xl font-bold">Run a stall on campus?</h2>
-            <p className="opacity-80 max-w-lg">List your menu, take pickup orders, and fulfill them with a simple status workflow. Reports for sales, vendor performance, and user activity included.</p>
-            <ul className="space-y-2">
-              {["Per-vendor menu CRUD", "Live order queue", "Sales & performance reports"].map((f) => (
-                <li key={f} className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="h-4 w-4 text-primary-glow" /> {f}
-                </li>
-              ))}
-            </ul>
-            <div className="flex gap-3">
-              <Button asChild><Link to="/vendors">Become a vendor</Link></Button>
-              <Button asChild variant="outline" className="bg-transparent border-background/30 text-background hover:bg-background hover:text-foreground"><Link to="/reports">View reports</Link></Button>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            {vendors.slice(0, 4).map((v) => {
-              const items = menu.filter((m) => m.vendorId === v.id);
-              return (
-                <Card key={v.id} className="bg-background/5 border-background/10 text-background">
-                  <CardContent className="p-5">
-                    <div className="text-xs opacity-60">{v.location}</div>
-                    <div className="font-semibold mt-1">{v.name}</div>
-                    <div className="text-xs opacity-70 mt-2">{items.length} items</div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+            <section className="stats-section">
+                <div className="container">
+                    <div className="stats-grid">
+                        <div>
+                            <div className="stat-number">{vendors.length.toLocaleString()}</div>
+                            <div className="stat-label">Campus Vendors</div>
+                        </div>
+                        <div>
+                            <div className="stat-number">{menu.length.toLocaleString()}</div>
+                            <div className="stat-label">Menu Items</div>
+                        </div>
+                        <div>
+                            <div className="stat-number">&lt;5 min</div>
+                            <div className="stat-label">Avg Pickup</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-      {/* Crypto donations */}
-      <CryptoDonations />
-    </div>
-  );
-}
+            <section id="how-it-works" className="how-it-works">
+                <div className="container">
+                    <div className="section-title">
+                        <h2>Pickup in three steps</h2>
+                        <p>Designed around the campus rhythm — between lectures, before practice, after the library.</p>
+                    </div>
+                    <div className="steps">
+                        {steps.map((step) => (
+                            <div className="step" key={step.number}>
+                                <div className="step-number">{step.number}</div>
+                                <h3>{step.title}</h3>
+                                <p>{step.text}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
 
-function Stat({ n, label }: { n: number | string; label: string }) {
-  return (
-    <div>
-      <div className="text-2xl font-bold">{n}</div>
-      <div className="text-xs text-muted-foreground uppercase tracking-wider">{label}</div>
-    </div>
-  );
+            <section className="features">
+                <div className="container">
+                    <div className="section-title">
+                        <h2>Everything the system manages</h2>
+                        <p>Four core modules, exactly as defined in the process spec.</p>
+                    </div>
+                    <div className="features-grid">
+                        {features.map((feature) => (
+                            <div className="feature-card" key={feature.title}>
+                                <div className="feature-icon"><i className={`fas ${feature.icon}`} aria-hidden="true" /></div>
+                                <h3>{feature.title}</h3>
+                                <p>{feature.text}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            <section id="vendors" className="vendors">
+                <div className="container">
+                    <div className="section-title">
+                        <h2>Featured Vendor</h2>
+                        <p>Discover our latest campus vendor. Sign up to see all available options.</p>
+                    </div>
+
+                    {featured ? (
+                        <div className="featured-vendor">
+                            <div className="featured-vendor-header">
+                                <h2>
+                                    <i className="fas fa-store" aria-hidden="true" />
+                                    {featured.name}
+                                </h2>
+                            </div>
+                            <div className="featured-vendor-body">
+                                <p>
+                                    <i className="fas fa-map-marker-alt" aria-hidden="true" />
+                                    {featured.location}
+                                </p>
+                                <p>
+                                    <i className="fas fa-tag" aria-hidden="true" />
+                                    {featured.contact}
+                                </p>
+
+                                {featuredMenu.length > 0 && (
+                                    <div className="featured-vendor-menu">
+                                        <h4>Popular Items</h4>
+                                        <div className="menu-preview">
+                                            {featuredMenu.map((item) => (
+                                                <div className="menu-preview-item" key={item.id}>
+                                                    <div className="item-name">{item.name}</div>
+                                                    <div className="item-price">R {item.price.toFixed(2)}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="featured-vendor-footer">
+                                    <p>
+                                        <i className="fas fa-info-circle" aria-hidden="true" />
+                                        Sign up or log in to view all vendors and place orders.
+                                    </p>
+                                    <div className="featured-vendor-actions">
+                                        <Link to="/signup" className="btn btn-ce-primary btn-primary">Sign Up to Order</Link>
+                                        <Link to="/login" className="btn btn-outline">Log In</Link>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="empty-state">
+                            <i className="fas fa-store-slash" aria-hidden="true" />
+                            <h3>No Vendors Available</h3>
+                            <p>No vendors are currently available. Please check back later.</p>
+                            <Link to="/signup" className="btn btn-ce-primary btn-primary">Sign Up</Link>
+                        </div>
+                    )}
+                </div>
+            </section>
+
+            <section className="cta vendor-cta">
+                <div className="container">
+                    <h2>Run a stall on campus?</h2>
+                    <p>
+                        List your menu, take pickup orders, and fulfill them with a simple status workflow.
+                        Reports for sales, vendor performance, and user activity included.
+                    </p>
+                    <ul>
+                        <li><i className="fas fa-check-circle" aria-hidden="true" /> Per-vendor menu CRUD</li>
+                        <li><i className="fas fa-check-circle" aria-hidden="true" /> Live order queue</li>
+                        <li><i className="fas fa-check-circle" aria-hidden="true" /> Sales &amp; performance reports</li>
+                    </ul>
+                    <Link to="/signup" className="btn btn-secondary">Become a vendor</Link>
+                </div>
+            </section>
+        </>
+    );
 }
