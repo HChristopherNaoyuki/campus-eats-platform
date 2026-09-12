@@ -80,6 +80,10 @@ interface State {
   catalogLoading: boolean;
   catalogLoaded: boolean;
   catalogError: string | null;
+  /** Firebase Authentication UID of the signed-in user (null when signed out). */
+  firebaseUid: string | null;
+  /** Last Firebase auth/database error, surfaced instead of being swallowed. */
+  firebaseError: string | null;
 
   loadCatalog: (force?: boolean) => Promise<void>;
   registerUser: (u: Omit<User, "id">) => Promise<User>;
@@ -118,6 +122,8 @@ export const useCampus = create<State>()(
       catalogLoading: false,
       catalogLoaded: false,
       catalogError: null,
+      firebaseUid: null,
+      firebaseError: null,
 
       // Pull restaurants + menu items from the Fake Restaurant API.
       loadCatalog: async (force = false) => {
