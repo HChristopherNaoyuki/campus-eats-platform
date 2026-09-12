@@ -257,6 +257,8 @@ export const useCampus = create<State>()(
         const user: User = { ...u, email, id: idFromUsercode(usercode) || genUserId(), usercode };
         set({ users: [...get().users.filter((x) => x.email !== email), user] });
         get().log("USER_REGISTERED", `${user.role}:${user.email}`, user.id);
+        // Mirror the account into Firebase Auth + the users/ path.
+        await linkFirebaseIdentity(user, u.password);
         return user;
       },
 
@@ -306,13 +308,19 @@ export const useCampus = create<State>()(
         });
         get().log("LOGIN_SUCCESS", user.email, user.id);
         void get().syncOrders();
+        // Establish the Firebase security context for this session. Awaited so
+        // that protected database calls made straight after login have an
+        // authenticated Firebase user (or a recorded error).
+        await linkFirebaseIdentity(user, password);
         return user;
       },
 
       logout: () => {
         const id = get().currentUserId;
         get().log("LOGOUT", undefined, id);
-        set({ currentUserId: null, apiKey: null });
+        set({ currentUserId: null, apiKey: null, firebaseUid: null, firebaseError: null });
+        // Drop the Firebase session too, otherwise the next user would inherit it.
+        void firebaseSignOut().catch((err) => console.error("[firebase] sign-out failed:", err));
       },
 
       resetPassword: async (userIdOrEmail, newPassword) => {
