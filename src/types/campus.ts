@@ -16,6 +16,8 @@ export interface User {
   vendorId?: string;
   /** Fake Restaurant API usercode / apikey (UUID). */
   usercode?: string;
+  /** Firebase Authentication UID (separate from the 16-char campus id). */
+  firebaseUid?: string;
 }
 
 export interface Vendor {
