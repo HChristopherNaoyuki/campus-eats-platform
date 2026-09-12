@@ -61,8 +61,11 @@ export interface Feedback {
   id: string;
   userId: string;
   type: "Compliment" | "Complaint";
+  subject?: string;
   message: string;
   createdAt: string;
+  /** Key of the matching record under the Firebase `feedback/` path. */
+  firebaseId?: string;
 }
 
 export interface SecurityLog {
