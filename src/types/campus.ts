@@ -16,6 +16,8 @@ export interface User {
   vendorId?: string;
   /** Fake Restaurant API usercode / apikey (UUID). */
   usercode?: string;
+  /** Firebase Authentication UID (separate from the 16-char campus id). */
+  firebaseUid?: string;
 }
 
 export interface Vendor {
@@ -59,8 +61,11 @@ export interface Feedback {
   id: string;
   userId: string;
   type: "Compliment" | "Complaint";
+  subject?: string;
   message: string;
   createdAt: string;
+  /** Key of the matching record under the Firebase `feedback/` path. */
+  firebaseId?: string;
 }
 
 export interface SecurityLog {

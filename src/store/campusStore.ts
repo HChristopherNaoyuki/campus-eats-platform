@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import * as api from "@/lib/restaurantApi";
+import { firebaseSignOut, signInOrCreate, syncOwnProfile } from "@/lib/firebaseUsers";
 import type {
   Feedback,
   MenuItem,
@@ -79,6 +80,10 @@ interface State {
   catalogLoading: boolean;
   catalogLoaded: boolean;
   catalogError: string | null;
+  /** Firebase Authentication UID of the signed-in user (null when signed out). */
+  firebaseUid: string | null;
+  /** Last Firebase auth/database error, surfaced instead of being swallowed. */
+  firebaseError: string | null;
 
   loadCatalog: (force?: boolean) => Promise<void>;
   registerUser: (u: Omit<User, "id">) => Promise<User>;
@@ -101,6 +106,65 @@ interface State {
   log: (action: string, detail?: string, userId?: string | null) => void;
 }
 
+/**
+ * Signs the campus user in to Firebase Authentication and makes sure their
+ * `users/<19-char id>` record exists.
+ *
+ * The campus account (Fake Restaurant API usercode) stays the primary
+ * identity; Firebase is a parallel identity used purely as the security
+ * context for the Realtime Database. The plaintext password is passed to
+ * Firebase Authentication only — it is never written to the database.
+ *
+ * Failures are recorded on `firebaseError` and in the security log rather
+ * than being swallowed, and they never turn into a "successful" write.
+ */
+async function linkFirebaseIdentity(user: User, password: string): Promise<void>
+{
+  const store = useCampus.getState();
+
+  if (!password)
+  {
+    // No password in hand (e.g. a restored session) — cannot sign in.
+    useCampus.setState({ firebaseError: "Firebase sign-in skipped: no password available." });
+    return;
+  }
+
+  try
+  {
+    const fbUser = await signInOrCreate(user.email, password);
+    useCampus.setState({ firebaseUid: fbUser.uid, firebaseError: null });
+    store.log("FIREBASE_AUTH_OK", user.email, user.id);
+
+    try
+    {
+      const key = await syncOwnProfile({
+        campusId: user.id,
+        fullName: user.name,
+        email: user.email,
+        role: user.role,
+        firebaseUid: fbUser.uid,
+      });
+      store.log("FIREBASE_PROFILE_SYNCED", key, user.id);
+    }
+    catch (dbErr)
+    {
+      // Typically PERMISSION_DENIED — for example an ADMIN role write from a
+      // client that does not hold the admin custom claim.
+      const message = dbErr instanceof Error ? dbErr.message : String(dbErr);
+      useCampus.setState({ firebaseError: message });
+      store.log("FIREBASE_PROFILE_FAILED", message, user.id);
+      console.error("[firebase] profile sync failed:", dbErr);
+    }
+  }
+  catch (authErr)
+  {
+    const message = authErr instanceof Error ? authErr.message : String(authErr);
+    useCampus.setState({ firebaseUid: null, firebaseError: message });
+    store.log("FIREBASE_AUTH_FAILED", message, user.id);
+    console.error("[firebase] authentication failed:", authErr);
+  }
+}
+
 export const useCampus = create<State>()(
   persist(
     (set, get) => ({
@@ -117,6 +181,8 @@ export const useCampus = create<State>()(
       catalogLoading: false,
       catalogLoaded: false,
       catalogError: null,
+      firebaseUid: null,
+      firebaseError: null,
 
       // Pull restaurants + menu items from the Fake Restaurant API.
       loadCatalog: async (force = false) => {
@@ -191,6 +257,8 @@ export const useCampus = create<State>()(
         const user: User = { ...u, email, id: idFromUsercode(usercode) || genUserId(), usercode };
         set({ users: [...get().users.filter((x) => x.email !== email), user] });
         get().log("USER_REGISTERED", `${user.role}:${user.email}`, user.id);
+        // Mirror the account into Firebase Auth + the users/ path.
+        await linkFirebaseIdentity(user, u.password);
         return user;
       },
 
@@ -240,13 +308,19 @@ export const useCampus = create<State>()(
         });
         get().log("LOGIN_SUCCESS", user.email, user.id);
         void get().syncOrders();
+        // Establish the Firebase security context for this session. Awaited so
+        // that protected database calls made straight after login have an
+        // authenticated Firebase user (or a recorded error).
+        await linkFirebaseIdentity(user, password);
         return user;
       },
 
       logout: () => {
         const id = get().currentUserId;
         get().log("LOGOUT", undefined, id);
-        set({ currentUserId: null, apiKey: null });
+        set({ currentUserId: null, apiKey: null, firebaseUid: null, firebaseError: null });
+        // Drop the Firebase session too, otherwise the next user would inherit it.
+        void firebaseSignOut().catch((err) => console.error("[firebase] sign-out failed:", err));
       },
 
       resetPassword: async (userIdOrEmail, newPassword) => {
