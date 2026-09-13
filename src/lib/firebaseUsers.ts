@@ -30,6 +30,8 @@
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
   signOut,
   type User as FirebaseUser,
 } from "firebase/auth";
@@ -97,6 +99,30 @@ export async function signInOrCreate(email: string, password: string): Promise<F
     }
 
     throw new Error(`Firebase sign-in failed: ${code || String(err)}`);
+  }
+}
+
+/**
+ * Google single sign-on. Firebase owns the credential exchange, so no
+ * password ever reaches this application. The returned account's e-mail is
+ * what the database rules match against `users/<id>/email`.
+ */
+export async function signInWithGoogle(): Promise<FirebaseUser>
+{
+  const auth = await getFirebaseAuth();
+  const provider = new GoogleAuthProvider();
+
+  provider.setCustomParameters({ prompt: "select_account" });
+
+  try
+  {
+    const cred = await signInWithPopup(auth, provider);
+    return cred.user;
+  }
+  catch (err)
+  {
+    const code = (err as { code?: string }).code ?? "";
+    throw new Error(`Google sign-in failed: ${code || String(err)}`);
   }
 }
 

@@ -1,0 +1,62 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "admin_claims": {
+      ".read": "auth != null && auth.token.admin === true",
+      ".write": "auth != null && auth.token.admin === true"
+    },
+
+    "users": {
+      ".indexOn": ["email", "role", "status"],
+      "$campus_user_id": {
+        ".read": "auth != null && (auth.token.admin === true || auth.token.email === data.child('email').val())",
+        ".write": "auth != null && (auth.token.admin === true || (!data.exists() && auth.token.email === newData.child('email').val()) || (data.exists() && auth.token.email === data.child('email').val()))",
+        ".validate": "newData.hasChildren(['userId', 'fullName', 'email', 'role'])",
+        "userId": {
+          ".validate": "newData.val() === $campus_user_id && newData.val().length === 19"
+        },
+        "email": {
+          ".validate": "!data.exists() || data.val() === newData.val()"
+        },
+        "role": {
+          ".validate": "newData.val() === 'STUDENT' || newData.val() === 'VENDOR' || newData.val() === 'STANDARD' || newData.val() === 'ADMIN' && (data.val() === newData.val() || auth.token.admin === true)"
+        },
+        "passwordHash": {
+          ".validate": "newData.val() === '[FIREBASE_SSO]'"
+        },
+        "walletBalance": {
+          ".validate": "newData.isNumber() && newData.val() >= 0 && (auth.token.admin === true || newData.val() <= data.val())"
+        },
+        "status": {
+          ".validate": "!data.exists() || data.val() === newData.val() || auth.token.admin === true"
+        }
+      }
+    },
+
+    "feedback": {
+      ".indexOn": ["userId", "type", "status", "createdAt"],
+      "$feedback_id": {
+        ".read": "auth != null && (auth.token.admin === true || data.child('userId').val() === auth.uid)",
+        ".write": "auth != null && (auth.token.admin === true || !data.exists())",
+        ".validate": "newData.hasChildren(['userId', 'type', 'subject', 'message', 'userName', 'userEmail', 'status', 'createdAt', 'updatedAt'])",
+        "userId": {
+          ".validate": "newData.val() === auth.uid"
+        },
+        "type": {
+          ".validate": "newData.val() === 'complaint' || newData.val() === 'compliment'"
+        },
+        "status": {
+          ".validate": "newData.val() === 'pending' || (newData.val() === 'resolved' && auth.token.admin === true)"
+        },
+        "createdAt": {
+          ".validate": "newData.isString() && newData.val().length > 0"
+        },
+        "updatedAt": {
+          ".validate": "newData.isString() && newData.val().length > 0"
+        }
+      }
+    }
+  }
+}
