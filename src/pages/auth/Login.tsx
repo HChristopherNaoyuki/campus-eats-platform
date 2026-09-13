@@ -56,6 +56,20 @@ export default function Login() {
           <Input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
         </div>
         <Button type="submit" className="w-full" disabled={busy}>{busy ? "Signing in…" : "Sign in"}</Button>
+        <div className="relative py-1 text-center">
+          <span className="bg-card px-2 text-xs text-muted-foreground relative z-10">or</span>
+          <div className="absolute inset-x-0 top-1/2 border-t" />
+        </div>
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full"
+          disabled={googleBusy}
+          onClick={onGoogle}
+        >
+          <i className="fa-brands fa-google mr-2" aria-hidden="true" />
+          {googleBusy ? "Signing in…" : "Continue with Google"}
+        </Button>
         <p className="text-sm text-center text-muted-foreground">
           New here? <Link to="/signup" className="text-primary hover:underline">Create account</Link>
         </p>
