@@ -88,6 +88,10 @@ interface State {
   loadCatalog: (force?: boolean) => Promise<void>;
   registerUser: (u: Omit<User, "id">) => Promise<User>;
   login: (identifier: string, password: string) => Promise<User | null>;
+  /** Google single sign-on through Firebase Authentication. */
+  loginWithGoogle: () => Promise<User | null>;
+  /** Updates the signed-in user's own display name (local + Firebase). */
+  updateProfile: (patch: { name?: string }) => Promise<void>;
   logout: () => void;
   resetPassword: (userIdOrEmail: string, newPassword: string) => Promise<boolean>;
 
@@ -313,6 +317,88 @@ export const useCampus = create<State>()(
         // authenticated Firebase user (or a recorded error).
         await linkFirebaseIdentity(user, password);
         return user;
+      },
+
+      // Google SSO. Firebase owns the credential exchange; the campus record
+      // is derived from the verified Google e-mail. No Fake Restaurant API
+      // usercode exists for such a session, so ordering through the upstream
+      // API stays disabled until the user links a password account.
+      loginWithGoogle: async () => {
+        let fbUser;
+        try {
+          fbUser = await signInWithGoogle();
+        } catch (err) {
+          const message = err instanceof Error ? err.message : String(err);
+          set({ firebaseError: message });
+          get().log("FIREBASE_AUTH_FAILED", message, null);
+          return null;
+        }
+
+        const email = (fbUser.email ?? "").toLowerCase();
+        if (!email) {
+          set({ firebaseError: "Google account has no e-mail address." });
+          return null;
+        }
+
+        const existing = get().users.find((u) => u.email.toLowerCase() === email);
+        const user: User = existing
+          ? { ...existing, firebaseUid: fbUser.uid }
+          : {
+              id: idFromUsercode(fbUser.uid),
+              name: fbUser.displayName ?? email.split("@")[0],
+              email,
+              password: "",
+              role: "Standard" as Role,
+              firebaseUid: fbUser.uid,
+            };
+
+        set({
+          users: [...get().users.filter((u) => u.id !== user.id), user],
+          currentUserId: user.id,
+          firebaseUid: fbUser.uid,
+          firebaseError: null,
+        });
+        get().log("LOGIN_SUCCESS_SSO", user.email, user.id);
+
+        try {
+          await syncOwnProfile({
+            campusId: user.id,
+            fullName: user.name,
+            email: user.email,
+            role: user.role,
+            firebaseUid: fbUser.uid,
+          });
+        } catch (dbErr) {
+          const message = dbErr instanceof Error ? dbErr.message : String(dbErr);
+          set({ firebaseError: message });
+          get().log("FIREBASE_PROFILE_FAILED", message, user.id);
+          console.error("[firebase] profile sync failed:", dbErr);
+        }
+        return user;
+      },
+
+      // Users may edit their own display name. The e-mail and role are
+      // deliberately immutable client-side — the database rules reject those
+      // changes for anyone without the admin claim.
+      updateProfile: async (patch) => {
+        const id = get().currentUserId;
+        const user = get().users.find((u) => u.id === id);
+        if (!user) throw new Error("Not signed in.");
+        const name = patch.name?.trim();
+        if (name !== undefined && name.length === 0) throw new Error("Name cannot be empty.");
+        const next = { ...user, ...(name ? { name } : {}) };
+        set({ users: get().users.map((u) => (u.id === user.id ? next : u)) });
+        get().log("PROFILE_UPDATED", next.name, next.id);
+
+        if (get().firebaseUid) {
+          await syncOwnProfile({
+            campusId: next.id,
+            fullName: next.name,
+            email: next.email,
+            role: next.role,
+            firebaseUid: get().firebaseUid as string,
+          });
+        }
       },
 
       logout: () => {
