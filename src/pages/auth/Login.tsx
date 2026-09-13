@@ -8,11 +8,15 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { toast } from "sonner";
 
 export default function Login() {
-  const { login } = useCampus();
+  const { login, loginWithGoogle } = useCampus();
   const navigate = useNavigate();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const [googleBusy, setGoogleBusy] = useState(false);
+
+  const routeFor = (role: string) =>
+    role === "Admin" ? "/dashboard" : role === "Vendor" ? "/vendor" : "/student";
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,9 +25,20 @@ export default function Login() {
     setBusy(false);
     if (!u) return toast.error("Invalid credentials");
     toast.success(`Welcome back, ${u.name}`);
-    if (u.role === "Admin") navigate("/dashboard");
-    else if (u.role === "Vendor") navigate("/vendor");
-    else navigate("/student");
+    navigate(routeFor(u.role));
+  };
+
+  // Google single sign-on through Firebase Authentication.
+  const onGoogle = async () => {
+    setGoogleBusy(true);
+    const u = await loginWithGoogle().catch(() => null);
+    setGoogleBusy(false);
+    if (!u) {
+      const detail = useCampus.getState().firebaseError;
+      return toast.error(detail ?? "Google sign-in failed");
+    }
+    toast.success(`Welcome, ${u.name}`);
+    navigate(routeFor(u.role));
   };
 
   return (
