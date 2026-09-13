@@ -1,5 +1,6 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Users, Store, UtensilsCrossed, ShoppingBag, LayoutDashboard, FileBarChart, MessageSquare, ShieldAlert, LogOut } from "lucide-react";
+import { Users, Store, UtensilsCrossed, ShoppingBag, LayoutDashboard, FileBarChart, MessageSquare, ShieldAlert,
+  Settings, LogOut } from "lucide-react";
 import { useCampus } from "@/store/campusStore";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -23,15 +24,18 @@ const adminItems = [
   { title: "Order Management", url: "/orders", icon: ShoppingBag },
   { title: "Reports", url: "/reports", icon: FileBarChart },
   { title: "Security Log", url: "/security-log", icon: ShieldAlert },
+  { title: "Settings", url: "/settings", icon: Settings },
 ];
 
 const studentItems = [
   { title: "Browse & Order", url: "/student", icon: UtensilsCrossed },
   { title: "Feedback", url: "/feedback", icon: MessageSquare },
+  { title: "Settings", url: "/settings", icon: Settings },
 ];
 
 const vendorItems = [
   { title: "Vendor Dashboard", url: "/vendor", icon: LayoutDashboard },
+  { title: "Settings", url: "/settings", icon: Settings },
 ];
 
 export function AppSidebar() {
