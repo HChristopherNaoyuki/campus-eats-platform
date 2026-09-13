@@ -30,6 +30,8 @@ import VendorDashboard from "./pages/VendorDashboard";
 import FeedbackPage from "./pages/FeedbackPage";
 import SecurityLogPage from "./pages/SecurityLogPage";
 import { useCampus } from "./store/campusStore";
+import SettingsPage from "./pages/SettingsPage";
+import { LanguageProvider } from "./i18n";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +46,7 @@ const CatalogLoader = () => {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <LanguageProvider>
     <TooltipProvider>
       <Toaster />
       <Sonner />
@@ -74,6 +77,7 @@ const App = () => (
             <Route path="/orders" element={<OrdersPage />} />
             <Route path="/reports" element={<ReportsPage />} />
             <Route path="/feedback" element={<FeedbackPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
             <Route path="/security-log" element={<SecurityLogPage />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
@@ -81,6 +85,7 @@ const App = () => (
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
+    </LanguageProvider>
   </QueryClientProvider>
 );
 
