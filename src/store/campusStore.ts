@@ -1,7 +1,12 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import * as api from "@/lib/restaurantApi";
-import { firebaseSignOut, signInOrCreate, syncOwnProfile } from "@/lib/firebaseUsers";
+import {
+  firebaseSignOut,
+  signInOrCreate,
+  signInWithGoogle,
+  syncOwnProfile,
+} from "@/lib/firebaseUsers";
 import type {
   Feedback,
   MenuItem,
