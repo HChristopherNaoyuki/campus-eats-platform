@@ -75,19 +75,25 @@ export default function Login() {
         </p>
         <div className="pt-4">
           <div className="rounded-lg border bg-muted/40 p-3">
-            <p className="text-xs font-semibold text-center mb-2">Demo accounts (all 8 work)</p>
+            <p className="text-xs font-semibold text-center mb-2">Demo accounts (all 10 work)</p>
             <div className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 text-xs font-mono">
-              <span>student01@campus.edu</span><span className="text-muted-foreground">student</span>
-              <span>student02@campus.edu</span><span className="text-muted-foreground">student</span>
-              <span>standard01@campus.edu</span><span className="text-muted-foreground">standard</span>
-              <span>standard02@campus.edu</span><span className="text-muted-foreground">standard</span>
-              <span>vendor01@campus.edu</span><span className="text-muted-foreground">vendor</span>
-              <span>vendor02@campus.edu</span><span className="text-muted-foreground">vendor</span>
-              <span>admin01@campus.edu</span><span className="text-muted-foreground">admin</span>
-              <span>admin02@campus.edu</span><span className="text-muted-foreground">admin</span>
+              <span>amara.nkosi@campuseats.test</span><span className="text-muted-foreground">Adm1n#Amara</span>
+              <span>pieter.vanwyk@campuseats.test</span><span className="text-muted-foreground">Adm1n#Pieter</span>
+              <span>thandiwe.mokoena@campuseats.test</span><span className="text-muted-foreground">Vend0r#Thandi</span>
+              <span>sipho.dlamini@campuseats.test</span><span className="text-muted-foreground">Vend0r#Sipho</span>
+              <span>annelie.botha@campuseats.test</span><span className="text-muted-foreground">Vend0r#Annelie</span>
+              <span>lerato.khumalo@campuseats.test</span><span className="text-muted-foreground">Stand@rd#Lerato</span>
+              <span>johan.pretorius@campuseats.test</span><span className="text-muted-foreground">Stand@rd#Johan</span>
+              <span>zanele.ndlovu@campuseats.test</span><span className="text-muted-foreground">Stand@rd#Zanele</span>
+              <span>marius.steyn@campuseats.test</span><span className="text-muted-foreground">Stand@rd#Marius</span>
+              <span>naledi.mahlangu@campuseats.test</span><span className="text-muted-foreground">Stud3nt#Naledi</span>
             </div>
+            <p className="mt-2 text-[11px] text-center text-muted-foreground">
+              You can sign in with the e-mail, the username or the 16-character User ID.
+            </p>
           </div>
         </div>
+
       </form>
     </AuthShell>
   );
