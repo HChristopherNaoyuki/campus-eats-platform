@@ -2,11 +2,21 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import * as api from "@/lib/restaurantApi";
 import {
+  SEED_FEEDBACK,
+  SEED_LOGS,
+  SEED_MENU,
+  SEED_ORDERS,
+  SEED_USERS,
+  SEED_VENDORS,
+  type SeedUser,
+} from "@/data/seed";
+import {
   firebaseSignOut,
   signInOrCreate,
   signInWithGoogle,
   syncOwnProfile,
 } from "@/lib/firebaseUsers";
+
 import type {
   Feedback,
   MenuItem,
@@ -60,18 +70,11 @@ export const priceOrder = (
   };
 };
 
-// 8 demo accounts (process document section 12). They are provisioned on the
-// Fake Restaurant API on first sign-in so their usercode/apikey is real.
-const DEMO_ACCOUNTS: Omit<User, "usercode">[] = [
-  { id: "STUDENT000000001", name: "Student_01", email: "student01@campus.edu", password: "student", role: "Student" },
-  { id: "STUDENT000000002", name: "Student_02", email: "student02@campus.edu", password: "student", role: "Student" },
-  { id: "STANDARD00000001", name: "Standard_01", email: "standard01@campus.edu", password: "standard", role: "Standard" },
-  { id: "STANDARD00000002", name: "Standard_02", email: "standard02@campus.edu", password: "standard", role: "Standard" },
-  { id: "VENDOR0000000001", name: "Vendor_01", email: "vendor01@campus.edu", password: "vendor", role: "Vendor" },
-  { id: "VENDOR0000000002", name: "Vendor_02", email: "vendor02@campus.edu", password: "vendor", role: "Vendor" },
-  { id: "ADMIN00000000001", name: "Admin_01", email: "admin01@campus.edu", password: "admin", role: "Admin" },
-  { id: "ADMIN00000000002", name: "Admin_02", email: "admin02@campus.edu", password: "admin", role: "Admin" },
-];
+// Seed accounts (ten records — two admins, three vendors, four standard users
+// and one student). They are provisioned on the Fake Restaurant API on first
+// sign-in so their usercode/apikey is real.
+const DEMO_ACCOUNTS: SeedUser[] = SEED_USERS;
+
 
 interface State {
   users: User[];
@@ -180,11 +183,12 @@ export const useCampus = create<State>()(
       // Seed users are in-memory only — partialize strips them from
       // localStorage so no plaintext credentials are written to disk.
       users: DEMO_ACCOUNTS.map((u) => ({ ...u })),
-      vendors: [],
-      menu: [],
-      orders: [],
-      feedback: [],
-      logs: [],
+      vendors: [...SEED_VENDORS],
+      menu: SEED_MENU.map((m) => ({ ...m })),
+      orders: SEED_ORDERS.map((o) => ({ ...o })),
+      feedback: SEED_FEEDBACK.map((f) => ({ ...f })),
+      logs: SEED_LOGS.map((l) => ({ ...l })),
+
       currentUserId: null,
       apiKey: null,
       catalogLoading: false,
@@ -226,24 +230,22 @@ export const useCampus = create<State>()(
               stock: prev?.stock ?? 25,
             };
           });
-          // Keep locally created items that the API does not know about.
-          const localOnly = existing.filter((m) => m.id.startsWith("local-"));
-
-          // Bind the two demo vendor accounts to real restaurants.
-          const users = get().users.map((u) => {
-            if (u.role !== "Vendor" || u.vendorId) return u;
-            const idx = u.email === "vendor01@campus.edu" ? 0 : u.email === "vendor02@campus.edu" ? 1 : -1;
-            return idx >= 0 && vendors[idx] ? { ...u, vendorId: vendors[idx].id } : u;
-          });
+          // Keep seeded and locally created items that the API does not know about.
+          const localOnly = existing.filter(
+            (m) => m.id.startsWith("local-") || m.id.startsWith("seed-")
+          );
+          const seededVendors = get().vendors.filter(
+            (v) => v.id.startsWith("local-") || v.id.startsWith("seed-")
+          );
 
           set({
-            vendors,
-            menu: [...menu, ...localOnly],
-            users,
+            vendors: [...seededVendors, ...vendors],
+            menu: [...localOnly, ...menu],
             catalogLoaded: true,
             catalogLoading: false,
           });
           get().log("CATALOG_SYNCED", `${vendors.length} vendors / ${menu.length} items`);
+
         } catch (e) {
           set({
             catalogLoading: false,
@@ -273,43 +275,63 @@ export const useCampus = create<State>()(
 
       login: async (identifier, password) => {
         const key = identifier.trim();
+
+        if (!key || !password) {
+          get().log("LOGIN_FAILED", key || "(empty)", null);
+          return null;
+        }
+
+        const lower = key.toLowerCase();
         const local = get().users.find(
-          (u) => u.email.toLowerCase() === key.toLowerCase() || u.id === key.toUpperCase()
+          (u) =>
+            u.email.toLowerCase() === lower ||
+            u.id === key.toUpperCase() ||
+            (u.username ?? "").toLowerCase() === lower
         );
         const email = local?.email ?? key;
 
-        let usercode = await api.getUserCode(email, password);
-        if (!usercode) {
-          // Demo accounts are provisioned on the API on first use.
-          const demo = DEMO_ACCOUNTS.find((d) => d.email === email && d.password === password);
-          if (demo) {
+        // A seeded account must match its own password before anything else.
+        const localMatch = local && local.password ? local.password === password : false;
+        if (local && local.password && !localMatch) {
+          get().log("LOGIN_FAILED", key, null);
+          return null;
+        }
+
+        let usercode: string | null = null;
+
+        try {
+          usercode = await api.getUserCode(email, password);
+
+          if (!usercode && localMatch) {
+            // Seed accounts are provisioned on the API on first use.
             try {
               usercode = (await api.registerUser(email, password)).usercode;
             } catch {
               usercode = await api.getUserCode(email, password);
             }
           }
+        } catch {
+          // The upstream API is unavailable — a known local account may still
+          // sign in; ordering through the API stays disabled for the session.
+          usercode = null;
         }
-        if (!usercode) {
+
+        if (!usercode && !localMatch) {
           get().log("LOGIN_FAILED", key, null);
           return null;
         }
 
-        let user = local
-          ? { ...local, usercode }
+        const user: User = local
+          ? { ...local, ...(usercode ? { usercode } : {}) }
           : {
-              id: idFromUsercode(usercode),
+              id: idFromUsercode(usercode as string),
               name: email.split("@")[0],
               email,
               password: "",
               role: "Standard" as Role,
-              usercode,
+              usercode: usercode as string,
             };
-        // Newly created vendor bindings survive catalog reloads.
-        if (user.role === "Vendor" && !user.vendorId) {
-          const idx = email === "vendor02@campus.edu" ? 1 : 0;
-          user = { ...user, vendorId: get().vendors[idx]?.id };
-        }
+
         set({
           users: [...get().users.filter((u) => u.id !== user.id), user],
           currentUserId: user.id,
@@ -562,7 +584,7 @@ export const useCampus = create<State>()(
     }),
     {
       name: "campus-eats-store",
-      version: 6,
+      version: 7,
       // Never persist users (passwords), the active session id, or the API key.
       partialize: (state) =>
         ({

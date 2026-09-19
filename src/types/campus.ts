@@ -10,15 +10,22 @@ export type OrderStatus =
 export interface User {
   id: string;
   name: string;
+  /** Optional login handle, e.g. "amara.nkosi". */
+  username?: string;
   email: string;
   password: string;
   role: Role;
   vendorId?: string;
+  /** Vendor shop name (vendors only). */
+  shopName?: string;
+  /** Short vendor shop description (vendors only). */
+  shopInfo?: string;
   /** Fake Restaurant API usercode / apikey (UUID). */
   usercode?: string;
   /** Firebase Authentication UID (separate from the 16-char campus id). */
   firebaseUid?: string;
 }
+
 
 export interface Vendor {
   id: string;
