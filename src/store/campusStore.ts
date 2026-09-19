@@ -275,43 +275,63 @@ export const useCampus = create<State>()(
 
       login: async (identifier, password) => {
         const key = identifier.trim();
+
+        if (!key || !password) {
+          get().log("LOGIN_FAILED", key || "(empty)", null);
+          return null;
+        }
+
+        const lower = key.toLowerCase();
         const local = get().users.find(
-          (u) => u.email.toLowerCase() === key.toLowerCase() || u.id === key.toUpperCase()
+          (u) =>
+            u.email.toLowerCase() === lower ||
+            u.id === key.toUpperCase() ||
+            (u.username ?? "").toLowerCase() === lower
         );
         const email = local?.email ?? key;
 
-        let usercode = await api.getUserCode(email, password);
-        if (!usercode) {
-          // Demo accounts are provisioned on the API on first use.
-          const demo = DEMO_ACCOUNTS.find((d) => d.email === email && d.password === password);
-          if (demo) {
+        // A seeded account must match its own password before anything else.
+        const localMatch = local && local.password ? local.password === password : false;
+        if (local && local.password && !localMatch) {
+          get().log("LOGIN_FAILED", key, null);
+          return null;
+        }
+
+        let usercode: string | null = null;
+
+        try {
+          usercode = await api.getUserCode(email, password);
+
+          if (!usercode && localMatch) {
+            // Seed accounts are provisioned on the API on first use.
             try {
               usercode = (await api.registerUser(email, password)).usercode;
             } catch {
               usercode = await api.getUserCode(email, password);
             }
           }
+        } catch {
+          // The upstream API is unavailable — a known local account may still
+          // sign in; ordering through the API stays disabled for the session.
+          usercode = null;
         }
-        if (!usercode) {
+
+        if (!usercode && !localMatch) {
           get().log("LOGIN_FAILED", key, null);
           return null;
         }
 
-        let user = local
-          ? { ...local, usercode }
+        const user: User = local
+          ? { ...local, ...(usercode ? { usercode } : {}) }
           : {
-              id: idFromUsercode(usercode),
+              id: idFromUsercode(usercode as string),
               name: email.split("@")[0],
               email,
               password: "",
               role: "Standard" as Role,
-              usercode,
+              usercode: usercode as string,
             };
-        // Newly created vendor bindings survive catalog reloads.
-        if (user.role === "Vendor" && !user.vendorId) {
-          const idx = email === "vendor02@campus.edu" ? 1 : 0;
-          user = { ...user, vendorId: get().vendors[idx]?.id };
-        }
+
         set({
           users: [...get().users.filter((u) => u.id !== user.id), user],
           currentUserId: user.id,
