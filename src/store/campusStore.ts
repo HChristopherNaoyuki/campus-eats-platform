@@ -183,11 +183,12 @@ export const useCampus = create<State>()(
       // Seed users are in-memory only — partialize strips them from
       // localStorage so no plaintext credentials are written to disk.
       users: DEMO_ACCOUNTS.map((u) => ({ ...u })),
-      vendors: [],
-      menu: [],
-      orders: [],
-      feedback: [],
-      logs: [],
+      vendors: [...SEED_VENDORS],
+      menu: SEED_MENU.map((m) => ({ ...m })),
+      orders: SEED_ORDERS.map((o) => ({ ...o })),
+      feedback: SEED_FEEDBACK.map((f) => ({ ...f })),
+      logs: SEED_LOGS.map((l) => ({ ...l })),
+
       currentUserId: null,
       apiKey: null,
       catalogLoading: false,
@@ -229,24 +230,22 @@ export const useCampus = create<State>()(
               stock: prev?.stock ?? 25,
             };
           });
-          // Keep locally created items that the API does not know about.
-          const localOnly = existing.filter((m) => m.id.startsWith("local-"));
-
-          // Bind the two demo vendor accounts to real restaurants.
-          const users = get().users.map((u) => {
-            if (u.role !== "Vendor" || u.vendorId) return u;
-            const idx = u.email === "vendor01@campus.edu" ? 0 : u.email === "vendor02@campus.edu" ? 1 : -1;
-            return idx >= 0 && vendors[idx] ? { ...u, vendorId: vendors[idx].id } : u;
-          });
+          // Keep seeded and locally created items that the API does not know about.
+          const localOnly = existing.filter(
+            (m) => m.id.startsWith("local-") || m.id.startsWith("seed-")
+          );
+          const seededVendors = get().vendors.filter(
+            (v) => v.id.startsWith("local-") || v.id.startsWith("seed-")
+          );
 
           set({
-            vendors,
-            menu: [...menu, ...localOnly],
-            users,
+            vendors: [...seededVendors, ...vendors],
+            menu: [...localOnly, ...menu],
             catalogLoaded: true,
             catalogLoading: false,
           });
           get().log("CATALOG_SYNCED", `${vendors.length} vendors / ${menu.length} items`);
+
         } catch (e) {
           set({
             catalogLoading: false,
