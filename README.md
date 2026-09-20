@@ -151,11 +151,18 @@ screenshots/     All visual media related to the application
 ## Roles and Demonstration Accounts
 
 The platform supports four roles: Student, Standard, Vendor, and Administrator.
-Eight demonstration accounts are provided, two for each role. Their credentials
-are listed on the sign in screen so that reviewers can sign in immediately. Each
-account is provisioned automatically against the external API on first use.
+Ten demonstration accounts are provided: two administrators, three vendors, four
+standard users, and one student. Their credentials are listed on the sign in
+screen so that reviewers can sign in immediately. An account may be identified by
+its email address, its username, or its sixteen character User ID, and each is
+provisioned automatically against the external API on first use.
+
+The seeded data set contains at least ten records per collection: ten users, ten
+vendors, sixteen menu items, twelve orders, ten feedback entries, and twelve
+security log entries.
 
 Demonstration accounts are intended for evaluation only.
+
 
 [Back to top](#table-of-contents)
 
