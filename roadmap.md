@@ -18,5 +18,5 @@
 - [x] User settings page (profile + language preference)
 - [x] Multi-language support: English + Afrikaans
 - [x] Invalid input handling: empty/wrong credentials rejected, offline API fallback
-- [ ] Update README + documentation/
+- [x] Update README + documentation/
 
