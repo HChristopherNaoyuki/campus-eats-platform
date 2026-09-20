@@ -279,13 +279,22 @@ Each report can be printed or exported to PDF through the browser print dialog.
 
 ## 11. Demonstration Accounts
 
-The application ships with eight demonstration accounts, two for each role. The
-full list of email addresses and passwords is displayed on the sign in screen so
-that reviewers can sign in without additional setup. Each account is registered
-automatically against the external API the first time it is used.
+The application ships with ten demonstration accounts: two administrators, three
+vendors, four standard users, and one student. The full list of email addresses
+and passwords is displayed on the sign in screen so that reviewers can sign in
+without additional setup. Sign in accepts the email address, the username, or the
+sixteen character User ID. Each account is registered automatically against the
+external API the first time it is used, and if that service is unavailable the
+account still signs in locally.
+
+The seeded data set defined in `src/data/seed.ts` provides at least ten records
+per collection: ten users, ten vendors, sixteen menu items, twelve orders, ten
+feedback entries, and twelve security log entries. Seeded identifiers are
+namespaced with `seed-` so that a catalogue synchronisation never removes them.
 
 Demonstration accounts are for evaluation only and must not be used in a
 production deployment.
+
 
 [Back to top](#table-of-contents)
 
