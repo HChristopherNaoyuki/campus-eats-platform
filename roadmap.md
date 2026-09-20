@@ -12,9 +12,11 @@
 - [ ] Build/lint/test verification
 
 ## New requirements (from follow-up notes)
-- [ ] Google SSO sign-in (Firebase Google provider) on login/signup
-- [ ] Seed at least 10 records per data set (users, vendors, menu, orders, feedback, logs)
-- [ ] User settings page (profile + language preference)
-- [ ] Multi-language support: English + Afrikaans
-- [ ] Invalid input handling / no crashes; app compiles and runs clean
+- [x] Google SSO sign-in (Firebase Google provider) on login
+- [x] Seed at least 10 records per data set (10 users, 10 vendors, 16 menu items, 12 orders, 10 feedback, 12 logs)
+- [x] Supplied sample accounts wired in (2 admin, 3 vendor, 4 standard, 1 student) with username/e-mail/User ID login
+- [x] User settings page (profile + language preference)
+- [x] Multi-language support: English + Afrikaans
+- [x] Invalid input handling: empty/wrong credentials rejected, offline API fallback
 - [ ] Update README + documentation/
+
