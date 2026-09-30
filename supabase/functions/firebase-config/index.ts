@@ -29,6 +29,8 @@ Deno.serve((req) =>
 
   const config = {
     apiKey,
+    // Public OAuth client ID for Google sign-in; safe to expose to the browser.
+    googleClientId: Deno.env.get("GOOGLE_OAUTH_CLIENT_ID") ?? null,
     authDomain: "campus-eats-db.firebaseapp.com",
     databaseURL: "https://campus-eats-db-default-rtdb.europe-west1.firebasedatabase.app",
     projectId: "campus-eats-db",
