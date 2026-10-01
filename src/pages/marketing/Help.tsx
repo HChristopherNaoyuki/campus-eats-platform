@@ -46,7 +46,7 @@ export default function Help()
 
     return (
         <>
-            <PageHero title="Help Center" subtitle="Answers to common questions about Campus Eats" />
+            <PageHero eyebrow="Support" title="Help Center" description="Answers to common questions about Campus Eats" />
             <section className="mx-auto max-w-4xl px-4 py-12 space-y-8">
                 <div className="relative">
                     <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
