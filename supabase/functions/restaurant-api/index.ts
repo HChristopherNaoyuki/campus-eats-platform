@@ -30,6 +30,17 @@ Deno.serve(async (req) => {
     });
 
     const text = await upstream.text();
+
+    // "Account not found" on code lookup is an expected outcome (the app then
+    // registers the account), not an error. Return 200 with a null code so the
+    // browser does not treat it as a failed request.
+    if (upstream.status === 404 && /\/api\/User\/getusercode$/i.test(path))
+    {
+      return new Response(JSON.stringify({ usercode: null, message: "Invalid Details" }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
     return new Response(text, {
       status: upstream.status,
       headers: {
