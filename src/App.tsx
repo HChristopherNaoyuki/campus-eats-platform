@@ -14,6 +14,7 @@ import Blog from "./pages/marketing/Blog";
 import Donate from "./pages/marketing/Donate";
 import Privacy from "./pages/marketing/Privacy";
 import Terms from "./pages/marketing/Terms";
+import Help from "./pages/marketing/Help";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound.tsx";
 import AppLayout from "./layouts/AppLayout";
@@ -63,6 +64,7 @@ const App = () => (
             <Route path="/donate" element={<Donate />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
+            <Route path="/help" element={<Help />} />
           </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />

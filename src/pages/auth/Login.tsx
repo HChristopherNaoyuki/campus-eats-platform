@@ -101,14 +101,14 @@ export default function Login() {
 
 export function AuthShell({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-secondary/30 to-background p-4">
-      <Card className="w-full max-w-md shadow-[var(--shadow-glow)]">
-        <CardHeader className="text-center">
-          <Link to="/" className="mx-auto mb-4 flex items-center gap-2">
-            <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary to-primary-glow text-primary-foreground font-bold flex items-center justify-center">CE</div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-secondary/30 to-background px-4 py-10">
+      <Card className="w-full max-w-md rounded-2xl border-border/60 shadow-[var(--shadow-glow)]">
+        <CardHeader className="text-center space-y-1 pb-4">
+          <Link to="/" className="mx-auto mb-3 flex items-center gap-2">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-primary-glow text-primary-foreground font-bold flex items-center justify-center">CE</div>
             <span className="font-bold text-lg">Campus Eats</span>
           </Link>
-          <CardTitle className="text-2xl">{title}</CardTitle>
+          <CardTitle className="text-2xl font-semibold tracking-tight">{title}</CardTitle>
           {subtitle && <CardDescription>{subtitle}</CardDescription>}
         </CardHeader>
         <CardContent>{children}</CardContent>
