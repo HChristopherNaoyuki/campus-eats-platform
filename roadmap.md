@@ -24,5 +24,5 @@
 - [x] Add administrator test coupons CAMPUS10, EATS20, and WELCOME5
 - [x] Polish the FAQ page
 - [x] Polish the Help Center
-- [ ] Verify coupon calculations and both support pages
+- [x] Verify coupon calculations and both support pages
 
