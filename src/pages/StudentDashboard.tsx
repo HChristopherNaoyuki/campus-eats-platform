@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Plus, Minus, ShoppingBag, Clock, CheckCircle2, ChefHat } from "lucide-react";
 import { toast } from "sonner";
+import { getCouponPercentage, isSampleCoupon } from "@/lib/coupons";
 
 export default function StudentDashboard() {
   const { currentUserId, users, vendors, menu, orders, placeOrder, catalogLoading, catalogError } = useCampus();
@@ -14,6 +15,8 @@ export default function StudentDashboard() {
   const [cart, setCart] = useState<Record<string, number>>({});
   const [search, setSearch] = useState("");
   const [placing, setPlacing] = useState(false);
+  const [couponInput, setCouponInput] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState("");
 
   if (!user) return <Navigate to="/login" replace />;
   if (user.role !== "Student" && user.role !== "Standard")
@@ -27,9 +30,10 @@ export default function StudentDashboard() {
       priceOrder(
         Object.entries(cart).map(([itemId, quantity]) => ({ itemId, quantity })),
         menu,
-        user.role
+        user.role,
+        appliedCoupon
       ),
-    [cart, menu, user.role]
+    [cart, menu, user.role, appliedCoupon]
   );
   const cartCount = Object.values(cart).reduce((a, b) => a + b, 0);
   const myOrders = orders.filter((o) => o.userId === user.id).slice().reverse();
@@ -46,14 +50,27 @@ export default function StudentDashboard() {
     if (lines.length === 0) return toast.error("Your cart is empty");
     setPlacing(true);
     try {
-      await placeOrder(user.id, lines);
+      await placeOrder(user.id, lines, appliedCoupon);
       setCart({});
+      setCouponInput("");
+      setAppliedCoupon("");
       toast.success("Order placed! Vendor will start preparing soon.");
     } catch {
       toast.error("Could not place the order. Please try again.");
     } finally {
       setPlacing(false);
     }
+  };
+
+  const applyCoupon = () => {
+    const normalized = couponInput.trim().toUpperCase();
+    if (!isSampleCoupon(normalized)) {
+      setAppliedCoupon("");
+      return toast.error("That coupon code is not valid");
+    }
+    setCouponInput(normalized);
+    setAppliedCoupon(normalized);
+    toast.success(`${normalized} applied: ${getCouponPercentage(normalized)}% off`);
   };
 
   const statusIcon = (s: string) =>
@@ -133,10 +150,20 @@ export default function StudentDashboard() {
                 <div className="flex justify-between text-muted-foreground"><span>Subtotal</span><span>R{pricing.subtotal.toFixed(2)}</span></div>
                 <div className="flex justify-between text-muted-foreground"><span>Tax (20%)</span><span>R{pricing.tax.toFixed(2)}</span></div>
                 <div className="flex justify-between text-muted-foreground"><span>Rounded to next R5</span><span>R{(pricing.subtotal + pricing.tax > 0 ? Math.ceil((pricing.subtotal + pricing.tax) / 5) * 5 : 0).toFixed(2)}</span></div>
-                {pricing.discount > 0 && (
-                  <div className="flex justify-between text-emerald-600"><span>Student discount (2.5%)</span><span>-R{pricing.discount.toFixed(2)}</span></div>
+                {pricing.studentDiscount > 0 && (
+                  <div className="flex justify-between text-accent"><span>Student discount (2.5%)</span><span>-R{pricing.studentDiscount.toFixed(2)}</span></div>
+                )}
+                {pricing.couponDiscount > 0 && (
+                  <div className="flex justify-between text-accent"><span>{appliedCoupon} coupon</span><span>-R{pricing.couponDiscount.toFixed(2)}</span></div>
                 )}
                 <div className="flex justify-between font-semibold text-base pt-1 border-t"><span>Total</span><span>R{pricing.total.toFixed(2)}</span></div>
+              </div>
+              <div className="space-y-2 border-t pt-3">
+                <label htmlFor="coupon-code" className="text-sm font-medium">Coupon code</label>
+                <div className="flex gap-2">
+                  <Input id="coupon-code" value={couponInput} onChange={(event) => setCouponInput(event.target.value.slice(0, 20).toUpperCase())} placeholder="Enter code" disabled={cartCount === 0} />
+                  <Button type="button" variant="outline" onClick={applyCoupon} disabled={cartCount === 0 || !couponInput.trim()}>Apply</Button>
+                </div>
               </div>
               <Button className="w-full" onClick={checkout} disabled={placing}>{placing ? "Placing order…" : "Confirm order"}</Button>
             </CardContent>

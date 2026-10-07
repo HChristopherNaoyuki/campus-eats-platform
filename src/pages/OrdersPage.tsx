@@ -10,6 +10,7 @@ import { useCampus } from "@/store/campusStore";
 import type { OrderStatus } from "@/types/campus";
 import { toast } from "sonner";
 import { Plus, Trash2 } from "lucide-react";
+import { SAMPLE_COUPONS, isSampleCoupon } from "@/lib/coupons";
 
 const statusVariant: Record<OrderStatus, string> = {
   Pending: "bg-amber-500/15 text-amber-700 dark:text-amber-400",
@@ -28,6 +29,7 @@ export default function OrdersPage() {
   const [lines, setLines] = useState<{ itemId: string; quantity: number }[]>([
     { itemId: menu[0]?.id ?? "", quantity: 1 },
   ]);
+  const [couponCode, setCouponCode] = useState("");
 
   const updateLine = (i: number, patch: Partial<{ itemId: string; quantity: number }>) =>
     setLines(lines.map((l, idx) => (idx === i ? { ...l, ...patch } : l)));
@@ -36,8 +38,11 @@ export default function OrdersPage() {
     if (!userId) return toast.error("Select a user");
     const valid = lines.filter((l) => l.itemId && l.quantity > 0);
     if (valid.length === 0) return toast.error("Add at least one item");
-    placeOrder(userId, valid);
+    const normalizedCoupon = couponCode.trim().toUpperCase();
+    if (normalizedCoupon && !isSampleCoupon(normalizedCoupon)) return toast.error("Enter a valid sample coupon");
+    void placeOrder(userId, valid, normalizedCoupon);
     setLines([{ itemId: menu[0]?.id ?? "", quantity: 1 }]);
+    setCouponCode("");
     toast.success("Order placed");
   };
 
@@ -69,7 +74,7 @@ export default function OrdersPage() {
                   <Select value={l.itemId} onValueChange={(v) => updateLine(i, { itemId: v })}>
                     <SelectTrigger className="flex-1"><SelectValue placeholder="Item" /></SelectTrigger>
                     <SelectContent>
-                      {menu.map((m) => <SelectItem key={m.id} value={m.id}>{m.name} — ${m.price.toFixed(2)}</SelectItem>)}
+                      {menu.map((m) => <SelectItem key={m.id} value={m.id}>{m.name} — R{m.price.toFixed(2)}</SelectItem>)}
                     </SelectContent>
                   </Select>
                   <Input type="number" min="1" className="w-20" value={l.quantity} onChange={(e) => updateLine(i, { quantity: parseInt(e.target.value) || 1 })} />
@@ -81,6 +86,18 @@ export default function OrdersPage() {
               <Button variant="outline" size="sm" onClick={() => setLines([...lines, { itemId: menu[0]?.id ?? "", quantity: 1 }])}>
                 <Plus className="h-4 w-4 mr-1" /> Add item
               </Button>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="admin-coupon">Sample coupon</Label>
+              <Input id="admin-coupon" value={couponCode} onChange={(event) => setCouponCode(event.target.value.slice(0, 20).toUpperCase())} placeholder="Optional coupon code" />
+              <div className="flex flex-wrap gap-2">
+                {Object.entries(SAMPLE_COUPONS).map(([code, percentage]) => (
+                  <Button key={code} type="button" size="sm" variant={couponCode === code ? "secondary" : "outline"} onClick={() => setCouponCode(code)}>
+                    {code} · {percentage}%
+                  </Button>
+                ))}
+              </div>
             </div>
 
             <Button className="w-full" onClick={handleConfirm}>Confirm Order</Button>
