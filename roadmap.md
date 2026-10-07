@@ -20,3 +20,9 @@
 - [x] Invalid input handling: empty/wrong credentials rejected, offline API fallback
 - [x] Update README + documentation/
 
+## Coupons and support pages
+- [ ] Add administrator test coupons CAMPUS10, EATS20, and WELCOME5
+- [ ] Polish the FAQ page
+- [ ] Polish the Help Center
+- [ ] Verify coupon calculations and both support pages
+
