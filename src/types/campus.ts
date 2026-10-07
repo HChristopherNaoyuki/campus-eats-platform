@@ -60,6 +60,10 @@ export interface Order {
   tax: number;
   discount: number;
   total: number;
+  /** Optional sample coupon applied during checkout. */
+  couponCode?: string;
+  /** Coupon portion of the total discount. */
+  couponDiscount?: number;
   /** Master order IDs returned by the Fake Restaurant API. */
   masterIds?: number[];
 }

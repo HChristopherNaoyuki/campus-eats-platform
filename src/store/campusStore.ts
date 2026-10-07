@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import * as api from "@/lib/restaurantApi";
+import { getCouponPercentage } from "@/lib/coupons";
 import {
   SEED_FEEDBACK,
   SEED_LOGS,
@@ -52,7 +53,8 @@ const genOrderId = () => {
 export const priceOrder = (
   lines: { itemId: string; quantity: number }[],
   menu: MenuItem[],
-  role: Role
+  role: Role,
+  couponCode?: string
 ) => {
   const subtotal = lines.reduce((s, l) => {
     const it = menu.find((m) => m.id === l.itemId);
@@ -60,12 +62,17 @@ export const priceOrder = (
   }, 0);
   const taxed = subtotal * 1.2;
   const rounded = Math.ceil(taxed / 5) * 5;
-  const discount = role === "Student" ? rounded * 0.025 : 0;
+  const studentDiscount = role === "Student" ? rounded * 0.025 : 0;
+  const couponPercentage = getCouponPercentage(couponCode);
+  const couponDiscount = rounded * (couponPercentage / 100);
+  const discount = studentDiscount + couponDiscount;
   const total = rounded - discount;
   return {
     subtotal: +subtotal.toFixed(2),
     tax: +(taxed - subtotal).toFixed(2),
     discount: +discount.toFixed(2),
+    studentDiscount: +studentDiscount.toFixed(2),
+    couponDiscount: +couponDiscount.toFixed(2),
     total: +total.toFixed(2),
   };
 };
@@ -110,7 +117,7 @@ interface State {
   updateMenuItem: (id: string, patch: Partial<Omit<MenuItem, "id">>) => void;
   removeMenuItem: (id: string) => void;
 
-  placeOrder: (userId: string, lines: { itemId: string; quantity: number }[]) => Promise<void>;
+  placeOrder: (userId: string, lines: { itemId: string; quantity: number }[], couponCode?: string) => Promise<void>;
   syncOrders: () => Promise<void>;
   updateOrderStatus: (id: string, status: OrderStatus) => void;
 
@@ -469,10 +476,11 @@ export const useCampus = create<State>()(
         set({ menu: get().menu.map((m) => (m.id === id ? { ...m, ...patch } : m)) }),
       removeMenuItem: (id) => set({ menu: get().menu.filter((m) => m.id !== id) }),
 
-      placeOrder: async (userId, lines) => {
+      placeOrder: async (userId, lines, couponCode) => {
         const { menu, users, apiKey } = get();
         const user = users.find((u) => u.id === userId);
-        const pricing = priceOrder(lines, menu, user?.role ?? "Standard");
+        const normalizedCoupon = couponCode?.trim().toUpperCase();
+        const pricing = priceOrder(lines, menu, user?.role ?? "Standard", normalizedCoupon);
 
         // Send one API master order per restaurant (vendor).
         const byVendor = new Map<string, { itemName: string; quantity: number }[]>();
@@ -504,6 +512,8 @@ export const useCampus = create<State>()(
           status: "Pending",
           createdAt: new Date().toISOString(),
           masterIds,
+          couponCode: pricing.couponDiscount > 0 ? normalizedCoupon : undefined,
+          couponDiscount: pricing.couponDiscount,
           ...pricing,
         };
         const nextMenu = menu.map((m) => {

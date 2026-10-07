@@ -21,8 +21,8 @@
 - [x] Update README + documentation/
 
 ## Coupons and support pages
-- [ ] Add administrator test coupons CAMPUS10, EATS20, and WELCOME5
-- [ ] Polish the FAQ page
-- [ ] Polish the Help Center
+- [x] Add administrator test coupons CAMPUS10, EATS20, and WELCOME5
+- [x] Polish the FAQ page
+- [x] Polish the Help Center
 - [ ] Verify coupon calculations and both support pages
 
