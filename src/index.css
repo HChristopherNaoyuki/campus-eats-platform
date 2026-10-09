@@ -297,7 +297,7 @@ All colors MUST be HSL.
 .php-site .home-page .feature-card p { font-size: 0.9375rem; margin: 0; }
 .php-site .home-page .featured-vendor { margin-top: 0; border: 1px solid hsl(var(--border)); border-radius: 0.5rem; box-shadow: none; background: hsl(var(--card)); }
 .php-site .home-page .featured-vendor-header { background: hsl(var(--secondary)); color: hsl(var(--foreground)); padding: 1.5rem; border-bottom: 1px solid hsl(var(--border)); }
-.php-site .home-page .featured-vendor-header h2 { font-size: 1.25rem; }
+.php-site .home-page .featured-vendor-header h2 { font-size: 1.25rem; color: hsl(var(--foreground)); }
 .php-site .home-page .featured-vendor-body { padding: 1.5rem; }
 .php-site .home-page .featured-vendor-body p { color: hsl(var(--muted-foreground)); }
 .php-site .home-page .featured-vendor-body p i { color: hsl(var(--muted-foreground)); }
@@ -305,8 +305,8 @@ All colors MUST be HSL.
 .php-site .home-page .featured-vendor-menu h4 { font-size: 0.9375rem; margin: 0; }
 .php-site .home-page .menu-preview-item { background: transparent; border: 0; border-radius: 0; border-bottom: 1px solid hsl(var(--border)); padding: 1rem 0; }
 .php-site .home-page .menu-preview-item:hover { background: transparent; }
-.php-site .home-page .item-name { color: hsl(var(--foreground)); font-size: 0.9375rem; font-weight: 500; }
-.php-site .home-page .item-price { color: hsl(var(--foreground)); font-weight: 600; margin-top: 0.5rem; }
+.php-site .home-page .menu-preview-item .item-name { color: hsl(var(--foreground)); font-size: 0.9375rem; font-weight: 500; }
+.php-site .home-page .menu-preview-item .item-price { color: hsl(var(--foreground)); font-weight: 600; margin-top: 0.5rem; }
 .php-site .home-page .featured-vendor-footer { margin-top: 1.5rem; }
 .php-site .home-page .featured-vendor-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.25rem; }
 .php-site .home-page .cta { background: hsl(var(--secondary)); color: hsl(var(--foreground)); border-top: 1px solid hsl(var(--border)); }
