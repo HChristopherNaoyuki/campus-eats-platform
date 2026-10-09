@@ -227,7 +227,9 @@ All colors MUST be HSL.
   margin-top: 2.5rem;
   padding-top: 2rem;
 }
-.php-site .support-page a.inline-flex { padding: 0.625rem 1.25rem; min-height: 2.75rem; border-radius: 0.5rem; }
+.php-site .support-page a.inline-flex { padding: 0.625rem 1.25rem; min-height: 2.75rem; border-radius: 0.5rem; color: hsl(var(--primary-foreground)); }
+.php-site .support-page > section:last-child > div:last-child.border-t h2,
+.php-site .support-page > section:last-child > div:last-child.border-t p { text-align: inherit; }
 
 @media (max-width: 639px) {
   .php-site .support-page h1 { font-size: 2rem; }

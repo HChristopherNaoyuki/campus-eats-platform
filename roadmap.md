@@ -1,8 +1,8 @@
 # Roadmap
 
 ## Support page refinement
-- [ ] Apply subtle Apple-inspired visual polish to FAQ and Help Center only
-- [ ] Verify search, accordions, links, and layout in the preview
+- [x] Apply subtle Apple-inspired visual polish to FAQ and Help Center only
+- [x] Verify search, accordions, links, and layout in the preview
 
 ## Firebase integration (in progress)
 - [x] Add firebase 12.18.0 dependency
