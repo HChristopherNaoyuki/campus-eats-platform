@@ -102,3 +102,144 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+/* Support-page refinements are isolated from the PHP reference shell. */
+.php-site .support-page {
+  --background: 240 20% 98%;
+  --foreground: 240 6% 13%;
+  --card: 0 0% 100%;
+  --card-foreground: 240 6% 13%;
+  --secondary: 240 14% 96%;
+  --muted-foreground: 240 4% 44%;
+  --border: 240 8% 89%;
+  --input: 240 8% 86%;
+  --radius: 0.5rem;
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
+  letter-spacing: 0;
+}
+
+.dark .php-site .support-page {
+  --background: 240 6% 10%;
+  --foreground: 240 5% 96%;
+  --card: 240 5% 14%;
+  --card-foreground: 240 5% 96%;
+  --secondary: 240 5% 16%;
+  --muted-foreground: 240 5% 69%;
+  --border: 240 4% 25%;
+  --input: 240 4% 30%;
+}
+
+.php-site .support-page > section:first-child {
+  background: hsl(var(--secondary));
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.php-site .support-page > section:first-child > div {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 3.5rem 1.5rem;
+}
+
+.php-site .support-page > section:first-child > div > span {
+  padding: 0;
+  background: none;
+  border-radius: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.php-site .support-page h1 {
+  margin-top: 0.75rem;
+  font-size: 2.5rem;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: 0;
+}
+
+.php-site .support-page > section:first-child p {
+  margin: 1rem 0 0;
+  max-width: 38rem;
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: hsl(var(--muted-foreground));
+}
+
+.php-site .support-page > section:last-child {
+  margin: 0 auto;
+  padding: 3rem 1.5rem 4rem;
+}
+
+.php-site .support-faq > section:last-child { max-width: 56rem; }
+.php-site .support-help > section:last-child { max-width: 64rem; }
+.php-site .support-help > section:last-child > * + * { margin-top: 2.5rem; }
+.php-site .support-help > section:last-child > div:first-child { margin-left: auto; margin-right: auto; }
+.php-site .support-faq .grid { margin-bottom: 2rem; }
+
+.php-site .support-page .bg-card {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.5rem;
+  box-shadow: none;
+}
+
+.php-site .support-faq .grid > div { padding: 1.25rem; }
+.php-site .support-faq [data-orientation="vertical"].bg-card { padding: 0 1.5rem; }
+.php-site .support-help .grid > div { padding: 1.5rem; }
+.php-site .support-help .grid > div > div:first-child { margin-bottom: 0.25rem; padding-bottom: 1.25rem; }
+.php-site .support-page .bg-primary\/10 { background: hsl(var(--secondary)); color: hsl(var(--muted-foreground)); }
+.php-site .support-page h2 { font-size: 1rem; font-weight: 600; line-height: 1.5; letter-spacing: 0; }
+.php-site .support-page p { margin: 0; }
+.php-site .support-page .text-xs { font-size: 0.75rem; line-height: 1.6; }
+.php-site .support-page .text-sm { font-size: 0.875rem; line-height: 1.6; }
+
+.php-site .support-page [data-orientation="vertical"] > h3 { font-size: inherit; margin: 0; letter-spacing: 0; }
+.php-site .support-page button[data-state] {
+  min-height: 3.5rem;
+  padding: 1.25rem 0;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.6;
+  text-align: left;
+  text-decoration: none;
+  color: hsl(var(--foreground));
+  gap: 1rem;
+}
+.php-site .support-page button[data-state]:hover { color: hsl(var(--primary)); }
+.php-site .support-page button[data-state]:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 4px; border-radius: 0.25rem; }
+.php-site .support-page button[data-state] > svg { color: hsl(var(--muted-foreground)); }
+.php-site .support-faq button[data-state] span > span { margin-bottom: 0.25rem; font-size: 0.6875rem; color: hsl(var(--muted-foreground)); }
+.php-site .support-page [role="region"] > div { padding: 0 1.5rem 1.5rem 0; font-size: 0.9375rem; line-height: 1.75; color: hsl(var(--muted-foreground)); }
+.php-site .support-page [data-orientation="vertical"].border-b:last-child { border-bottom: 0; }
+
+.php-site .support-page label { display: block; margin-bottom: 0.75rem; font-size: 0.875rem; font-weight: 500; }
+.php-site .support-page input {
+  height: 3.25rem;
+  padding: 0.75rem 1rem 0.75rem 3rem;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--input));
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  box-shadow: none;
+}
+.php-site .support-page > section:last-child > div:last-child.border-t {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+}
+.php-site .support-page a.inline-flex { padding: 0.625rem 1.25rem; min-height: 2.75rem; border-radius: 0.5rem; }
+
+@media (max-width: 639px) {
+  .php-site .support-page h1 { font-size: 2rem; }
+  .php-site .support-page > section:first-child > div { padding: 2.5rem 1.25rem; }
+  .php-site .support-page > section:last-child { padding: 2rem 1.25rem 3rem; }
+  .php-site .support-faq [data-orientation="vertical"].bg-card { padding: 0 1.25rem; }
+  .php-site .support-help .grid > div { padding: 1.25rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .php-site .support-page *, .php-site .support-page *::before, .php-site .support-page *::after {
+    animation: none;
+    transition: none;
+  }
+}

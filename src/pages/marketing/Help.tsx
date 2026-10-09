@@ -46,7 +46,7 @@ export default function Help()
     }, [query]);
 
     return (
-        <>
+        <div className="support-page support-help">
             <PageHero eyebrow="Support" title="Help Center" description="Answers to common questions about Campus Eats" />
             <section className="mx-auto max-w-5xl px-4 py-12 md:py-16 space-y-10">
                 <div className="mx-auto max-w-2xl">
@@ -92,6 +92,6 @@ export default function Help()
                     <Button asChild><Link to="/contact">Contact support <ArrowRight className="ml-2 h-4 w-4" /></Link></Button>
                 </div>
             </section>
-        </>
+        </div>
     );
 }

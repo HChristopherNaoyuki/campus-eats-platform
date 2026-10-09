@@ -19,7 +19,7 @@ const faqs =
 export default function FAQ()
 {
     return (
-        <>
+        <div className="support-page support-faq">
             <PageHero
                 eyebrow="FAQ"
                 title="Frequently asked questions"
@@ -50,6 +50,6 @@ export default function FAQ()
                     <Button asChild><Link to="/help">Visit Help Center</Link></Button>
                 </div>
             </section>
-        </>
+        </div>
     );
 }
