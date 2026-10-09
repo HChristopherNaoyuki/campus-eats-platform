@@ -104,7 +104,8 @@ All colors MUST be HSL.
 }
 
 /* Support-page refinements are isolated from the PHP reference shell. */
-.php-site .support-page {
+.php-site .support-page,
+.php-site .refined-page {
   --background: 240 20% 98%;
   --foreground: 240 6% 13%;
   --card: 0 0% 100%;
@@ -119,7 +120,8 @@ All colors MUST be HSL.
   letter-spacing: 0;
 }
 
-.dark .php-site .support-page {
+.dark .php-site .support-page,
+.dark .php-site .refined-page {
   --background: 240 6% 10%;
   --foreground: 240 5% 96%;
   --card: 240 5% 14%;
@@ -244,4 +246,112 @@ All colors MUST be HSL.
     animation: none;
     transition: none;
   }
+}
+
+/* Home and About retain their original sections and reference-shell layout. */
+.php-site .refined-page {
+  --hero-foreground: 0 0% 100%;
+  --hero-overlay: 240 6% 8%;
+  --hero-scrim: linear-gradient(hsl(var(--hero-overlay) / 0.62), hsl(var(--hero-overlay) / 0.72));
+  font-family: var(--font-sans);
+}
+.php-site .refined-page h1,
+.php-site .refined-page h2,
+.php-site .refined-page h3,
+.php-site .refined-page h4 { letter-spacing: 0; color: hsl(var(--foreground)); font-weight: 600; }
+.php-site .refined-page p { color: hsl(var(--muted-foreground)); line-height: 1.75; }
+.php-site .home-page > section { padding: 4rem 0; background: hsl(var(--background)); }
+.php-site .home-page .container { max-width: 72rem; padding: 0 1.5rem; margin: 0 auto; }
+.php-site .home-page .hero { background: hsl(var(--hero-overlay)); padding: 5rem 0; }
+.php-site .home-page .home-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.php-site .home-page .hero::after { inset: 0; height: auto; background: var(--hero-scrim); }
+.php-site .home-page .hero h1 { font-size: 3.5rem; line-height: 1.15; margin-bottom: 1.5rem; color: hsl(var(--hero-foreground)); }
+.php-site .home-page .hero h1 span { color: inherit; }
+.php-site .home-page .hero p { color: hsl(var(--hero-foreground)); opacity: 1; max-width: 38rem; font-size: 1.0625rem; margin: 0 auto 2rem; }
+.php-site .home-page .hero-buttons { gap: 0.75rem; }
+.php-site .home-page .home-action { min-height: 2.75rem; padding: 0.625rem 1.5rem; border-radius: 0.5rem; color: hsl(var(--primary-foreground)); font-size: 0.9375rem; box-shadow: none; }
+.php-site .home-page .home-action-outline { color: hsl(var(--foreground)); background: hsl(var(--card)); border-color: hsl(var(--input)); }
+.php-site .home-page .home-action-outline:hover { background: hsl(var(--secondary)); }
+.php-site .home-page .hero .home-action-outline { color: hsl(var(--hero-foreground)); background: transparent; border-color: hsl(var(--hero-foreground) / 0.55); }
+.php-site .home-page .hero .home-action-outline:hover { background: hsl(var(--hero-foreground) / 0.12); }
+.php-site .home-page .stats-section { padding: 2.25rem 0; background: hsl(var(--card)); border-bottom-color: hsl(var(--border)); }
+.php-site .home-page .stat-number { font-size: 2rem; font-weight: 600; color: hsl(var(--foreground)); letter-spacing: 0; }
+.php-site .home-page .stat-label { margin-top: 0.5rem; text-transform: none; letter-spacing: 0; color: hsl(var(--muted-foreground)); }
+.php-site .home-page .features,
+.php-site .home-page .vendors { background: hsl(var(--card)); }
+.php-site .home-page .section-title { margin-bottom: 2.5rem; }
+.php-site .home-page .section-title h2 { font-size: 2rem; line-height: 1.25; margin-bottom: 0; }
+.php-site .home-page .section-title h2::after { content: none; }
+.php-site .home-page .section-title p { margin: 1rem auto 0; font-size: 1rem; max-width: 40rem; }
+.php-site .home-page .steps,
+.php-site .home-page .features-grid { margin-top: 0; gap: 1.25rem; }
+.php-site .home-page .step,
+.php-site .home-page .feature-card { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: 0.5rem; padding: 1.75rem 1.25rem; box-shadow: none; }
+.php-site .home-page .step:hover,
+.php-site .home-page .feature-card:hover { transform: none; box-shadow: none; }
+.php-site .home-page .step-number { width: 2.75rem; height: 2.75rem; background: hsl(var(--secondary)); color: hsl(var(--foreground)); font-size: 1rem; margin-bottom: 1.25rem; }
+.php-site .home-page .feature-icon { width: 3rem; height: 3rem; border-radius: 0.5rem; background: hsl(var(--secondary)); color: hsl(var(--muted-foreground)); font-size: 1.375rem; margin-bottom: 1.25rem; }
+.php-site .home-page .step h3,
+.php-site .home-page .feature-card h3 { font-size: 1.0625rem; margin-bottom: 0.75rem; }
+.php-site .home-page .step p,
+.php-site .home-page .feature-card p { font-size: 0.9375rem; margin: 0; }
+.php-site .home-page .featured-vendor { margin-top: 0; border: 1px solid hsl(var(--border)); border-radius: 0.5rem; box-shadow: none; background: hsl(var(--card)); }
+.php-site .home-page .featured-vendor-header { background: hsl(var(--secondary)); color: hsl(var(--foreground)); padding: 1.5rem; border-bottom: 1px solid hsl(var(--border)); }
+.php-site .home-page .featured-vendor-header h2 { font-size: 1.25rem; color: hsl(var(--foreground)); }
+.php-site .home-page .featured-vendor-body { padding: 1.5rem; }
+.php-site .home-page .featured-vendor-body p { color: hsl(var(--muted-foreground)); }
+.php-site .home-page .featured-vendor-body p i { color: hsl(var(--muted-foreground)); }
+.php-site .home-page .featured-vendor-menu { margin-top: 1.5rem; }
+.php-site .home-page .featured-vendor-menu h4 { font-size: 0.9375rem; margin: 0; }
+.php-site .home-page .menu-preview-item { background: transparent; border: 0; border-radius: 0; border-bottom: 1px solid hsl(var(--border)); padding: 1rem 0; }
+.php-site .home-page .menu-preview-item:hover { background: transparent; }
+.php-site .home-page .menu-preview-item .item-name { color: hsl(var(--foreground)); font-size: 0.9375rem; font-weight: 500; }
+.php-site .home-page .menu-preview-item .item-price { color: hsl(var(--foreground)); font-weight: 600; margin-top: 0.5rem; }
+.php-site .home-page .featured-vendor-footer { margin-top: 1.5rem; }
+.php-site .home-page .featured-vendor-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.25rem; }
+.php-site .home-page .cta { background: hsl(var(--secondary)); color: hsl(var(--foreground)); border-top: 1px solid hsl(var(--border)); }
+.php-site .home-page .cta h2 { font-size: 2rem; margin-bottom: 1rem; }
+.php-site .home-page .cta p { max-width: 38rem; font-size: 1rem; opacity: 1; }
+.php-site .home-page .cta ul { margin: 0 0 2rem; }
+.php-site .home-page .cta ul li i { color: hsl(var(--accent)); }
+
+.php-site .about-page > section:first-child { background: hsl(var(--secondary)); border-bottom: 1px solid hsl(var(--border)); }
+.php-site .about-page > section:first-child > div { margin: 0 auto; max-width: 72rem; padding: 3.5rem 1.5rem; }
+.php-site .about-page > section:first-child span { padding: 0; border-radius: 0; background: none; color: hsl(var(--muted-foreground)); font-size: 0.75rem; letter-spacing: 0; }
+.php-site .about-page h1 { font-size: 2.5rem; line-height: 1.15; margin-top: 0.75rem; }
+.php-site .about-page > section:first-child p { max-width: 42rem; font-size: 1.0625rem; margin: 1rem 0 0; }
+.php-site .about-page > section:last-child { display: grid; gap: 2.5rem; margin: 0 auto; max-width: 72rem; padding: 4rem 1.5rem; }
+.php-site .about-page h2 { font-size: 1.75rem; line-height: 1.3; margin-bottom: 1.5rem; }
+.php-site .about-page .space-y-4 > p { margin: 0 0 1.25rem; font-size: 1rem; }
+.php-site .about-page .space-y-4 > div { margin-top: 1.5rem; padding-top: 0; gap: 1rem; }
+.php-site .about-page a { min-height: 2.75rem; letter-spacing: 0; }
+.php-site .about-page a:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 4px; border-radius: 0.25rem; }
+.php-site .about-page .bg-card { border-radius: 0.5rem; border: 1px solid hsl(var(--border)); background: hsl(var(--card)); box-shadow: none; }
+.php-site .about-page .bg-card > div { padding: 1.5rem; gap: 1rem; }
+.php-site .about-page .bg-accent\/10 { border-radius: 0.5rem; background: hsl(var(--secondary)); color: hsl(var(--muted-foreground)); }
+.php-site .about-page h3 { margin: 0; font-size: 1rem; line-height: 1.5; }
+.php-site .about-page .bg-card p { margin: 0.5rem 0 0; font-size: 0.9375rem; }
+
+@media (min-width: 1024px) {
+  .php-site .about-page > section:last-child { grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
+}
+@media (max-width: 639px) {
+  .php-site .home-page .container { padding: 0 1.25rem; }
+  .php-site .home-page > section { padding: 3rem 0; }
+  .php-site .home-page .hero { padding: 3.5rem 0; }
+  .php-site .home-page .hero h1 { font-size: 2.25rem; }
+  .php-site .home-page .hero p { font-size: 1rem; }
+  .php-site .home-page .section-title h2,
+  .php-site .home-page .cta h2 { font-size: 1.75rem; }
+  .php-site .home-page .stats-section { padding: 2rem 0; }
+  .php-site .home-page .stats-grid { gap: 1.5rem; }
+  .php-site .home-page .featured-vendor-header,
+  .php-site .home-page .featured-vendor-body { padding: 1.25rem; }
+  .php-site .about-page h1 { font-size: 2rem; }
+  .php-site .about-page > section:first-child > div { padding: 2.5rem 1.25rem; }
+  .php-site .about-page > section:last-child { padding: 2.5rem 1.25rem; }
+  .php-site .about-page .bg-card > div { padding: 1.25rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .php-site .refined-page *, .php-site .refined-page *::before, .php-site .refined-page *::after { animation: none; transition: none; scroll-behavior: auto; }
 }

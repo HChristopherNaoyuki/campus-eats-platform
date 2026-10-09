@@ -1,5 +1,9 @@
 # Roadmap
 
+## Home and About refinement
+- [x] Apply subtle, consistent visual refinements without changing content or layout
+- [x] Verify both pages and existing links across desktop and narrow screens
+
 ## Support page refinement
 - [x] Apply subtle Apple-inspired visual polish to FAQ and Help Center only
 - [x] Verify search, accordions, links, and layout in the preview

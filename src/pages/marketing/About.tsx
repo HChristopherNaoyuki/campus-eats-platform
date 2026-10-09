@@ -12,7 +12,7 @@ const values =
 export default function About()
 {
     return (
-        <>
+        <div className="refined-page about-page">
             <PageHero
                 eyebrow="About"
                 title="The team behind Campus Eats"
@@ -68,6 +68,6 @@ export default function About()
                     ))}
                 </div>
             </section>
-        </>
+        </div>
     );
 }

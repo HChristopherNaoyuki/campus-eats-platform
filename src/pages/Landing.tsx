@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { useCampus } from "@/store/campusStore";
+import { Button } from "@/components/ui/button";
+import homePhoto from "@/assets/home-restaurant.jpg.asset.json";
 
 /**
  * Home page, a direct port of the reference `index.php`.
@@ -33,8 +35,9 @@ export default function Landing()
     ];
 
     return (
-        <>
+        <div className="refined-page home-page">
             <section id="home" className="hero">
+                <img className="home-photo" src={homePhoto.url} alt="" fetchPriority="high" />
                 <div className="container">
                     <h1>Skip the line.<br /><span>Pick up on campus.</span></h1>
                     <p>
@@ -42,8 +45,8 @@ export default function Landing()
                         then grab it on the way to class. No delivery fee, no waiting.
                     </p>
                     <div className="hero-buttons">
-                        <Link to="/signup" className="btn btn-ce-primary btn-primary">Order now</Link>
-                        <a href="#how-it-works" className="btn btn-outline">Learn more</a>
+                        <Button asChild className="home-action"><Link to="/signup">Order now</Link></Button>
+                        <Button asChild variant="outline" className="home-action home-action-outline"><a href="#how-it-works">Learn more</a></Button>
                     </div>
                 </div>
             </section>
@@ -148,8 +151,8 @@ export default function Landing()
                                         Sign up or log in to view all vendors and place orders.
                                     </p>
                                     <div className="featured-vendor-actions">
-                                        <Link to="/signup" className="btn btn-ce-primary btn-primary">Sign Up to Order</Link>
-                                        <Link to="/login" className="btn btn-outline">Log In</Link>
+                                        <Button asChild className="home-action"><Link to="/signup">Sign Up to Order</Link></Button>
+                                        <Button asChild variant="outline" className="home-action home-action-outline"><Link to="/login">Log In</Link></Button>
                                     </div>
                                 </div>
                             </div>
@@ -159,7 +162,7 @@ export default function Landing()
                             <i className="fas fa-store-slash" aria-hidden="true" />
                             <h3>No Vendors Available</h3>
                             <p>No vendors are currently available. Please check back later.</p>
-                            <Link to="/signup" className="btn btn-ce-primary btn-primary">Sign Up</Link>
+                            <Button asChild className="home-action"><Link to="/signup">Sign Up</Link></Button>
                         </div>
                     )}
                 </div>
@@ -177,9 +180,9 @@ export default function Landing()
                         <li><i className="fas fa-check-circle" aria-hidden="true" /> Live order queue</li>
                         <li><i className="fas fa-check-circle" aria-hidden="true" /> Sales &amp; performance reports</li>
                     </ul>
-                    <Link to="/signup" className="btn btn-secondary">Become a vendor</Link>
+                    <Button asChild className="home-action"><Link to="/signup">Become a vendor</Link></Button>
                 </div>
             </section>
-        </>
+        </div>
     );
 }
