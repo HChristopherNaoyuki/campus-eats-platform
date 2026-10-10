@@ -151,11 +151,27 @@ screenshots/     All visual media related to the application
 ## Roles and Demonstration Accounts
 
 The platform supports four roles: Student, Standard, Vendor, and Administrator.
-Ten demonstration accounts are provided: two administrators, three vendors, four
-standard users, and one student. Their credentials are listed on the sign in
-screen so that reviewers can sign in immediately. An account may be identified by
-its email address, its username, or its sixteen character User ID, and each is
-provisioned automatically against the external API on first use.
+Ten demonstration accounts are defined in `src/data/seed.ts` and listed on the
+sign in screen. Sign in with the email address, the username, or the User ID,
+plus the password. Each account is provisioned against the external API on
+first use.
+
+User IDs are normalised to sixteen characters by the application: IDs supplied
+with fifteen characters are padded with `0`, and IDs with seventeen characters
+are trimmed. The values below are the IDs the application actually uses.
+
+| Role | Name | Username | Email | Password | User ID | Shop |
+| --- | --- | --- | --- | --- | --- | --- |
+| Admin | Amara Nkosi | amara.nkosi | amara.nkosi@campuseats.test | Adm1n#Amara | ADMN4K7P2Q9XRT5M | |
+| Admin | Pieter van Wyk | pieter.vanwyk | pieter.vanwyk@campuseats.test | Adm1n#Pieter | ADMN8B3W6Y1ZPL4N | |
+| Vendor | Thandiwe Mokoena | thandiwe.mokoena | thandiwe.mokoena@campuseats.test | Vend0r#Thandi | VNDR2T5H8J3KQ7L0 | Campus Corner Kitchen |
+| Vendor | Sipho Dlamini | sipho.dlamini | sipho.dlamini@campuseats.test | Vend0r#Sipho | VNDR9F4G7N2MXP5Q | Braai Brothers |
+| Vendor | Annelie Botha | annelie.botha | annelie.botha@campuseats.test | Vend0r#Annelie | VNDR6C1V9B4LZR8T | Coffee and Koeksisters |
+| Standard | Lerato Khumalo | lerato.khumalo | lerato.khumalo@campuseats.test | Stand@rd#Lerato | STDN3J7R5H2KXQ9M | |
+| Standard | Johan Pretorius | johan.pretorius | johan.pretorius@campuseats.test | Stand@rd#Johan | STDN7P4W1Y6NBLZ2 | |
+| Standard | Zanele Ndlovu | zanele.ndlovu | zanele.ndlovu@campuseats.test | Stand@rd#Zanele | STDN5T8M3K2LZXR6 | |
+| Standard | Marius Steyn | marius.steyn | marius.steyn@campuseats.test | Stand@rd#Marius | STDN9R2B7V4MQP1X | |
+| Student | Naledi Mahlangu | naledi.mahlangu | naledi.mahlangu@campuseats.test | Stud3nt#Naledi | STDT4K9X2P7MNZR5 | |
 
 The seeded data set contains at least ten records per collection: ten users, ten
 vendors, sixteen menu items, twelve orders, ten feedback entries, and twelve
@@ -163,6 +179,25 @@ security log entries.
 
 Demonstration accounts are intended for evaluation only.
 
+### Sample Coupons
+
+Coupons are defined in `src/lib/coupons.ts`.
+
+| Code | Discount |
+| --- | --- |
+| CAMPUS10 | 10% |
+| EATS20 | 20% |
+| WELCOME5 | 5% |
+
+Usage conditions, as implemented:
+
+- Codes are not case sensitive and surrounding spaces are ignored.
+- One coupon applies per order. Any other code is rejected.
+- The percentage applies to the order total after the 20% tax and rounding up to
+  the next R5. For the Student role it is added to the 2.5% student discount,
+  both calculated on that same rounded amount.
+- Coupons can be entered at checkout on the ordering page, and administrators can
+  select one when creating an order in Order Management for testing.
 
 [Back to top](#table-of-contents)
 

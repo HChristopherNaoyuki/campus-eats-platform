@@ -9,33 +9,35 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { AuthShell } from "./Login";
 import type { Role } from "@/types/campus";
+import { useI18n } from "@/i18n";
 
 type Field = "name" | "username" | "email" | "password" | "confirm" | "shopName";
-
-const baseSchema = z.object(
-{
-    name: z.string().trim().min(2, "Enter your full name").max(80, "Name is too long"),
-    username: z.string().trim()
-        .min(3, "Username must be at least 3 characters")
-        .max(30, "Username is too long")
-        .regex(/^[a-zA-Z0-9._-]+$/, "Use letters, numbers, dots, dashes or underscores only"),
-    email: z.string().trim().email("Enter a valid email address").max(120, "Email is too long"),
-    password: z.string().min(8, "Password must be at least 8 characters").max(64, "Password is too long"),
-    confirm: z.string(),
-    shopName: z.string().trim().max(60, "Shop name is too long"),
-});
 
 const ROLE_HOME: Record<Role, string> = { Student: "/student", Standard: "/student", Vendor: "/vendor", Admin: "/dashboard" };
 
 export default function Signup()
 {
     const { registerUser, users, login } = useCampus();
+    const { t } = useI18n();
     const navigate = useNavigate();
     const [form, setForm] = useState({ name: "", username: "", email: "", password: "", confirm: "", shopName: "" });
     const [role, setRole] = useState<Role>("Student");
     const [errors, setErrors] = useState<Partial<Record<Field, string>>>({});
     const [submitting, setSubmitting] = useState(false);
     const [created, setCreated] = useState<{ id: string; role: Role } | null>(null);
+
+    const baseSchema = z.object(
+    {
+        name: z.string().trim().min(2, t("authx.errEnterFullName")).max(80, t("authx.errNameTooLong")),
+        username: z.string().trim()
+            .min(3, t("authx.errUsernameMin"))
+            .max(30, t("authx.errUsernameTooLong"))
+            .regex(/^[a-zA-Z0-9._-]+$/, t("authx.errUsernameChars")),
+        email: z.string().trim().email(t("authx.errEmailInvalid")).max(120, t("authx.errEmailTooLong")),
+        password: z.string().min(8, t("authx.errPasswordMin")).max(64, t("authx.errPasswordTooLong")),
+        confirm: z.string(),
+        shopName: z.string().trim().max(60, t("authx.errShopNameTooLong")),
+    });
 
     const set = (k: Field) => (e: React.ChangeEvent<HTMLInputElement>) =>
     {
@@ -55,13 +57,13 @@ export default function Signup()
                 if (!next[k]) next[k] = issue.message;
             }
         }
-        if (form.confirm !== form.password) next.confirm = "Passwords do not match";
-        if (!form.confirm) next.confirm = "Confirm your password";
-        if (role === "Vendor" && form.shopName.trim().length < 2) next.shopName = "Enter your shop name";
+        if (form.confirm !== form.password) next.confirm = t("authx.errPasswordsMismatch");
+        if (!form.confirm) next.confirm = t("authx.errConfirmPassword");
+        if (role === "Vendor" && form.shopName.trim().length < 2) next.shopName = t("authx.errShopNameRequired");
         const email = form.email.trim().toLowerCase();
         const uname = form.username.trim().toLowerCase();
-        if (!next.email && users.some((u) => u.email.toLowerCase() === email)) next.email = "Email already registered";
-        if (!next.username && users.some((u) => (u.username ?? "").toLowerCase() === uname)) next.username = "Username already taken";
+        if (!next.email && users.some((u) => u.email.toLowerCase() === email)) next.email = t("authx.errEmailTaken");
+        if (!next.username && users.some((u) => (u.username ?? "").toLowerCase() === uname)) next.username = t("authx.errUsernameTaken");
         setErrors(next);
         return Object.keys(next).length === 0;
     };
@@ -84,11 +86,11 @@ export default function Signup()
                 ...(safeRole === "Vendor" ? { shopName: form.shopName.trim() } : {}),
             });
             setCreated({ id: user.id, role: safeRole });
-            toast.success("Account created. Save your User ID.");
+            toast.success(t("authx.toastAccountCreated"));
         }
         catch (err)
         {
-            toast.error(err instanceof Error ? err.message : "Registration failed");
+            toast.error(err instanceof Error ? err.message : t("authx.toastRegistrationFailed"));
         }
         finally
         {
@@ -99,20 +101,20 @@ export default function Signup()
     if (created)
     {
         return (
-            <AuthShell title="Save your User ID" subtitle="This 16-character ID is your account recovery key">
+            <AuthShell title={t("authx.saveUserIdTitle")} subtitle={t("authx.saveUserIdSubtitle")}>
                 <div className="space-y-4">
                     <div className="rounded-xl border-2 border-dashed border-primary/60 bg-primary/5 p-4 text-center">
-                        <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1">Your User ID</div>
+                        <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1">{t("authx.yourUserId")}</div>
                         <div className="font-mono text-lg font-bold tracking-wider break-all">{created.id}</div>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                        Store this somewhere safe. You can sign in with it, your username or your email.
+                        {t("authx.storeIdHint")}
                     </p>
                     <Button className="w-full h-11" onClick={async () =>
                     {
                         await login(form.email.trim(), form.password);
                         navigate(ROLE_HOME[created.role]);
-                    }}>Continue</Button>
+                    }}>{t("authx.continue")}</Button>
                 </div>
             </AuthShell>
         );
@@ -134,34 +136,34 @@ export default function Signup()
     );
 
     return (
-        <AuthShell title="Create account" subtitle="Join the campus pickup network">
+        <AuthShell title={t("authx.createAccountTitle")} subtitle={t("authx.createAccountSubtitle")}>
             <form onSubmit={onSubmit} noValidate className="space-y-4">
                 <div className="space-y-1.5">
-                    <Label>Account type</Label>
+                    <Label>{t("authx.accountType")}</Label>
                     <Select value={role} onValueChange={(v) => { setRole(v as Role); setErrors((er) => ({ ...er, shopName: undefined })); }}>
                         <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="Student">Student</SelectItem>
-                            <SelectItem value="Standard">Standard</SelectItem>
-                            <SelectItem value="Vendor">Vendor</SelectItem>
+                            <SelectItem value="Student">{t("authx.student")}</SelectItem>
+                            <SelectItem value="Standard">{t("authx.standard")}</SelectItem>
+                            <SelectItem value="Vendor">{t("authx.vendor")}</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
-                {role === "Vendor" && field("shopName", "Shop name", { maxLength: 60, placeholder: "e.g. Campus Corner Kitchen" })}
-                {field("name", "Full name", { maxLength: 80, autoComplete: "name" })}
+                {role === "Vendor" && field("shopName", t("authx.shopName"), { maxLength: 60, placeholder: t("authx.shopNamePlaceholder") })}
+                {field("name", t("authx.fullName"), { maxLength: 80, autoComplete: "name" })}
                 <div className="grid gap-4 sm:grid-cols-2">
-                    {field("username", "Username", { maxLength: 30, autoComplete: "username" })}
-                    {field("email", "Email", { type: "email", maxLength: 120, autoComplete: "email" })}
+                    {field("username", t("authx.username"), { maxLength: 30, autoComplete: "username" })}
+                    {field("email", t("authx.email"), { type: "email", maxLength: 120, autoComplete: "email" })}
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
-                    {field("password", "Password", { type: "password", maxLength: 64, autoComplete: "new-password" })}
-                    {field("confirm", "Confirm password", { type: "password", maxLength: 64, autoComplete: "new-password" })}
+                    {field("password", t("authx.password"), { type: "password", maxLength: 64, autoComplete: "new-password" })}
+                    {field("confirm", t("authx.confirmPassword"), { type: "password", maxLength: 64, autoComplete: "new-password" })}
                 </div>
                 <Button type="submit" className="w-full h-11" disabled={submitting}>
-                    {submitting ? "Creating account..." : "Create account"}
+                    {submitting ? t("authx.creatingAccount") : t("authx.createAccount")}
                 </Button>
                 <p className="text-sm text-center text-muted-foreground">
-                    Already have an account? <Link to="/login" className="text-primary font-medium hover:underline">Sign in</Link>
+                    {t("authx.alreadyHaveAccount")} <Link to="/login" className="text-primary font-medium hover:underline">{t("authx.signInLink")}</Link>
                 </p>
             </form>
         </AuthShell>

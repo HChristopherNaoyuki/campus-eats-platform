@@ -34,3 +34,8 @@
 - [x] Polish the Help Center
 - [x] Verify coupon calculations and both support pages
 
+
+## Language and README
+- [ ] EN/AF selector on public header and dashboard header
+- [ ] Translate all public pages, auth pages, dashboards, toasts
+- [ ] README: demo accounts + sample coupons verified against source

@@ -7,8 +7,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useCampus } from "@/store/campusStore";
 import { toast } from "sonner";
 import { Pencil, Check, X } from "lucide-react";
+import { useI18n } from "@/i18n";
 
 export default function VendorsPage() {
+  const { t } = useI18n();
   const { vendors, addVendor, updateVendor, loadCatalog, catalogLoading } = useCampus();
   const [form, setForm] = useState({ name: "", location: "", contact: "" });
   const [editId, setEditId] = useState<string | null>(null);
@@ -16,10 +18,10 @@ export default function VendorsPage() {
 
   const handleAdd = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name || !form.location || !form.contact) return toast.error("Fill all fields");
+    if (!form.name || !form.location || !form.contact) return toast.error(t("adm.vendors.fillAllFields"));
     addVendor(form);
     setForm({ name: "", location: "", contact: "" });
-    toast.success("Vendor registered");
+    toast.success(t("adm.vendors.registered"));
   };
 
   const startEdit = (id: string, name: string, location: string) => {
@@ -31,40 +33,40 @@ export default function VendorsPage() {
     if (!editId) return;
     updateVendor(editId, edit);
     setEditId(null);
-    toast.success("Vendor updated");
+    toast.success(t("adm.vendors.updated"));
   };
 
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Vendor Management</h1>
-          <p className="text-muted-foreground text-sm">Vendors are synced live from the Restaurant API.</p>
+          <h1 className="text-2xl font-bold">{t("adm.vendors.title")}</h1>
+          <p className="text-muted-foreground text-sm">{t("adm.vendors.subtitle")}</p>
         </div>
         <Button variant="outline" disabled={catalogLoading} onClick={() => loadCatalog(true)}>
-          {catalogLoading ? "Syncing…" : "Sync from API"}
+          {catalogLoading ? t("adm.vendors.syncing") : t("adm.vendors.syncFromApi")}
         </Button>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[420px_1fr]">
         <Card>
-          <CardHeader><CardTitle>Register Vendor</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("adm.vendors.registerVendor")}</CardTitle></CardHeader>
           <CardContent>
             <form onSubmit={handleAdd} className="space-y-3">
-              <div><Label>Vendor Name</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
-              <div><Label>Location</Label><Input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} /></div>
-              <div><Label>Contact Number</Label><Input value={form.contact} onChange={(e) => setForm({ ...form, contact: e.target.value })} /></div>
-              <Button type="submit" className="w-full">Register Vendor</Button>
+              <div><Label>{t("adm.vendors.vendorName")}</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
+              <div><Label>{t("adm.vendors.location")}</Label><Input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} /></div>
+              <div><Label>{t("adm.vendors.contactNumber")}</Label><Input value={form.contact} onChange={(e) => setForm({ ...form, contact: e.target.value })} /></div>
+              <Button type="submit" className="w-full">{t("adm.vendors.registerVendor")}</Button>
             </form>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader><CardTitle>All Vendors</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("adm.vendors.allVendors")}</CardTitle></CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
-                <TableRow><TableHead>ID</TableHead><TableHead>Name</TableHead><TableHead>Location</TableHead><TableHead>Contact</TableHead><TableHead></TableHead></TableRow>
+                <TableRow><TableHead>{t("adm.vendors.idHeader")}</TableHead><TableHead>{t("adm.vendors.nameHeader")}</TableHead><TableHead>{t("adm.vendors.locationHeader")}</TableHead><TableHead>{t("adm.vendors.contactHeader")}</TableHead><TableHead></TableHead></TableRow>
               </TableHeader>
               <TableBody>
                 {vendors.map((v) => (

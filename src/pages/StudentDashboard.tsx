@@ -8,9 +8,20 @@ import { Input } from "@/components/ui/input";
 import { Plus, Minus, ShoppingBag, Clock, CheckCircle2, ChefHat } from "lucide-react";
 import { toast } from "sonner";
 import { getCouponPercentage, isSampleCoupon } from "@/lib/coupons";
+import { useI18n } from "@/i18n";
+
+const STATUS_KEY: Record<string, string> = {
+  Pending: "stu.statusPending",
+  Accepted: "stu.statusAccepted",
+  Preparing: "stu.statusPreparing",
+  Ready: "stu.statusReady",
+  Completed: "stu.statusCompleted",
+  Rejected: "stu.statusRejected",
+};
 
 export default function StudentDashboard() {
   const { currentUserId, users, vendors, menu, orders, placeOrder, catalogLoading, catalogError } = useCampus();
+  const { t } = useI18n();
   const user = users.find((u) => u.id === currentUserId);
   const [cart, setCart] = useState<Record<string, number>>({});
   const [search, setSearch] = useState("");
@@ -47,16 +58,16 @@ export default function StudentDashboard() {
 
   const checkout = async () => {
     const lines = Object.entries(cart).map(([itemId, quantity]) => ({ itemId, quantity }));
-    if (lines.length === 0) return toast.error("Your cart is empty");
+    if (lines.length === 0) return toast.error(t("stu.cartIsEmptyError"));
     setPlacing(true);
     try {
       await placeOrder(user.id, lines, appliedCoupon);
       setCart({});
       setCouponInput("");
       setAppliedCoupon("");
-      toast.success("Order placed! Vendor will start preparing soon.");
+      toast.success(t("stu.orderPlaced"));
     } catch {
-      toast.error("Could not place the order. Please try again.");
+      toast.error(t("stu.orderFailed"));
     } finally {
       setPlacing(false);
     }
@@ -66,11 +77,13 @@ export default function StudentDashboard() {
     const normalized = couponInput.trim().toUpperCase();
     if (!isSampleCoupon(normalized)) {
       setAppliedCoupon("");
-      return toast.error("That coupon code is not valid");
+      return toast.error(t("stu.couponInvalid"));
     }
     setCouponInput(normalized);
     setAppliedCoupon(normalized);
-    toast.success(`${normalized} applied: ${getCouponPercentage(normalized)}% off`);
+    toast.success(
+      t("stu.couponApplied").replace("{code}", normalized).replace("{pct}", String(getCouponPercentage(normalized)))
+    );
   };
 
   const statusIcon = (s: string) =>
@@ -78,16 +91,18 @@ export default function StudentDashboard() {
       : s === "Preparing" ? <ChefHat className="h-3 w-3" />
       : <CheckCircle2 className="h-3 w-3" />;
 
+  const statusLabel = (s: string) => t(STATUS_KEY[s] ?? s);
+
   return (
     <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <div>
-            <h1 className="text-3xl font-bold">Hey {user.name.split(" ")[0]} 👋</h1>
-            <p className="text-muted-foreground">What are you eating today?</p>
+            <h1 className="text-3xl font-bold">{t("stu.greeting").replace("{name}", user.name.split(" ")[0])} 👋</h1>
+            <p className="text-muted-foreground">{t("stu.whatEating")}</p>
           </div>
-          <Input placeholder="Search menu items…" value={search} onChange={(e) => setSearch(e.target.value)} />
-          {catalogLoading && <p className="text-sm text-muted-foreground">Loading restaurants and menus…</p>}
-          {catalogError && <p className="text-sm text-destructive">Menu service unavailable: {catalogError}</p>}
+          <Input placeholder={t("stu.searchPlaceholder")} value={search} onChange={(e) => setSearch(e.target.value)} />
+          {catalogLoading && <p className="text-sm text-muted-foreground">{t("stu.loadingMenus")}</p>}
+          {catalogError && <p className="text-sm text-destructive">{t("stu.menuUnavailable").replace("{detail}", catalogError)}</p>}
 
           {vendors.map((v) => {
             const items = filtered.filter((m) => m.vendorId === v.id);
@@ -115,7 +130,7 @@ export default function StudentDashboard() {
                             <Button size="icon" className="h-8 w-8" onClick={() => inc(m.id)}><Plus className="h-3 w-3" /></Button>
                           </>
                         ) : (
-                          <Button size="sm" onClick={() => inc(m.id)}><Plus className="h-3 w-3" /> Add</Button>
+                          <Button size="sm" onClick={() => inc(m.id)}><Plus className="h-3 w-3" /> {t("stu.add")}</Button>
                         )}
                       </div>
                     </div>
@@ -129,11 +144,11 @@ export default function StudentDashboard() {
         <div className="space-y-6">
           <Card className="sticky top-20">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><ShoppingBag className="h-4 w-4" /> Your cart ({cartCount})</CardTitle>
+              <CardTitle className="flex items-center gap-2"><ShoppingBag className="h-4 w-4" /> {t("stu.yourCart").replace("{count}", String(cartCount))}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {Object.entries(cart).length === 0 ? (
-                <p className="text-sm text-muted-foreground">Cart is empty.</p>
+                <p className="text-sm text-muted-foreground">{t("stu.cartEmpty")}</p>
               ) : (
                 Object.entries(cart).map(([id, q]) => {
                   const m = menu.find((mi) => mi.id === id);
@@ -147,39 +162,39 @@ export default function StudentDashboard() {
                 })
               )}
               <div className="border-t pt-3 space-y-1 text-sm">
-                <div className="flex justify-between text-muted-foreground"><span>Subtotal</span><span>R{pricing.subtotal.toFixed(2)}</span></div>
-                <div className="flex justify-between text-muted-foreground"><span>Tax (20%)</span><span>R{pricing.tax.toFixed(2)}</span></div>
-                <div className="flex justify-between text-muted-foreground"><span>Rounded to next R5</span><span>R{(pricing.subtotal + pricing.tax > 0 ? Math.ceil((pricing.subtotal + pricing.tax) / 5) * 5 : 0).toFixed(2)}</span></div>
+                <div className="flex justify-between text-muted-foreground"><span>{t("stu.subtotal")}</span><span>R{pricing.subtotal.toFixed(2)}</span></div>
+                <div className="flex justify-between text-muted-foreground"><span>{t("stu.tax")}</span><span>R{pricing.tax.toFixed(2)}</span></div>
+                <div className="flex justify-between text-muted-foreground"><span>{t("stu.roundedTo")}</span><span>R{(pricing.subtotal + pricing.tax > 0 ? Math.ceil((pricing.subtotal + pricing.tax) / 5) * 5 : 0).toFixed(2)}</span></div>
                 {pricing.studentDiscount > 0 && (
-                  <div className="flex justify-between text-accent"><span>Student discount (2.5%)</span><span>-R{pricing.studentDiscount.toFixed(2)}</span></div>
+                  <div className="flex justify-between text-accent"><span>{t("stu.studentDiscount")}</span><span>-R{pricing.studentDiscount.toFixed(2)}</span></div>
                 )}
                 {pricing.couponDiscount > 0 && (
-                  <div className="flex justify-between text-accent"><span>{appliedCoupon} coupon</span><span>-R{pricing.couponDiscount.toFixed(2)}</span></div>
+                  <div className="flex justify-between text-accent"><span>{t("stu.couponLabel").replace("{code}", appliedCoupon)}</span><span>-R{pricing.couponDiscount.toFixed(2)}</span></div>
                 )}
-                <div className="flex justify-between font-semibold text-base pt-1 border-t"><span>Total</span><span>R{pricing.total.toFixed(2)}</span></div>
+                <div className="flex justify-between font-semibold text-base pt-1 border-t"><span>{t("stu.total")}</span><span>R{pricing.total.toFixed(2)}</span></div>
               </div>
               <div className="space-y-2 border-t pt-3">
-                <label htmlFor="coupon-code" className="text-sm font-medium">Coupon code</label>
+                <label htmlFor="coupon-code" className="text-sm font-medium">{t("stu.couponCode")}</label>
                 <div className="flex gap-2">
-                  <Input id="coupon-code" value={couponInput} onChange={(event) => setCouponInput(event.target.value.slice(0, 20).toUpperCase())} placeholder="Enter code" disabled={cartCount === 0} />
-                  <Button type="button" variant="outline" onClick={applyCoupon} disabled={cartCount === 0 || !couponInput.trim()}>Apply</Button>
+                  <Input id="coupon-code" value={couponInput} onChange={(event) => setCouponInput(event.target.value.slice(0, 20).toUpperCase())} placeholder={t("stu.enterCode")} disabled={cartCount === 0} />
+                  <Button type="button" variant="outline" onClick={applyCoupon} disabled={cartCount === 0 || !couponInput.trim()}>{t("stu.apply")}</Button>
                 </div>
               </div>
-              <Button className="w-full" onClick={checkout} disabled={placing}>{placing ? "Placing order…" : "Confirm order"}</Button>
+              <Button className="w-full" onClick={checkout} disabled={placing}>{placing ? t("stu.placingOrder") : t("stu.confirmOrder")}</Button>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader><CardTitle>My orders</CardTitle></CardHeader>
+            <CardHeader><CardTitle>{t("stu.myOrders")}</CardTitle></CardHeader>
             <CardContent className="space-y-2">
               {myOrders.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No orders yet.</p>
+                <p className="text-sm text-muted-foreground">{t("stu.noOrdersYet")}</p>
               ) : (
                 myOrders.slice(0, 5).map((o) => (
                   <div key={o.id} className="flex justify-between text-sm p-2 rounded border">
                     <span className="font-mono text-xs">#{o.id.slice(0, 6)}</span>
-                    <span>{o.lines.length} item(s)</span>
-                    <Badge variant="secondary" className="gap-1">{statusIcon(o.status)} {o.status}</Badge>
+                    <span>{t("stu.itemsCount").replace("{count}", String(o.lines.length))}</span>
+                    <Badge variant="secondary" className="gap-1">{statusIcon(o.status)} {statusLabel(o.status)}</Badge>
                   </div>
                 ))
               )}

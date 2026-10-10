@@ -5,16 +5,26 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Trash2, ShoppingBag, DollarSign, UtensilsCrossed, Check, X } from "lucide-react";
 import { toast } from "sonner";
 import type { OrderStatus } from "@/types/campus";
 import { Switch } from "@/components/ui/switch";
+import { useI18n } from "@/i18n";
+
+const STATUS_KEY: Record<string, string> = {
+  Pending: "stu.statusPending",
+  Accepted: "stu.statusAccepted",
+  Preparing: "stu.statusPreparing",
+  Ready: "stu.statusReady",
+  Completed: "stu.statusCompleted",
+  Rejected: "stu.statusRejected",
+};
 
 export default function VendorDashboard() {
   const { currentUserId, users, vendors, menu, orders, addMenuItem, removeMenuItem, updateMenuItem, updateOrderStatus } = useCampus();
+  const { t } = useI18n();
   const user = users.find((u) => u.id === currentUserId);
   const vendor = vendors.find((v) => v.id === user?.vendorId) ?? vendors[0];
 
@@ -45,12 +55,14 @@ export default function VendorDashboard() {
   const add = (e: React.FormEvent) => {
     e.preventDefault();
     const p = parseFloat(price);
-    if (!name.trim() || isNaN(p) || p <= 0) return toast.error("Enter a name and valid price");
-    if (!vendor) return toast.error("No vendor profile linked");
+    if (!name.trim() || isNaN(p) || p <= 0) return toast.error(t("stu.enterNameValidPrice"));
+    if (!vendor) return toast.error(t("stu.noVendorProfile"));
     addMenuItem({ name: name.trim(), price: p, vendorId: vendor.id });
     setName(""); setPrice("");
-    toast.success("Item added");
+    toast.success(t("stu.itemAdded"));
   };
+
+  const statusLabel = (s: string) => t(STATUS_KEY[s] ?? s);
 
   return (
     <div className="space-y-6">
@@ -59,21 +71,21 @@ export default function VendorDashboard() {
         <p className="text-sm text-muted-foreground">{vendor?.location}</p>
       </div>
         <div className="grid sm:grid-cols-3 gap-4">
-          <Stat label="Menu items" value={myMenu.length} icon={UtensilsCrossed} />
-          <Stat label="Orders" value={myOrders.length} icon={ShoppingBag} />
-          <Stat label="Revenue" value={`R${revenue.toFixed(2)}`} icon={DollarSign} />
+          <Stat label={t("stu.menuItems")} value={myMenu.length} icon={UtensilsCrossed} />
+          <Stat label={t("stu.orders")} value={myOrders.length} icon={ShoppingBag} />
+          <Stat label={t("stu.revenue")} value={`R${revenue.toFixed(2)}`} icon={DollarSign} />
         </div>
 
         <div className="grid lg:grid-cols-2 gap-6">
           <Card>
-            <CardHeader><CardTitle>Incoming orders</CardTitle></CardHeader>
+            <CardHeader><CardTitle>{t("stu.incomingOrders")}</CardTitle></CardHeader>
             <CardContent>
               {myOrders.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No orders yet.</p>
+                <p className="text-sm text-muted-foreground">{t("stu.noOrdersYet")}</p>
               ) : (
                 <Table>
                   <TableHeader>
-                    <TableRow><TableHead>Order</TableHead><TableHead>Items</TableHead><TableHead>Status</TableHead></TableRow>
+                    <TableRow><TableHead>{t("stu.order")}</TableHead><TableHead>{t("stu.items")}</TableHead><TableHead>{t("stu.status")}</TableHead></TableRow>
                   </TableHeader>
                   <TableBody>
                     {myOrders.map((o) => (
@@ -88,18 +100,18 @@ export default function VendorDashboard() {
                         <TableCell>
                           {o.status === "Pending" ? (
                             <div className="flex gap-1">
-                              <Button size="sm" variant="outline" className="h-8" onClick={() => updateOrderStatus(o.id, "Accepted")}><Check className="h-3 w-3 mr-1" />Accept</Button>
-                              <Button size="sm" variant="ghost" className="h-8 text-red-600" onClick={() => updateOrderStatus(o.id, "Rejected")}><X className="h-3 w-3 mr-1" />Reject</Button>
+                              <Button size="sm" variant="outline" className="h-8" onClick={() => updateOrderStatus(o.id, "Accepted")}><Check className="h-3 w-3 mr-1" />{t("stu.accept")}</Button>
+                              <Button size="sm" variant="ghost" className="h-8 text-red-600" onClick={() => updateOrderStatus(o.id, "Rejected")}><X className="h-3 w-3 mr-1" />{t("stu.reject")}</Button>
                             </div>
                           ) : (
                             <Select value={o.status} onValueChange={(v) => updateOrderStatus(o.id, v as OrderStatus)}>
-                              <SelectTrigger className="h-8 w-[150px]"><SelectValue /></SelectTrigger>
+                              <SelectTrigger className="h-8 w-[150px]"><SelectValue>{statusLabel(o.status)}</SelectValue></SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="Accepted">Accepted</SelectItem>
-                                <SelectItem value="Preparing">Preparing</SelectItem>
-                                <SelectItem value="Ready">Ready for pickup</SelectItem>
-                                <SelectItem value="Completed">Completed</SelectItem>
-                                <SelectItem value="Rejected">Rejected</SelectItem>
+                                <SelectItem value="Accepted">{statusLabel("Accepted")}</SelectItem>
+                                <SelectItem value="Preparing">{statusLabel("Preparing")}</SelectItem>
+                                <SelectItem value="Ready">{statusLabel("Ready")}</SelectItem>
+                                <SelectItem value="Completed">{statusLabel("Completed")}</SelectItem>
+                                <SelectItem value="Rejected">{statusLabel("Rejected")}</SelectItem>
                               </SelectContent>
                             </Select>
                           )}
@@ -113,15 +125,15 @@ export default function VendorDashboard() {
           </Card>
 
           <Card>
-            <CardHeader><CardTitle>Manage menu</CardTitle></CardHeader>
+            <CardHeader><CardTitle>{t("stu.manageMenu")}</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <form onSubmit={add} className="grid grid-cols-[1fr,100px,auto] gap-2 items-end">
-                <div className="space-y-1"><Label>Item name</Label><Input value={name} onChange={(e) => setName(e.target.value)} /></div>
-                <div className="space-y-1"><Label>Price</Label><Input type="number" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} /></div>
+                <div className="space-y-1"><Label>{t("stu.itemName")}</Label><Input value={name} onChange={(e) => setName(e.target.value)} /></div>
+                <div className="space-y-1"><Label>{t("stu.price")}</Label><Input type="number" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} /></div>
                 <Button type="submit"><Plus className="h-4 w-4" /></Button>
               </form>
               <Table>
-                <TableHeader><TableRow><TableHead>Item</TableHead><TableHead>Price (R)</TableHead><TableHead>Stock</TableHead><TableHead>Available</TableHead><TableHead></TableHead></TableRow></TableHeader>
+                <TableHeader><TableRow><TableHead>{t("stu.item")}</TableHead><TableHead>{t("stu.priceR")}</TableHead><TableHead>{t("stu.stock")}</TableHead><TableHead>{t("stu.available")}</TableHead><TableHead></TableHead></TableRow></TableHeader>
                 <TableBody>
                   {myMenu.map((m) => (
                     <TableRow key={m.id}>

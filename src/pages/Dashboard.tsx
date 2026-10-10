@@ -2,8 +2,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCampus } from "@/store/campusStore";
 import { Users, Store, UtensilsCrossed, ShoppingBag, DollarSign } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useI18n } from "@/i18n";
 
 export default function Index() {
+  const { t } = useI18n();
   const { users, vendors, menu, orders } = useCampus();
 
   // Revenue is summed from each order's final total (post-tax/discount).
@@ -25,18 +27,18 @@ export default function Index() {
   });
 
   const stats = [
-    { label: "Users", value: users.length, icon: Users, to: "/users", color: "from-orange-500 to-amber-500" },
-    { label: "Vendors", value: vendors.length, icon: Store, to: "/vendors", color: "from-rose-500 to-orange-500" },
-    { label: "Menu Items", value: menu.length, icon: UtensilsCrossed, to: "/menu", color: "from-emerald-500 to-teal-500" },
-    { label: "Orders", value: orders.length, icon: ShoppingBag, to: "/orders", color: "from-amber-500 to-yellow-500" },
+    { label: t("adm.dashboard.users"), value: users.length, icon: Users, to: "/users", color: "from-orange-500 to-amber-500" },
+    { label: t("adm.dashboard.vendors"), value: vendors.length, icon: Store, to: "/vendors", color: "from-rose-500 to-orange-500" },
+    { label: t("adm.dashboard.menuItems"), value: menu.length, icon: UtensilsCrossed, to: "/menu", color: "from-emerald-500 to-teal-500" },
+    { label: t("adm.dashboard.orders"), value: orders.length, icon: ShoppingBag, to: "/orders", color: "from-amber-500 to-yellow-500" },
   ];
 
   return (
     <div className="space-y-8">
       <section className="rounded-2xl bg-gradient-to-br from-primary to-primary-glow p-8 text-primary-foreground shadow-[var(--shadow-glow)]">
-        <h1 className="text-3xl font-bold">Welcome to Campus Eats</h1>
+        <h1 className="text-3xl font-bold">{t("adm.dashboard.welcome")}</h1>
         <p className="mt-2 text-primary-foreground/90 max-w-xl">
-          Manage users, vendors, menus, and orders for your campus food network — all in one place.
+          {t("adm.dashboard.subtitle")}
         </p>
       </section>
 
@@ -60,7 +62,7 @@ export default function Index() {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Total Revenue (all vendors)</CardTitle>
+          <CardTitle>{t("adm.dashboard.totalRevenue")}</CardTitle>
           <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white">
             <DollarSign className="h-4 w-4" />
           </div>
@@ -68,7 +70,7 @@ export default function Index() {
         <CardContent>
           <div className="text-4xl font-bold mb-4">R{totalRevenue.toFixed(2)}</div>
           {perVendor.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No vendors registered.</p>
+            <p className="text-sm text-muted-foreground">{t("adm.dashboard.noVendors")}</p>
           ) : (
             <ul className="divide-y">
               {perVendor.map(({ vendor, revenue }) => (
@@ -85,18 +87,18 @@ export default function Index() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Recent Orders</CardTitle>
+          <CardTitle>{t("adm.dashboard.recentOrders")}</CardTitle>
         </CardHeader>
         <CardContent>
           {orders.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No orders yet. Place one in Order Management.</p>
+            <p className="text-sm text-muted-foreground">{t("adm.dashboard.noOrders")}</p>
           ) : (
             <ul className="divide-y">
               {orders.slice(-5).reverse().map((o) => (
                 <li key={o.id} className="py-2 flex justify-between text-sm">
                   <span className="font-mono text-xs text-muted-foreground">#{o.id}</span>
-                  <span>{o.lines.length} item(s)</span>
-                  <span className="font-medium">{o.status}</span>
+                  <span>{t("adm.dashboard.itemCount").replace("{n}", String(o.lines.length))}</span>
+                  <span className="font-medium">{t(`adm.status.${o.status}`)}</span>
                 </li>
               ))}
             </ul>
