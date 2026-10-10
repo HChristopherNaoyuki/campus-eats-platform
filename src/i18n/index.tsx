@@ -7,6 +7,12 @@
  *
  * The chosen language is persisted in localStorage so it survives reloads.
  */
+import * as marketing from "./locales/marketing";
+import * as auth from "./locales/auth";
+import * as shell from "./locales/shell";
+import * as admin from "./locales/admin";
+import * as student from "./locales/student";
+import * as reports from "./locales/reports";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 export type Language = "en" | "af";
@@ -105,7 +111,12 @@ const AF: Dictionary = {
   "feedback.cloudFailed": "Op hierdie toestel gestoor, maar nie in die wolk nie:",
 };
 
-const DICTIONARIES: Record<Language, Dictionary> = { en: EN, af: AF };
+// Per-area dictionaries are merged so each screen group owns its own file.
+const AREAS = [marketing, auth, shell, admin, student, reports];
+const EN_ALL: Dictionary = Object.assign({}, EN, ...AREAS.map((a) => a.en));
+const AF_ALL: Dictionary = Object.assign({}, AF, ...AREAS.map((a) => a.af));
+
+export const DICTIONARIES: Record<Language, Dictionary> = { en: EN_ALL, af: AF_ALL };
 
 interface I18nValue
 {
@@ -145,7 +156,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode })
   // Falls back to English, then to the key itself, so a missing translation
   // never renders as an empty string.
   const t = useCallback(
-    (key: string) => DICTIONARIES[lang][key] ?? EN[key] ?? key,
+    (key: string) => DICTIONARIES[lang][key] ?? EN_ALL[key] ?? key,
     [lang]
   );
 
