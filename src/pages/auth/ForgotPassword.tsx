@@ -6,9 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { AuthShell } from "./Login";
+import { useI18n } from "@/i18n";
 
 export default function ForgotPassword() {
   const { resetPassword } = useCampus();
+  const { t } = useI18n();
   const navigate = useNavigate();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
@@ -16,32 +18,32 @@ export default function ForgotPassword() {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password.length < 4) return toast.error("Password must be at least 4 characters");
-    if (password !== confirm) return toast.error("Passwords do not match");
+    if (password.length < 4) return toast.error(t("authx.errPasswordMin4"));
+    if (password !== confirm) return toast.error(t("authx.errPasswordsMismatch"));
     const ok = await resetPassword(identifier.trim(), password).catch(() => false);
-    if (!ok) return toast.error("No account with that User ID or email");
-    toast.success("Account recovered. Please sign in.");
+    if (!ok) return toast.error(t("authx.errNoAccount"));
+    toast.success(t("authx.toastRecovered"));
     navigate("/login");
   };
 
   return (
-    <AuthShell title="Recover account" subtitle="Use your 16-character User ID (or email) to set a new password">
+    <AuthShell title={t("authx.recoverAccountTitle")} subtitle={t("authx.recoverAccountSubtitle")}>
       <form onSubmit={onSubmit} className="space-y-4">
         <div className="space-y-2">
-          <Label>User ID or Email</Label>
-          <Input required value={identifier} onChange={(e) => setIdentifier(e.target.value)} placeholder="16-char User ID or you@campus.edu" />
+          <Label>{t("authx.userIdOrEmail")}</Label>
+          <Input required value={identifier} onChange={(e) => setIdentifier(e.target.value)} placeholder={t("authx.userIdPlaceholder")} />
         </div>
         <div className="space-y-2">
-          <Label>New password</Label>
+          <Label>{t("authx.newPassword")}</Label>
           <Input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
         </div>
         <div className="space-y-2">
-          <Label>Confirm new password</Label>
+          <Label>{t("authx.confirmNewPassword")}</Label>
           <Input type="password" required value={confirm} onChange={(e) => setConfirm(e.target.value)} />
         </div>
-        <Button type="submit" className="w-full">Reset password</Button>
+        <Button type="submit" className="w-full">{t("authx.resetPassword")}</Button>
         <p className="text-sm text-center text-muted-foreground">
-          Remembered it? <Link to="/login" className="text-primary hover:underline">Sign in</Link>
+          {t("authx.rememberedIt")} <Link to="/login" className="text-primary hover:underline">{t("authx.signInLink")}</Link>
         </p>
       </form>
     </AuthShell>

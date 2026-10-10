@@ -11,6 +11,7 @@ import type { OrderStatus } from "@/types/campus";
 import { toast } from "sonner";
 import { Plus, Trash2 } from "lucide-react";
 import { SAMPLE_COUPONS, isSampleCoupon } from "@/lib/coupons";
+import { useI18n } from "@/i18n";
 
 const statusVariant: Record<OrderStatus, string> = {
   Pending: "bg-amber-500/15 text-amber-700 dark:text-amber-400",
@@ -24,6 +25,7 @@ const statusVariant: Record<OrderStatus, string> = {
 const ALL_STATUSES: OrderStatus[] = ["Pending", "Accepted", "Rejected", "Preparing", "Ready", "Completed"];
 
 export default function OrdersPage() {
+  const { t } = useI18n();
   const { orders, users, menu, placeOrder, updateOrderStatus } = useCampus();
   const [userId, setUserId] = useState(users[0]?.id ?? "");
   const [lines, setLines] = useState<{ itemId: string; quantity: number }[]>([
@@ -35,44 +37,44 @@ export default function OrdersPage() {
     setLines(lines.map((l, idx) => (idx === i ? { ...l, ...patch } : l)));
 
   const handleConfirm = () => {
-    if (!userId) return toast.error("Select a user");
+    if (!userId) return toast.error(t("adm.orders.selectUser"));
     const valid = lines.filter((l) => l.itemId && l.quantity > 0);
-    if (valid.length === 0) return toast.error("Add at least one item");
+    if (valid.length === 0) return toast.error(t("adm.orders.addAtLeastOneItem"));
     const normalizedCoupon = couponCode.trim().toUpperCase();
-    if (normalizedCoupon && !isSampleCoupon(normalizedCoupon)) return toast.error("Enter a valid sample coupon");
+    if (normalizedCoupon && !isSampleCoupon(normalizedCoupon)) return toast.error(t("adm.orders.enterValidCoupon"));
     void placeOrder(userId, valid, normalizedCoupon);
     setLines([{ itemId: menu[0]?.id ?? "", quantity: 1 }]);
     setCouponCode("");
-    toast.success("Order placed");
+    toast.success(t("adm.orders.orderPlaced"));
   };
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Order Management</h1>
-        <p className="text-muted-foreground text-sm">Place new orders and track fulfillment.</p>
+        <h1 className="text-2xl font-bold">{t("adm.orders.title")}</h1>
+        <p className="text-muted-foreground text-sm">{t("adm.orders.subtitle")}</p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[460px_1fr]">
         <Card>
-          <CardHeader><CardTitle>Place Order</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("adm.orders.placeOrder")}</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label>User</Label>
+              <Label>{t("adm.orders.user")}</Label>
               <Select value={userId} onValueChange={setUserId}>
-                <SelectTrigger><SelectValue placeholder="Select user" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder={t("adm.orders.selectUserPlaceholder")} /></SelectTrigger>
                 <SelectContent>
-                  {users.map((u) => <SelectItem key={u.id} value={u.id}>{u.name} ({u.role})</SelectItem>)}
+                  {users.map((u) => <SelectItem key={u.id} value={u.id}>{u.name} ({t(`adm.role.${u.role}`)})</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label>Items</Label>
+              <Label>{t("adm.orders.items")}</Label>
               {lines.map((l, i) => (
                 <div key={i} className="flex gap-2">
                   <Select value={l.itemId} onValueChange={(v) => updateLine(i, { itemId: v })}>
-                    <SelectTrigger className="flex-1"><SelectValue placeholder="Item" /></SelectTrigger>
+                    <SelectTrigger className="flex-1"><SelectValue placeholder={t("adm.orders.itemPlaceholder")} /></SelectTrigger>
                     <SelectContent>
                       {menu.map((m) => <SelectItem key={m.id} value={m.id}>{m.name} — R{m.price.toFixed(2)}</SelectItem>)}
                     </SelectContent>
@@ -84,13 +86,13 @@ export default function OrdersPage() {
                 </div>
               ))}
               <Button variant="outline" size="sm" onClick={() => setLines([...lines, { itemId: menu[0]?.id ?? "", quantity: 1 }])}>
-                <Plus className="h-4 w-4 mr-1" /> Add item
+                <Plus className="h-4 w-4 mr-1" /> {t("adm.orders.addItem")}
               </Button>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="admin-coupon">Sample coupon</Label>
-              <Input id="admin-coupon" value={couponCode} onChange={(event) => setCouponCode(event.target.value.slice(0, 20).toUpperCase())} placeholder="Optional coupon code" />
+              <Label htmlFor="admin-coupon">{t("adm.orders.sampleCoupon")}</Label>
+              <Input id="admin-coupon" value={couponCode} onChange={(event) => setCouponCode(event.target.value.slice(0, 20).toUpperCase())} placeholder={t("adm.orders.optionalCouponCode")} />
               <div className="flex flex-wrap gap-2">
                 {Object.entries(SAMPLE_COUPONS).map(([code, percentage]) => (
                   <Button key={code} type="button" size="sm" variant={couponCode === code ? "secondary" : "outline"} onClick={() => setCouponCode(code)}>
@@ -100,20 +102,20 @@ export default function OrdersPage() {
               </div>
             </div>
 
-            <Button className="w-full" onClick={handleConfirm}>Confirm Order</Button>
+            <Button className="w-full" onClick={handleConfirm}>{t("adm.orders.confirmOrder")}</Button>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader><CardTitle>All Orders</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("adm.orders.allOrders")}</CardTitle></CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
-                <TableRow><TableHead>Order ID</TableHead><TableHead>User</TableHead><TableHead>Items</TableHead><TableHead>Total</TableHead><TableHead>Status</TableHead></TableRow>
+                <TableRow><TableHead>{t("adm.orders.orderId")}</TableHead><TableHead>{t("adm.orders.userHeader")}</TableHead><TableHead>{t("adm.orders.itemsHeader")}</TableHead><TableHead>{t("adm.orders.totalHeader")}</TableHead><TableHead>{t("adm.orders.statusHeader")}</TableHead></TableRow>
               </TableHeader>
               <TableBody>
                 {orders.length === 0 ? (
-                  <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">No orders yet</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">{t("adm.orders.noOrdersYet")}</TableCell></TableRow>
                 ) : orders.map((o) => {
                   const user = users.find((u) => u.id === o.userId);
                   const total = o.lines.reduce((sum, l) => {
@@ -123,7 +125,7 @@ export default function OrdersPage() {
                   return (
                     <TableRow key={o.id}>
                       <TableCell className="font-mono text-xs">{o.id}</TableCell>
-                      <TableCell>{user?.name ?? "—"}</TableCell>
+                      <TableCell>{user?.name ?? t("adm.orders.dash")}</TableCell>
                       <TableCell>
                         <div className="text-xs text-muted-foreground">
                           {o.lines.map((l) => {
@@ -136,11 +138,11 @@ export default function OrdersPage() {
                       <TableCell>
                         <Select value={o.status} onValueChange={(v) => updateOrderStatus(o.id, v as OrderStatus)}>
                           <SelectTrigger className="w-[160px] h-8">
-                            <Badge className={statusVariant[o.status]} variant="outline">{o.status}</Badge>
+                            <Badge className={statusVariant[o.status]} variant="outline">{t(`adm.status.${o.status}`)}</Badge>
                           </SelectTrigger>
                           <SelectContent>
                             {ALL_STATUSES.map((s) => (
-                              <SelectItem key={s} value={s}>{s}</SelectItem>
+                              <SelectItem key={s} value={s}>{t(`adm.status.${s}`)}</SelectItem>
                             ))}
                           </SelectContent>
                         </Select>

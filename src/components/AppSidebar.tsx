@@ -4,6 +4,7 @@ import { Users, Store, UtensilsCrossed, ShoppingBag, LayoutDashboard, FileBarCha
 import { useCampus } from "@/store/campusStore";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useI18n } from "@/i18n";
 import {
   Sidebar,
   SidebarContent,
@@ -16,40 +17,42 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-const adminItems = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "User Management", url: "/users", icon: Users },
-  { title: "Vendor Management", url: "/vendors", icon: Store },
-  { title: "Menu Management", url: "/menu", icon: UtensilsCrossed },
-  { title: "Order Management", url: "/orders", icon: ShoppingBag },
-  { title: "Reports", url: "/reports", icon: FileBarChart },
-  { title: "Security Log", url: "/security-log", icon: ShieldAlert },
-  { title: "Settings", url: "/settings", icon: Settings },
-];
-
-const studentItems = [
-  { title: "Browse & Order", url: "/student", icon: UtensilsCrossed },
-  { title: "Feedback", url: "/feedback", icon: MessageSquare },
-  { title: "Settings", url: "/settings", icon: Settings },
-];
-
-const vendorItems = [
-  { title: "Vendor Dashboard", url: "/vendor", icon: LayoutDashboard },
-  { title: "Settings", url: "/settings", icon: Settings },
-];
-
 export function AppSidebar() {
   const { pathname } = useLocation();
   const { currentUserId, users, logout } = useCampus();
   const navigate = useNavigate();
+  const { t } = useI18n();
   const user = users.find((u) => u.id === currentUserId);
   const role = user?.role ?? "Admin";
+
+  const adminItems = [
+    { title: t("shell.dashboard"), url: "/dashboard", icon: LayoutDashboard },
+    { title: t("shell.userManagement"), url: "/users", icon: Users },
+    { title: t("shell.vendorManagement"), url: "/vendors", icon: Store },
+    { title: t("shell.menuManagement"), url: "/menu", icon: UtensilsCrossed },
+    { title: t("shell.orderManagement"), url: "/orders", icon: ShoppingBag },
+    { title: t("shell.reports"), url: "/reports", icon: FileBarChart },
+    { title: t("shell.securityLog"), url: "/security-log", icon: ShieldAlert },
+    { title: t("shell.settings"), url: "/settings", icon: Settings },
+  ];
+
+  const studentItems = [
+    { title: t("shell.browseOrder"), url: "/student", icon: UtensilsCrossed },
+    { title: t("shell.feedback"), url: "/feedback", icon: MessageSquare },
+    { title: t("shell.settings"), url: "/settings", icon: Settings },
+  ];
+
+  const vendorItems = [
+    { title: t("shell.vendorDashboard"), url: "/vendor", icon: LayoutDashboard },
+    { title: t("shell.settings"), url: "/settings", icon: Settings },
+  ];
+
   const items = role === "Admin" ? adminItems : role === "Vendor" ? vendorItems : studentItems;
   const subtitle =
-    role === "Admin" ? "Admin Console"
-    : role === "Vendor" ? "Vendor Portal"
-    : role === "Standard" ? "Standard Portal"
-    : "Student Portal";
+    role === "Admin" ? t("shell.adminConsole")
+    : role === "Vendor" ? t("shell.vendorPortal")
+    : role === "Standard" ? t("shell.standardPortal")
+    : t("shell.studentPortal");
   const isActive = (path: string) => pathname === path || pathname.startsWith(path + "/");
 
   return (
@@ -60,14 +63,14 @@ export function AppSidebar() {
             CE
           </div>
           <div className="flex flex-col leading-tight group-data-[collapsible=icon]:hidden">
-            <span className="font-bold text-sidebar-foreground">Campus Eats</span>
+            <span className="font-bold text-sidebar-foreground">{t("shell.brand")}</span>
             <span className="text-xs text-sidebar-foreground/60">{subtitle}</span>
           </div>
         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Modules</SidebarGroupLabel>
+          <SidebarGroupLabel>{t("shell.modules")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
@@ -91,7 +94,7 @@ export function AppSidebar() {
                 <div className="font-mono text-[10px] break-all">{user.id}</div>
               </div>
               <Button variant="ghost" size="sm" className="w-full justify-start" onClick={() => { logout(); navigate("/login"); }}>
-                <LogOut className="h-4 w-4 mr-2" /> Sign out
+                <LogOut className="h-4 w-4 mr-2" /> {t("shell.signOut")}
               </Button>
             </SidebarGroupContent>
           </SidebarGroup>

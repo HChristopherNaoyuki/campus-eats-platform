@@ -8,8 +8,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useCampus } from "@/store/campusStore";
 import { toast } from "sonner";
 import { Pencil, Trash2, Check, X } from "lucide-react";
+import { useI18n } from "@/i18n";
 
 export default function MenuPage() {
+  const { t } = useI18n();
   const { menu, vendors, addMenuItem, updateMenuItem, removeMenuItem } = useCampus();
   const [form, setForm] = useState({ name: "", price: "", vendorId: vendors[0]?.id ?? "" });
   const [editId, setEditId] = useState<string | null>(null);
@@ -18,10 +20,10 @@ export default function MenuPage() {
   const handleAdd = (e: React.FormEvent) => {
     e.preventDefault();
     const price = parseFloat(form.price);
-    if (!form.name || isNaN(price) || !form.vendorId) return toast.error("Fill all fields");
+    if (!form.name || isNaN(price) || !form.vendorId) return toast.error(t("adm.menu.fillAllFields"));
     addMenuItem({ name: form.name, price, vendorId: form.vendorId });
     setForm({ ...form, name: "", price: "" });
-    toast.success("Item added");
+    toast.success(t("adm.menu.added"));
   };
 
   const startEdit = (id: string, name: string, price: number) => {
@@ -33,43 +35,43 @@ export default function MenuPage() {
     if (!editId) return;
     updateMenuItem(editId, { name: edit.name, price: parseFloat(edit.price) });
     setEditId(null);
-    toast.success("Item updated");
+    toast.success(t("adm.menu.updated"));
   };
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Menu Management</h1>
-        <p className="text-muted-foreground text-sm">Add, update, and remove menu items.</p>
+        <h1 className="text-2xl font-bold">{t("adm.menu.title")}</h1>
+        <p className="text-muted-foreground text-sm">{t("adm.menu.subtitle")}</p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[420px_1fr]">
         <Card>
-          <CardHeader><CardTitle>Add Menu Item</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("adm.menu.addMenuItem")}</CardTitle></CardHeader>
           <CardContent>
             <form onSubmit={handleAdd} className="space-y-3">
-              <div><Label>Item Name</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
-              <div><Label>Price</Label><Input type="number" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} /></div>
+              <div><Label>{t("adm.menu.itemName")}</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
+              <div><Label>{t("adm.menu.price")}</Label><Input type="number" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} /></div>
               <div>
-                <Label>Vendor</Label>
+                <Label>{t("adm.menu.vendor")}</Label>
                 <Select value={form.vendorId} onValueChange={(v) => setForm({ ...form, vendorId: v })}>
-                  <SelectTrigger><SelectValue placeholder="Select vendor" /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder={t("adm.menu.selectVendor")} /></SelectTrigger>
                   <SelectContent>
                     {vendors.map((v) => <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
-              <Button type="submit" className="w-full">Add Item</Button>
+              <Button type="submit" className="w-full">{t("adm.menu.addItem")}</Button>
             </form>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader><CardTitle>Menu Items</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("adm.menu.menuItems")}</CardTitle></CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
-                <TableRow><TableHead>ID</TableHead><TableHead>Name</TableHead><TableHead>Price</TableHead><TableHead>Vendor</TableHead><TableHead></TableHead></TableRow>
+                <TableRow><TableHead>{t("adm.menu.idHeader")}</TableHead><TableHead>{t("adm.menu.nameHeader")}</TableHead><TableHead>{t("adm.menu.priceHeader")}</TableHead><TableHead>{t("adm.menu.vendorHeader")}</TableHead><TableHead></TableHead></TableRow>
               </TableHeader>
               <TableBody>
                 {menu.map((m) => {
@@ -83,7 +85,7 @@ export default function MenuPage() {
                       <TableCell>
                         {editId === m.id ? <Input type="number" step="0.01" value={edit.price} onChange={(e) => setEdit({ ...edit, price: e.target.value })} /> : `R${m.price.toFixed(2)}`}
                       </TableCell>
-                      <TableCell>{vendor?.name ?? "—"}</TableCell>
+                      <TableCell>{vendor?.name ?? t("adm.menu.dash")}</TableCell>
                       <TableCell>
                         <div className="flex gap-1">
                           {editId === m.id ? (
@@ -94,7 +96,7 @@ export default function MenuPage() {
                           ) : (
                             <>
                               <Button size="icon" variant="ghost" onClick={() => startEdit(m.id, m.name, m.price)}><Pencil className="h-4 w-4" /></Button>
-                              <Button size="icon" variant="ghost" onClick={() => { removeMenuItem(m.id); toast.success("Removed"); }}><Trash2 className="h-4 w-4" /></Button>
+                              <Button size="icon" variant="ghost" onClick={() => { removeMenuItem(m.id); toast.success(t("adm.menu.removed")); }}><Trash2 className="h-4 w-4" /></Button>
                             </>
                           )}
                         </div>

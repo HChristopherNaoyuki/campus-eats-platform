@@ -4,9 +4,12 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { useCampus } from "@/store/campusStore";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { useI18n } from "@/i18n";
 
 export default function AppLayout() {
   const { currentUserId, users, logout } = useCampus();
+  const { t } = useI18n();
   const user = users.find((u) => u.id === currentUserId);
 
   // Any authenticated user can use the shell; pages enforce their own role.
@@ -20,9 +23,10 @@ export default function AppLayout() {
           <header className="h-14 flex items-center justify-between border-b bg-card px-4 sticky top-0 z-10">
             <div className="flex items-center gap-3">
               <SidebarTrigger />
-              <h1 className="font-semibold text-foreground">Campus Eats</h1>
+              <h1 className="font-semibold text-foreground">{t("shell.brand")}</h1>
             </div>
             <div className="flex items-center gap-3">
+              <LanguageSwitcher />
               {user ? (
                 <>
                   <div className="text-right hidden sm:block">
@@ -34,7 +38,7 @@ export default function AppLayout() {
                   </Button>
                 </>
               ) : (
-                <span className="text-sm text-muted-foreground">Not signed in</span>
+                <span className="text-sm text-muted-foreground">{t("shell.notSignedIn")}</span>
               )}
             </div>
           </header>
