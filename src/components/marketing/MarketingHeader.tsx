@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useI18n } from "@/i18n";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 /**
  * Public header, a direct port of `solution/includes/public_header.php`.
@@ -9,15 +11,16 @@ import { Link, useLocation } from "react-router-dom";
  */
 export const marketingNav =
 [
-    { to: "/", label: "Home", match: "/" },
-    { to: "/about", label: "About", match: "/about" },
-    { to: "/#vendors", label: "Services", match: "/services" },
-    { to: "/faq", label: "FAQ", match: "/faq" },
-    { to: "/help", label: "Help Center", match: "/help" },
+    { to: "/", label: "mkt.nav.home", match: "/" },
+    { to: "/about", label: "mkt.nav.about", match: "/about" },
+    { to: "/#vendors", label: "mkt.nav.services", match: "/services" },
+    { to: "/faq", label: "mkt.nav.faq", match: "/faq" },
+    { to: "/help", label: "mkt.nav.help", match: "/help" },
 ];
 
 export default function MarketingHeader()
 {
+    const { t } = useI18n();
     const [open, setOpen] = useState(false);
     const { pathname } = useLocation();
 
@@ -37,7 +40,7 @@ export default function MarketingHeader()
             <header className="public-header" role="banner">
                 <div className="container">
                     <div className="logo">
-                        <Link to="/" aria-label="Campus Eats Home">
+                        <Link to="/" aria-label={t("mkt.header.logoAria")}>
                             <i className="fas fa-utensils" aria-hidden="true" />
                             <span>Campus Eats</span>
                         </Link>
@@ -48,7 +51,7 @@ export default function MarketingHeader()
                             {marketingNav.map((item) => (
                                 <li key={item.label}>
                                     <Link to={item.to} className={isActive(item.match)}>
-                                        {item.label}
+                                        {t(item.label)}
                                     </Link>
                                 </li>
                             ))}
@@ -56,18 +59,19 @@ export default function MarketingHeader()
                     </nav>
 
                     <div className="auth-buttons">
+                        <LanguageSwitcher />
                         <Link to="/login" className="btn btn-outline">
-                            <i className="fas fa-sign-in-alt" aria-hidden="true" /> Sign In
+                            <i className="fas fa-sign-in-alt" aria-hidden="true" /> {t("mkt.header.signIn")}
                         </Link>
                         <Link to="/signup" className="btn btn-ce-primary btn-primary">
-                            <i className="fas fa-user-plus" aria-hidden="true" /> Create account
+                            <i className="fas fa-user-plus" aria-hidden="true" /> {t("mkt.header.createAccount")}
                         </Link>
                     </div>
 
                     <button
                         type="button"
                         className="mobile-menu-toggle"
-                        aria-label="Menu"
+                        aria-label={t("mkt.header.menuAria")}
                         aria-expanded={open}
                         onClick={() => setOpen((value) => !value)}
                     >
@@ -81,11 +85,12 @@ export default function MarketingHeader()
                     <ul>
                         {marketingNav.map((item) => (
                             <li key={item.label}>
-                                <Link to={item.to} onClick={() => setOpen(false)}>{item.label}</Link>
+                                <Link to={item.to} onClick={() => setOpen(false)}>{t(item.label)}</Link>
                             </li>
                         ))}
-                        <li><Link to="/login" onClick={() => setOpen(false)}>Sign In</Link></li>
-                        <li><Link to="/signup" onClick={() => setOpen(false)}>Create account</Link></li>
+                        <li><Link to="/login" onClick={() => setOpen(false)}>{t("mkt.header.signIn")}</Link></li>
+                        <li><Link to="/signup" onClick={() => setOpen(false)}>{t("mkt.header.createAccount")}</Link></li>
+                        <li><LanguageSwitcher /></li>
                     </ul>
                 </nav>
             </div>
