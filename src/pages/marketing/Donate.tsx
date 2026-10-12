@@ -1,14 +1,17 @@
 import PageHero from "@/components/marketing/PageHero";
 import CryptoDonations from "@/components/marketing/CryptoDonations";
+import { useI18n } from "@/i18n";
 
 export default function Donate()
 {
+    const { t } = useI18n();
+
     return (
         <>
             <PageHero
-                eyebrow="Support us"
-                title="Fund the next release"
-                description="Campus Eats accepts cryptocurrency donations to help fund the continued development and production of the website and the mobile application."
+                eyebrow={t("mkt.donate.eyebrow")}
+                title={t("mkt.donate.title")}
+                description={t("mkt.donate.description")}
             />
             <CryptoDonations withHeading={false} />
         </>

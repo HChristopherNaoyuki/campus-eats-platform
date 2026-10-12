@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useI18n } from "@/i18n";
 
 /**
  * Site-wide footer, a direct port of `solution/includes/footer.php`.
@@ -8,6 +9,7 @@ import { Link } from "react-router-dom";
  */
 export default function MarketingFooter()
 {
+    const { t } = useI18n();
     return (
         <footer className="app-footer">
             <div className="container">
@@ -18,7 +20,7 @@ export default function MarketingFooter()
                             <span>Campus Eats</span>
                         </div>
                         <p className="footer-description">
-                            The student pickup network — order ahead from campus vendors and skip the queue.
+                            {t("mkt.footer.description")}
                         </p>
                         <div className="social-links">
                             <a href="#" aria-label="Facebook"><i className="fab fa-facebook-f" aria-hidden="true" /></a>
@@ -36,40 +38,40 @@ export default function MarketingFooter()
                     </div>
 
                     <div className="footer-column">
-                        <h3>Explore</h3>
+                        <h3>{t("mkt.footer.explore")}</h3>
                         <ul>
-                            <li><Link to="/#home">Home</Link></li>
-                            <li><Link to="/about">About</Link></li>
-                            <li><Link to="/#vendors">Services</Link></li>
-                            <li><Link to="/faq">FAQ</Link></li>
-                            <li><Link to="/help">Help Center</Link></li>
+                            <li><Link to="/#home">{t("mkt.nav.home")}</Link></li>
+                            <li><Link to="/about">{t("mkt.nav.about")}</Link></li>
+                            <li><Link to="/#vendors">{t("mkt.nav.services")}</Link></li>
+                            <li><Link to="/faq">{t("mkt.nav.faq")}</Link></li>
+                            <li><Link to="/help">{t("mkt.nav.help")}</Link></li>
                         </ul>
                     </div>
 
                     <div className="footer-column">
-                        <h3>Application</h3>
+                        <h3>{t("mkt.footer.application")}</h3>
                         <ul>
-                            <li><Link to="/login">Sign in</Link></li>
-                            <li><Link to="/signup">Create account</Link></li>
-                            <li><Link to="/student">Student dashboard</Link></li>
-                            <li><Link to="/vendor">Vendor dashboard</Link></li>
-                            <li><Link to="/dashboard">Admin dashboard</Link></li>
+                            <li><Link to="/login">{t("mkt.footer.signIn")}</Link></li>
+                            <li><Link to="/signup">{t("mkt.footer.createAccount")}</Link></li>
+                            <li><Link to="/student">{t("mkt.footer.studentDashboard")}</Link></li>
+                            <li><Link to="/vendor">{t("mkt.footer.vendorDashboard")}</Link></li>
+                            <li><Link to="/dashboard">{t("mkt.footer.adminDashboard")}</Link></li>
                         </ul>
                     </div>
 
                     <div className="footer-column">
-                        <h3>Legal</h3>
+                        <h3>{t("mkt.footer.legal")}</h3>
                         <ul>
-                            <li><Link to="/privacy">Privacy Policy</Link></li>
-                            <li><Link to="/terms">Terms &amp; Conditions</Link></li>
-                            <li><Link to="/donate">Crypto donations</Link></li>
+                            <li><Link to="/privacy">{t("mkt.footer.privacyPolicy")}</Link></li>
+                            <li><Link to="/terms">{t("mkt.footer.termsConditions")}</Link></li>
+                            <li><Link to="/donate">{t("mkt.footer.cryptoDonations")}</Link></li>
                             <li>
                                 <a
                                     href="https://github.com/HChristopherNaoyuki/campus-eats-platform"
                                     target="_blank"
                                     rel="noreferrer noopener"
                                 >
-                                    Website repository
+                                    {t("mkt.footer.websiteRepo")}
                                 </a>
                             </li>
                             <li>
@@ -78,7 +80,7 @@ export default function MarketingFooter()
                                     target="_blank"
                                     rel="noreferrer noopener"
                                 >
-                                    Mobile app repository
+                                    {t("mkt.footer.mobileRepo")}
                                 </a>
                             </li>
                         </ul>
@@ -88,23 +90,22 @@ export default function MarketingFooter()
                 <div className="footer-bottom">
                     <div className="copyright">
                         <p>
-                            © {new Date().getFullYear()} Campus Eats — student pickup network.
-                            All prices in South African Rand (R).
+                            {t("mkt.footer.copyright").replace("{year}", String(new Date().getFullYear()))}
                         </p>
                     </div>
 
                     <div className="footer-nav-buttons">
                         <Link to="/terms" className="footer-nav-btn">
                             <i className="fas fa-file-contract" aria-hidden="true" />
-                            <span>Terms</span>
+                            <span>{t("mkt.footer.terms")}</span>
                         </Link>
                         <Link to="/privacy" className="footer-nav-btn">
                             <i className="fas fa-shield-alt" aria-hidden="true" />
-                            <span>Privacy</span>
+                            <span>{t("mkt.footer.privacy")}</span>
                         </Link>
                         <Link to="/help" className="footer-nav-btn">
                             <i className="fas fa-life-ring" aria-hidden="true" />
-                            <span>Support</span>
+                            <span>{t("mkt.footer.support")}</span>
                         </Link>
                         <a
                             href="https://github.com/HChristopherNaoyuki"

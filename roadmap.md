@@ -36,6 +36,6 @@
 
 
 ## Language and README
-- [ ] EN/AF selector on public header and dashboard header
-- [ ] Translate all public pages, auth pages, dashboards, toasts
-- [ ] README: demo accounts + sample coupons verified against source
+- [x] EN/AF selector on public header and dashboard header
+- [x] Translate all public pages, auth pages, dashboards, toasts
+- [x] README: demo accounts + sample coupons verified against source

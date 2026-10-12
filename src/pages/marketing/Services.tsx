@@ -5,41 +5,43 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCampus } from "@/store/campusStore";
 import { Users, Store, UtensilsCrossed, ClipboardList, BarChart3, MessageSquare } from "lucide-react";
+import { useI18n } from "@/i18n";
 
 const modules =
 [
-    { title: "User management", desc: "Register and sign in as Student, Standard user, Vendor, or Admin, each with their own dashboard.", icon: Users },
-    { title: "Vendor management", desc: "Onboard campus vendors with a unique shop name, location, and contact details.", icon: Store },
-    { title: "Menu management", desc: "Vendors create, read, update, and delete their own menu items and stock levels.", icon: UtensilsCrossed },
-    { title: "Order management", desc: "Pending → Accepted → Preparing → Ready → Completed, tracked live for both sides.", icon: ClipboardList },
-    { title: "Reporting", desc: "Sales, order summary, vendor performance, detailed order, and user activity reports.", icon: BarChart3 },
-    { title: "Feedback", desc: "Students log compliments and complaints; admins review them alongside the security log.", icon: MessageSquare },
+    { titleKey: "mkt.services.module1Title", descKey: "mkt.services.module1Desc", icon: Users },
+    { titleKey: "mkt.services.module2Title", descKey: "mkt.services.module2Desc", icon: Store },
+    { titleKey: "mkt.services.module3Title", descKey: "mkt.services.module3Desc", icon: UtensilsCrossed },
+    { titleKey: "mkt.services.module4Title", descKey: "mkt.services.module4Desc", icon: ClipboardList },
+    { titleKey: "mkt.services.module5Title", descKey: "mkt.services.module5Desc", icon: BarChart3 },
+    { titleKey: "mkt.services.module6Title", descKey: "mkt.services.module6Desc", icon: MessageSquare },
 ];
 
 export default function Services()
 {
     const { vendors, menu } = useCampus();
     const isLoading = vendors.length === 0;
+    const { t } = useI18n();
 
     return (
         <>
             <PageHero
-                eyebrow="Services"
-                title="What Campus Eats does"
-                description="One platform covering the full campus pickup workflow — for students, for vendors, and for the administrators who keep it running."
+                eyebrow={t("mkt.services.eyebrow")}
+                title={t("mkt.services.title")}
+                description={t("mkt.services.description")}
             />
 
             <section className="container mx-auto px-4 py-16">
-                <h2 className="text-2xl md:text-3xl font-bold mb-8">Platform modules</h2>
+                <h2 className="text-2xl md:text-3xl font-bold mb-8">{t("mkt.services.modulesTitle")}</h2>
                 <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     {modules.map((m) => (
-                        <Card key={m.title} className="h-full shadow-[var(--shadow-soft)]">
+                        <Card key={m.titleKey} className="h-full shadow-[var(--shadow-soft)]">
                             <CardContent className="p-6 space-y-3">
                                 <div className="h-10 w-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
                                     <m.icon className="h-5 w-5" aria-hidden="true" />
                                 </div>
-                                <h3 className="font-semibold">{m.title}</h3>
-                                <p className="text-sm text-muted-foreground">{m.desc}</p>
+                                <h3 className="font-semibold">{t(m.titleKey)}</h3>
+                                <p className="text-sm text-muted-foreground">{t(m.descKey)}</p>
                             </CardContent>
                         </Card>
                     ))}
@@ -50,13 +52,11 @@ export default function Services()
                 <div className="container mx-auto px-4 py-16">
                     <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
                         <div>
-                            <h2 className="text-2xl md:text-3xl font-bold">Campus vendors</h2>
-                            <p className="text-muted-foreground mt-2">
-                                Every vendor runs their own shop with their own inventory.
-                            </p>
+                            <h2 className="text-2xl md:text-3xl font-bold">{t("mkt.services.vendorsTitle")}</h2>
+                            <p className="text-muted-foreground mt-2">{t("mkt.services.vendorsSubtitle")}</p>
                         </div>
                         <Button asChild>
-                            <Link to="/student">Browse and order</Link>
+                            <Link to="/student">{t("mkt.services.browseAndOrder")}</Link>
                         </Button>
                     </div>
 
@@ -77,7 +77,7 @@ export default function Services()
                                             <div className="text-xs text-muted-foreground">{v.location}</div>
                                             <h3 className="font-semibold mt-1">{v.name}</h3>
                                             <p className="text-xs text-muted-foreground mt-2">
-                                                {items.length} {items.length === 1 ? "item" : "items"} on the menu
+                                                {items.length} {items.length === 1 ? t("mkt.services.itemOnMenu") : t("mkt.services.itemsOnMenu")}
                                             </p>
                                         </CardContent>
                                     </Card>

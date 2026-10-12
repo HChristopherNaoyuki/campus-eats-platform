@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useCampus } from "@/store/campusStore";
 import { Button } from "@/components/ui/button";
 import homePhoto from "@/assets/home-restaurant.jpg.asset.json";
+import { useI18n } from "@/i18n";
 
 /**
  * Home page, a direct port of the reference `index.php`.
@@ -13,6 +14,7 @@ import homePhoto from "@/assets/home-restaurant.jpg.asset.json";
 export default function Landing()
 {
     const { vendors, menu } = useCampus();
+    const { t } = useI18n();
 
     const featured = vendors.find((vendor) => menu.some((item) => item.vendorId === vendor.id));
     const featuredMenu = featured
@@ -21,17 +23,17 @@ export default function Landing()
 
     const steps =
     [
-        { number: "1", title: "Browse & order", text: "Pick items from any campus vendor and confirm your order." },
-        { number: "2", title: "Vendor prepares", text: "Track status as it moves from Pending → Preparing → Completed." },
-        { number: "3", title: "Pick it up", text: "Walk over to the vendor's stall and grab your bag. Done." },
+        { number: "1", titleKey: "mkt.landing.step1Title", textKey: "mkt.landing.step1Text" },
+        { number: "2", titleKey: "mkt.landing.step2Title", textKey: "mkt.landing.step2Text" },
+        { number: "3", titleKey: "mkt.landing.step3Title", textKey: "mkt.landing.step3Text" },
     ];
 
     const features =
     [
-        { icon: "fa-users", title: "User Management", text: "Register & sign in as Student, Vendor, or Admin." },
-        { icon: "fa-store", title: "Vendor Management", text: "Onboard campus vendors with location & contact." },
-        { icon: "fa-utensils", title: "Menu Management", text: "Add, update, and remove menu items per vendor." },
-        { icon: "fa-clipboard-list", title: "Order Management", text: "Place orders and track Pending → Preparing → Completed." },
+        { icon: "fa-users", titleKey: "mkt.landing.feature1Title", textKey: "mkt.landing.feature1Text" },
+        { icon: "fa-store", titleKey: "mkt.landing.feature2Title", textKey: "mkt.landing.feature2Text" },
+        { icon: "fa-utensils", titleKey: "mkt.landing.feature3Title", textKey: "mkt.landing.feature3Text" },
+        { icon: "fa-clipboard-list", titleKey: "mkt.landing.feature4Title", textKey: "mkt.landing.feature4Text" },
     ];
 
     return (
@@ -39,14 +41,11 @@ export default function Landing()
             <section id="home" className="hero">
                 <img className="home-photo" src={homePhoto.url} alt="" fetchPriority="high" />
                 <div className="container">
-                    <h1>Skip the line.<br /><span>Pick up on campus.</span></h1>
-                    <p>
-                        Campus Eats is the on-campus pickup network. Order ahead from your favorite campus vendor,
-                        then grab it on the way to class. No delivery fee, no waiting.
-                    </p>
+                    <h1>{t("mkt.landing.heroTitle1")}<br /><span>{t("mkt.landing.heroTitle2")}</span></h1>
+                    <p>{t("mkt.landing.heroText")}</p>
                     <div className="hero-buttons">
-                        <Button asChild className="home-action"><Link to="/signup">Order now</Link></Button>
-                        <Button asChild variant="outline" className="home-action home-action-outline"><a href="#how-it-works">Learn more</a></Button>
+                        <Button asChild className="home-action"><Link to="/signup">{t("mkt.landing.orderNow")}</Link></Button>
+                        <Button asChild variant="outline" className="home-action home-action-outline"><a href="#how-it-works">{t("mkt.landing.learnMore")}</a></Button>
                     </div>
                 </div>
             </section>
@@ -56,15 +55,15 @@ export default function Landing()
                     <div className="stats-grid">
                         <div>
                             <div className="stat-number">{vendors.length.toLocaleString()}</div>
-                            <div className="stat-label">Campus Vendors</div>
+                            <div className="stat-label">{t("mkt.landing.statVendors")}</div>
                         </div>
                         <div>
                             <div className="stat-number">{menu.length.toLocaleString()}</div>
-                            <div className="stat-label">Menu Items</div>
+                            <div className="stat-label">{t("mkt.landing.statMenuItems")}</div>
                         </div>
                         <div>
-                            <div className="stat-number">&lt;5 min</div>
-                            <div className="stat-label">Avg Pickup</div>
+                            <div className="stat-number">{t("mkt.landing.statPickup")}</div>
+                            <div className="stat-label">{t("mkt.landing.statPickupLabel")}</div>
                         </div>
                     </div>
                 </div>
@@ -73,15 +72,15 @@ export default function Landing()
             <section id="how-it-works" className="how-it-works">
                 <div className="container">
                     <div className="section-title">
-                        <h2>Pickup in three steps</h2>
-                        <p>Designed around the campus rhythm — between lectures, before practice, after the library.</p>
+                        <h2>{t("mkt.landing.stepsTitle")}</h2>
+                        <p>{t("mkt.landing.stepsSubtitle")}</p>
                     </div>
                     <div className="steps">
                         {steps.map((step) => (
                             <div className="step" key={step.number}>
                                 <div className="step-number">{step.number}</div>
-                                <h3>{step.title}</h3>
-                                <p>{step.text}</p>
+                                <h3>{t(step.titleKey)}</h3>
+                                <p>{t(step.textKey)}</p>
                             </div>
                         ))}
                     </div>
@@ -91,15 +90,15 @@ export default function Landing()
             <section className="features">
                 <div className="container">
                     <div className="section-title">
-                        <h2>Everything the system manages</h2>
-                        <p>Four core modules, exactly as defined in the process spec.</p>
+                        <h2>{t("mkt.landing.featuresTitle")}</h2>
+                        <p>{t("mkt.landing.featuresSubtitle")}</p>
                     </div>
                     <div className="features-grid">
                         {features.map((feature) => (
-                            <div className="feature-card" key={feature.title}>
+                            <div className="feature-card" key={feature.titleKey}>
                                 <div className="feature-icon"><i className={`fas ${feature.icon}`} aria-hidden="true" /></div>
-                                <h3>{feature.title}</h3>
-                                <p>{feature.text}</p>
+                                <h3>{t(feature.titleKey)}</h3>
+                                <p>{t(feature.textKey)}</p>
                             </div>
                         ))}
                     </div>
@@ -109,8 +108,8 @@ export default function Landing()
             <section id="vendors" className="vendors">
                 <div className="container">
                     <div className="section-title">
-                        <h2>Featured Vendor</h2>
-                        <p>Discover our latest campus vendor. Sign up to see all available options.</p>
+                        <h2>{t("mkt.landing.featuredVendorTitle")}</h2>
+                        <p>{t("mkt.landing.featuredVendorSubtitle")}</p>
                     </div>
 
                     {featured ? (
@@ -133,7 +132,7 @@ export default function Landing()
 
                                 {featuredMenu.length > 0 && (
                                     <div className="featured-vendor-menu">
-                                        <h4>Popular Items</h4>
+                                        <h4>{t("mkt.landing.popularItems")}</h4>
                                         <div className="menu-preview">
                                             {featuredMenu.map((item) => (
                                                 <div className="menu-preview-item" key={item.id}>
@@ -148,11 +147,11 @@ export default function Landing()
                                 <div className="featured-vendor-footer">
                                     <p>
                                         <i className="fas fa-info-circle" aria-hidden="true" />
-                                        Sign up or log in to view all vendors and place orders.
+                                        {t("mkt.landing.signUpToView")}
                                     </p>
                                     <div className="featured-vendor-actions">
-                                        <Button asChild className="home-action"><Link to="/signup">Sign Up to Order</Link></Button>
-                                        <Button asChild variant="outline" className="home-action home-action-outline"><Link to="/login">Log In</Link></Button>
+                                        <Button asChild className="home-action"><Link to="/signup">{t("mkt.landing.signUpToOrder")}</Link></Button>
+                                        <Button asChild variant="outline" className="home-action home-action-outline"><Link to="/login">{t("mkt.landing.logIn")}</Link></Button>
                                     </div>
                                 </div>
                             </div>
@@ -160,9 +159,9 @@ export default function Landing()
                     ) : (
                         <div className="empty-state">
                             <i className="fas fa-store-slash" aria-hidden="true" />
-                            <h3>No Vendors Available</h3>
-                            <p>No vendors are currently available. Please check back later.</p>
-                            <Button asChild className="home-action"><Link to="/signup">Sign Up</Link></Button>
+                            <h3>{t("mkt.landing.noVendorsTitle")}</h3>
+                            <p>{t("mkt.landing.noVendorsText")}</p>
+                            <Button asChild className="home-action"><Link to="/signup">{t("mkt.landing.signUp")}</Link></Button>
                         </div>
                     )}
                 </div>
@@ -170,17 +169,14 @@ export default function Landing()
 
             <section className="cta vendor-cta">
                 <div className="container">
-                    <h2>Run a stall on campus?</h2>
-                    <p>
-                        List your menu, take pickup orders, and fulfill them with a simple status workflow.
-                        Reports for sales, vendor performance, and user activity included.
-                    </p>
+                    <h2>{t("mkt.landing.ctaTitle")}</h2>
+                    <p>{t("mkt.landing.ctaText")}</p>
                     <ul>
-                        <li><i className="fas fa-check-circle" aria-hidden="true" /> Per-vendor menu CRUD</li>
-                        <li><i className="fas fa-check-circle" aria-hidden="true" /> Live order queue</li>
-                        <li><i className="fas fa-check-circle" aria-hidden="true" /> Sales &amp; performance reports</li>
+                        <li><i className="fas fa-check-circle" aria-hidden="true" /> {t("mkt.landing.ctaItem1")}</li>
+                        <li><i className="fas fa-check-circle" aria-hidden="true" /> {t("mkt.landing.ctaItem2")}</li>
+                        <li><i className="fas fa-check-circle" aria-hidden="true" /> {t("mkt.landing.ctaItem3")}</li>
                     </ul>
-                    <Button asChild className="home-action"><Link to="/signup">Become a vendor</Link></Button>
+                    <Button asChild className="home-action"><Link to="/signup">{t("mkt.landing.becomeVendor")}</Link></Button>
                 </div>
             </section>
         </div>

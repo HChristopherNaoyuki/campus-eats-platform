@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { Mail, MapPin, Clock, Loader2 } from "lucide-react";
+import { useI18n } from "@/i18n";
 
 interface ContactErrors
 {
@@ -17,13 +18,14 @@ interface ContactErrors
 
 const businessHours =
 [
-    { day: "Monday – Friday", hours: "07:30 – 18:00" },
-    { day: "Saturday", hours: "09:00 – 14:00" },
-    { day: "Sunday & public holidays", hours: "Closed" },
+    { dayKey: "mkt.contact.hoursWeekday", hoursKey: "mkt.contact.hoursWeekdayTime" },
+    { dayKey: "mkt.contact.hoursSaturday", hoursKey: "mkt.contact.hoursSaturdayTime" },
+    { dayKey: "mkt.contact.hoursSunday", hoursKey: "mkt.contact.hoursSundayTime" },
 ];
 
 export default function Contact()
 {
+    const { t } = useI18n();
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState("");
@@ -38,17 +40,17 @@ export default function Contact()
 
         if (!name.trim())
         {
-            next.name = "Please enter your name.";
+            next.name = t("mkt.contact.errorName");
         }
 
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()))
         {
-            next.email = "Please enter a valid email address.";
+            next.email = t("mkt.contact.errorEmail");
         }
 
         if (message.trim().length < 10)
         {
-            next.message = "Please provide at least 10 characters so we can help.";
+            next.message = t("mkt.contact.errorMessage");
         }
 
         return next;
@@ -72,15 +74,15 @@ export default function Contact()
         setName("");
         setEmail("");
         setMessage("");
-        toast({ title: "Message received", description: "We reply to campus enquiries within one business day." });
+        toast({ title: t("mkt.contact.toastReceivedTitle"), description: t("mkt.contact.toastReceivedDesc") });
     };
 
     return (
         <>
             <PageHero
-                eyebrow="Contact"
-                title="Talk to the Campus Eats team"
-                description="Questions about an order, onboarding your stall, or the platform itself — we are happy to help."
+                eyebrow={t("mkt.contact.eyebrow")}
+                title={t("mkt.contact.title")}
+                description={t("mkt.contact.description")}
             />
 
             <section className="container mx-auto px-4 py-16 grid gap-8 lg:grid-cols-[1fr_1.2fr]">
@@ -90,7 +92,7 @@ export default function Contact()
                             <div className="flex gap-3">
                                 <Mail className="h-5 w-5 text-primary shrink-0" aria-hidden="true" />
                                 <div>
-                                    <h2 className="font-semibold">Email</h2>
+                                    <h2 className="font-semibold">{t("mkt.contact.emailTitle")}</h2>
                                     <a href="mailto:support@campuseats.co.za" className="text-sm text-muted-foreground hover:text-foreground">
                                         support@campuseats.co.za
                                     </a>
@@ -99,23 +101,23 @@ export default function Contact()
                             <div className="flex gap-3">
                                 <MapPin className="h-5 w-5 text-primary shrink-0" aria-hidden="true" />
                                 <div>
-                                    <h2 className="font-semibold">Address</h2>
+                                    <h2 className="font-semibold">{t("mkt.contact.addressTitle")}</h2>
                                     <address className="not-italic text-sm text-muted-foreground">
-                                        Student Centre, Ground Floor<br />
-                                        Main Campus, Cape Town<br />
-                                        South Africa
+                                        {t("mkt.contact.addressLine1")}<br />
+                                        {t("mkt.contact.addressLine2")}<br />
+                                        {t("mkt.contact.addressLine3")}
                                     </address>
                                 </div>
                             </div>
                             <div className="flex gap-3">
                                 <Clock className="h-5 w-5 text-primary shrink-0" aria-hidden="true" />
                                 <div>
-                                    <h2 className="font-semibold">Business hours</h2>
+                                    <h2 className="font-semibold">{t("mkt.contact.hoursTitle")}</h2>
                                     <ul className="text-sm text-muted-foreground space-y-1 mt-1">
                                         {businessHours.map((h) => (
-                                            <li key={h.day} className="flex justify-between gap-6">
-                                                <span>{h.day}</span>
-                                                <span>{h.hours}</span>
+                                            <li key={h.dayKey} className="flex justify-between gap-6">
+                                                <span>{t(h.dayKey)}</span>
+                                                <span>{t(h.hoursKey)}</span>
                                             </li>
                                         ))}
                                     </ul>
@@ -127,20 +129,20 @@ export default function Contact()
 
                 <Card className="shadow-[var(--shadow-soft)]">
                     <CardContent className="p-6">
-                        <h2 className="text-xl font-semibold mb-4">Send us a message</h2>
+                        <h2 className="text-xl font-semibold mb-4">{t("mkt.contact.sendMessageTitle")}</h2>
 
                         {sent && (
                             <div
                                 role="status"
                                 className="mb-4 rounded-lg border border-accent/30 bg-accent/10 px-4 py-3 text-sm text-foreground"
                             >
-                                Thanks — your message has been logged. We reply within one business day.
+                                {t("mkt.contact.sentNotice")}
                             </div>
                         )}
 
                         <form onSubmit={handleSubmit} noValidate className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="contact-name">Full name</Label>
+                                <Label htmlFor="contact-name">{t("mkt.contact.fullName")}</Label>
                                 <Input
                                     id="contact-name"
                                     value={name}
@@ -154,7 +156,7 @@ export default function Contact()
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="contact-email">Email address</Label>
+                                <Label htmlFor="contact-email">{t("mkt.contact.emailAddress")}</Label>
                                 <Input
                                     id="contact-email"
                                     type="email"
@@ -169,7 +171,7 @@ export default function Contact()
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="contact-message">Message</Label>
+                                <Label htmlFor="contact-message">{t("mkt.contact.message")}</Label>
                                 <Textarea
                                     id="contact-message"
                                     rows={6}
@@ -185,7 +187,7 @@ export default function Contact()
 
                             <Button type="submit" className="w-full" disabled={submitting}>
                                 {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
-                                {submitting ? "Sending…" : "Send message"}
+                                {submitting ? t("mkt.contact.sending") : t("mkt.contact.sendMessage")}
                             </Button>
                         </form>
                     </CardContent>
