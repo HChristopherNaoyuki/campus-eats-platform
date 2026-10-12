@@ -3,6 +3,7 @@ import { Bitcoin, Copy, Check, HeartHandshake } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
+import { useI18n } from "@/i18n";
 
 /** Supported donation wallets. Addresses are public and safe to ship in the client. */
 export const cryptoWallets =
@@ -28,6 +29,7 @@ interface CryptoDonationsProps
 export default function CryptoDonations({ withHeading = true }: CryptoDonationsProps)
 {
     const [copied, setCopied] = useState<string | null>(null);
+    const { t } = useI18n();
 
     /**
      * Copies an address to the clipboard. The async Clipboard API is unavailable in some
@@ -39,15 +41,18 @@ export default function CryptoDonations({ withHeading = true }: CryptoDonationsP
         {
             await navigator.clipboard.writeText(address);
             setCopied(symbol);
-            toast({ title: `${symbol} address copied`, description: "Thank you for supporting Campus Eats." });
+            toast({
+                title: t("mkt.crypto.toastCopiedTitle").replace("{symbol}", symbol),
+                description: t("mkt.crypto.toastCopiedDesc"),
+            });
             window.setTimeout(() => setCopied(null), 2000);
         }
         catch
         {
             toast({
                 variant: "destructive",
-                title: "Could not copy automatically",
-                description: "Please select the address and copy it manually.",
+                title: t("mkt.crypto.toastFailedTitle"),
+                description: t("mkt.crypto.toastFailedDesc"),
             });
         }
     };
@@ -57,14 +62,10 @@ export default function CryptoDonations({ withHeading = true }: CryptoDonationsP
             {withHeading && (
                 <div className="max-w-2xl mb-10">
                     <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-wider uppercase text-primary bg-primary/10 px-3 py-1 rounded-full">
-                        <HeartHandshake className="h-3.5 w-3.5" /> Support the project
+                        <HeartHandshake className="h-3.5 w-3.5" /> {t("mkt.crypto.supportBadge")}
                     </span>
-                    <h2 className="mt-4 text-3xl md:text-4xl font-bold">We accept cryptocurrency donations</h2>
-                    <p className="mt-3 text-muted-foreground">
-                        Campus Eats is built and maintained by a small team. Donations fund the continued development
-                        and production of both the website and the mobile application — hosting, testing devices, and
-                        the time it takes to ship new features.
-                    </p>
+                    <h2 className="mt-4 text-3xl md:text-4xl font-bold">{t("mkt.crypto.heading")}</h2>
+                    <p className="mt-3 text-muted-foreground">{t("mkt.crypto.description")}</p>
                 </div>
             )}
 
@@ -84,7 +85,7 @@ export default function CryptoDonations({ withHeading = true }: CryptoDonationsP
 
                             <code
                                 className="block break-all rounded-lg bg-muted px-3 py-3 text-xs leading-relaxed"
-                                aria-label={`${wallet.name} donation address`}
+                                aria-label={t("mkt.crypto.addressAria").replace("{name}", wallet.name)}
                             >
                                 {wallet.address}
                             </code>
@@ -95,8 +96,8 @@ export default function CryptoDonations({ withHeading = true }: CryptoDonationsP
                                 onClick={() => handleCopy(wallet.symbol, wallet.address)}
                             >
                                 {copied === wallet.symbol
-                                    ? (<><Check className="h-4 w-4" /> Copied</>)
-                                    : (<><Copy className="h-4 w-4" /> Copy {wallet.symbol} address</>)}
+                                    ? (<><Check className="h-4 w-4" /> {t("mkt.crypto.copied")}</>)
+                                    : (<><Copy className="h-4 w-4" /> {t("mkt.crypto.copyAddress").replace("{symbol}", wallet.symbol)}</>)}
                             </Button>
                         </CardContent>
                     </Card>
@@ -104,8 +105,7 @@ export default function CryptoDonations({ withHeading = true }: CryptoDonationsP
             </div>
 
             <p className="mt-6 text-xs text-muted-foreground max-w-2xl">
-                Donations are voluntary, non-refundable, and do not purchase goods, services, or any form of equity.
-                Always verify the address before sending — cryptocurrency transactions cannot be reversed.
+                {t("mkt.crypto.disclaimer")}
             </p>
         </section>
     );

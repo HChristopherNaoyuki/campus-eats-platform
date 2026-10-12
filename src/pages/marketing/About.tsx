@@ -1,37 +1,32 @@
 import PageHero from "@/components/marketing/PageHero";
 import { Card, CardContent } from "@/components/ui/card";
 import { Github, Target, Users, Store } from "lucide-react";
+import { useI18n } from "@/i18n";
 
 const values =
 [
-    { icon: Target, title: "Built around the campus rhythm", desc: "Order between lectures, collect on the way past the stall — no delivery fleet, no delivery fees." },
-    { icon: Users, title: "Made with students", desc: "Every screen started as a mobile mockup tested against real campus ordering behaviour." },
-    { icon: Store, title: "Fair to vendors", desc: "Vendors keep their own shop, their own inventory, and full control over their menu and order queue." },
+    { icon: Target, titleKey: "mkt.about.value1Title", descKey: "mkt.about.value1Desc" },
+    { icon: Users, titleKey: "mkt.about.value2Title", descKey: "mkt.about.value2Desc" },
+    { icon: Store, titleKey: "mkt.about.value3Title", descKey: "mkt.about.value3Desc" },
 ];
 
 export default function About()
 {
+    const { t } = useI18n();
+
     return (
         <div className="refined-page about-page">
             <PageHero
-                eyebrow="About"
-                title="The team behind Campus Eats"
-                description="Campus Eats is a student pickup platform: a Kotlin mobile application and a matching responsive web application, sharing one product language and one order workflow."
+                eyebrow={t("mkt.about.eyebrow")}
+                title={t("mkt.about.title")}
+                description={t("mkt.about.description")}
             />
 
             <section className="container mx-auto px-4 py-16 grid gap-10 lg:grid-cols-2">
                 <div className="space-y-4">
-                    <h2 className="text-2xl md:text-3xl font-bold">Our story</h2>
-                    <p className="text-muted-foreground">
-                        Campus Eats started as a process-modelling project: map how a campus food order actually moves
-                        from a hungry student to a vendor stall and back again. That model became four core modules —
-                        user management, vendor management, menu management, and order management — and those modules
-                        became the product you are looking at.
-                    </p>
-                    <p className="text-muted-foreground">
-                        The platform is developed in the open. The web application and the Kotlin mobile application are
-                        maintained side by side so that a change in one is reflected in the other.
-                    </p>
+                    <h2 className="text-2xl md:text-3xl font-bold">{t("mkt.about.storyTitle")}</h2>
+                    <p className="text-muted-foreground">{t("mkt.about.storyP1")}</p>
+                    <p className="text-muted-foreground">{t("mkt.about.storyP2")}</p>
                     <div className="flex flex-col sm:flex-row gap-3 pt-2">
                         <a
                             className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
@@ -39,7 +34,7 @@ export default function About()
                             target="_blank"
                             rel="noreferrer noopener"
                         >
-                            <Github className="h-4 w-4" /> Website repository
+                            <Github className="h-4 w-4" /> {t("mkt.about.websiteRepo")}
                         </a>
                         <a
                             className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
@@ -47,21 +42,21 @@ export default function About()
                             target="_blank"
                             rel="noreferrer noopener"
                         >
-                            <Github className="h-4 w-4" /> Mobile application repository
+                            <Github className="h-4 w-4" /> {t("mkt.about.mobileRepo")}
                         </a>
                     </div>
                 </div>
 
                 <div className="grid gap-5">
                     {values.map((v) => (
-                        <Card key={v.title} className="shadow-[var(--shadow-soft)]">
+                        <Card key={v.titleKey} className="shadow-[var(--shadow-soft)]">
                             <CardContent className="p-6 flex gap-4">
                                 <div className="h-10 w-10 shrink-0 rounded-xl bg-accent/10 text-accent flex items-center justify-center">
                                     <v.icon className="h-5 w-5" aria-hidden="true" />
                                 </div>
                                 <div>
-                                    <h3 className="font-semibold">{v.title}</h3>
-                                    <p className="text-sm text-muted-foreground mt-1">{v.desc}</p>
+                                    <h3 className="font-semibold">{t(v.titleKey)}</h3>
+                                    <p className="text-sm text-muted-foreground mt-1">{t(v.descKey)}</p>
                                 </div>
                             </CardContent>
                         </Card>
