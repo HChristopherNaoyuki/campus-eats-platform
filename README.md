@@ -1,12 +1,5 @@
 # Campus Eats
 
-Campus Eats is a campus food ordering and pickup platform. Students browse
-campus vendors, order ahead, and collect their food without queuing. Vendors run
-their own shop with an isolated inventory, and administrators oversee users,
-vendors, orders, revenue, feedback, and security events.
-
-Live application: https://campus-eats-platform.lovable.app
-
 ## Table of Contents
 
 1. [Overview](#overview)
@@ -30,24 +23,34 @@ Live application: https://campus-eats-platform.lovable.app
 
 ## Overview
 
-The platform implements the hierarchical input structure defined in the project
-process document: user management, vendor management, menu management, and order
-management. It is delivered as a responsive single page application with a
-public marketing site and a role aware application area.
+Campus Eats is a campus food ordering and pickup platform. Students
+browse campus vendors, order ahead, and collect their food without
+queuing. Vendors run their own shop with an isolated inventory.
+Administrators oversee users, vendors, orders, revenue, feedback,
+and security events.
+
+The platform implements the hierarchical input structure defined in
+the project process document: user management, vendor management,
+menu management, and order management. It is delivered as a
+responsive single page application with a public marketing site and
+a role aware application area.
+
+Live application: https://campus-eats-platform.lovable.app
 
 [Back to top](#table-of-contents)
 
 ## Key Features
 
 - Student ordering with cart, live pricing, and order history.
-- Vendor portal with full create, read, update, and delete control of its own
-  inventory, plus order status management.
-- Administrator dashboard with platform totals and per vendor revenue.
+- Vendor portal with full create, read, update, and delete control
+  of its own inventory, plus order status management.
+- Administrator dashboard with platform totals and per vendor
+  revenue.
 - Five reports with print and PDF export.
 - Feedback capture for compliments and complaints.
 - Security log recording every authentication and order action.
-- Public marketing site covering home, about, services, contact, questions,
-  news, donations, privacy, and terms.
+- Public marketing site covering home, about, services, contact,
+  questions, news, donations, privacy, and terms.
 
 [Back to top](#table-of-contents)
 
@@ -77,7 +80,8 @@ npm install
 npm run dev
 ```
 
-The development server prints a local address, normally `http://localhost:8080`.
+The development server prints a local address, normally
+`http://localhost:8080`.
 
 [Back to top](#table-of-contents)
 
@@ -97,15 +101,19 @@ The development server prints a local address, normally `http://localhost:8080`.
 
 ```text
 src/
-  components/    Shared components, marketing sections, and UI primitives
-  layouts/       Marketing shell and authenticated application shell
+  components/    Shared components, marketing sections, and UI
+                 primitives
+  layouts/       Marketing shell and authenticated application
+                 shell
   lib/           Client for the external restaurant API
-  pages/         Marketing pages, authentication pages, and dashboards
+  pages/         Marketing pages, authentication pages, and
+                 dashboards
   store/         Application state and business rules
   types/         Shared domain types
 supabase/
   functions/     Cross origin proxy for the external restaurant API
-documentation/   Technical documentation, disclaimer, and contributing guide
+documentation/   Technical documentation, disclaimer, and
+                 contributing guide
 screenshots/     All visual media related to the application
 ```
 
@@ -136,29 +144,31 @@ screenshots/     All visual media related to the application
 
 ## Business Rules
 
-- All prices are quoted in South African Rand and shown with the prefix `R`.
-- Pricing is calculated as subtotal, plus twenty percent tax, rounded up to the
-  next multiple of five Rand, with a two and a half percent discount applied for
-  the Student role only.
-- User identifiers are sixteen character uppercase alphanumeric strings issued
-  at sign up as a recovery key.
+- All prices are quoted in South African Rand and shown with the
+  prefix `R`.
+- Pricing is calculated as subtotal, plus twenty percent tax,
+  rounded up to the next multiple of five Rand, with a two and a
+  half percent discount applied for the Student role only.
+- User identifiers are sixteen character uppercase alphanumeric
+  strings issued at sign up as a recovery key.
 - Order identifiers follow the pattern `ORD-YYYYMMDD-XXXXXXXX`.
-- The order status workflow is Pending, then Accepted or Rejected, then
-  Preparing, then Ready, then Completed.
+- The order status workflow is Pending, then Accepted or Rejected,
+  then Preparing, then Ready, then Completed.
 
 [Back to top](#table-of-contents)
 
 ## Roles and Demonstration Accounts
 
-The platform supports four roles: Student, Standard, Vendor, and Administrator.
-Ten demonstration accounts are defined in `src/data/seed.ts` and listed on the
-sign in screen. Sign in with the email address, the username, or the User ID,
-plus the password. Each account is provisioned against the external API on
-first use.
+The platform supports four roles: Student, Standard, Vendor, and
+Administrator. Ten demonstration accounts are defined in
+`src/data/seed.ts` and listed on the sign in screen. Sign in with
+the email address, the username, or the User ID, plus the password.
+Each account is provisioned against the external API on first use.
 
-User IDs are normalised to sixteen characters by the application: IDs supplied
-with fifteen characters are padded with `0`, and IDs with seventeen characters
-are trimmed. The values below are the IDs the application actually uses.
+User IDs are normalised to sixteen characters by the application:
+IDs supplied with fifteen characters are padded with `0`, and IDs
+with seventeen characters are trimmed. The values below are the IDs
+the application actually uses.
 
 | Role | Name | Username | Email | Password | User ID | Shop |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -173,9 +183,9 @@ are trimmed. The values below are the IDs the application actually uses.
 | Standard | Marius Steyn | marius.steyn | marius.steyn@campuseats.test | Stand@rd#Marius | STDN9R2B7V4MQP1X | |
 | Student | Naledi Mahlangu | naledi.mahlangu | naledi.mahlangu@campuseats.test | Stud3nt#Naledi | STDT4K9X2P7MNZR5 | |
 
-The seeded data set contains at least ten records per collection: ten users, ten
-vendors, sixteen menu items, twelve orders, ten feedback entries, and twelve
-security log entries.
+The seeded data set contains at least ten records per collection:
+ten users, ten vendors, sixteen menu items, twelve orders, ten
+feedback entries, and twelve security log entries.
 
 Demonstration accounts are intended for evaluation only.
 
@@ -193,31 +203,34 @@ Usage conditions, as implemented:
 
 - Codes are not case sensitive and surrounding spaces are ignored.
 - One coupon applies per order. Any other code is rejected.
-- The percentage applies to the order total after the 20% tax and rounding up to
-  the next R5. For the Student role it is added to the 2.5% student discount,
-  both calculated on that same rounded amount.
-- Coupons can be entered at checkout on the ordering page, and administrators can
-  select one when creating an order in Order Management for testing.
+- The percentage applies to the order total after the 20% tax and
+  rounding up to the next R5. For the Student role it is added to
+  the 2.5% student discount, both calculated on that same rounded
+  amount.
+- Coupons can be entered at checkout on the ordering page, and
+  administrators can select one when creating an order in Order
+  Management for testing.
 
 [Back to top](#table-of-contents)
 
 ## External API Integration
 
-Catalogue data, user codes, and order creation are provided by the Fake
-Restaurant API at `https://fakerestaurantapi.runasp.net`. The service does not
-return cross origin resource sharing headers, so all browser requests are routed
-through a hosted proxy function that forwards the request unchanged and adds the
-required response headers. Authentication uses a `usercode` value supplied as the
+Catalogue data, user codes, and order creation are provided by the
+Fake Restaurant API at `https://fakerestaurantapi.runasp.net`. The
+service does not return cross origin resource sharing headers, so
+all browser requests are routed through a hosted proxy function
+that forwards the request unchanged and adds the required response
+headers. Authentication uses a `usercode` value supplied as the
 `apikey` query parameter.
 
 [Back to top](#table-of-contents)
 
 ## Screenshots
 
-All visual media for this project is stored in the `screenshots` folder. Images
-are never embedded in this README. Refer to that folder for captures of the
-landing page, the student ordering flow, the vendor portal, the administrator
-dashboard, and the reports.
+All visual media for this project is stored in the `screenshots`
+folder. Images are never embedded in this README. Refer to that
+folder for captures of the landing page, the student ordering flow,
+the vendor portal, the administrator dashboard, and the reports.
 
 [Back to top](#table-of-contents)
 
@@ -234,25 +247,33 @@ dashboard, and the reports.
 ## Contributing
 
 Contributions are welcome. Read
-[documentation/contributing.md](documentation/contributing.md) before opening a
-pull request. Do not correct defects silently or outside the project. Open an
-issue or submit a pull request so that the change can be reviewed by the
-maintainers.
+[documentation/contributing.md](documentation/contributing.md)
+before opening a pull request. Do not correct defects silently or
+outside the project. Open an issue or submit a pull request so that
+the change can be reviewed by the maintainers.
 
 [Back to top](#table-of-contents)
 
 ## Disclaimer
 
-This project is provided as is, without warranty of any kind. The author is not
-liable or responsible for any malfunction, defect, or issue arising from
-copying, modifying, or using this software. The full terms are set out in
+This project is provided as is, without warranty of any kind. The
+author is not liable or responsible for any malfunction, defect, or
+issue arising from copying, modifying, or using this software. The
+full terms are set out in
 [documentation/disclaimer.md](documentation/disclaimer.md).
 
 [Back to top](#table-of-contents)
 
 ## License
 
-Unless a separate license file is added to this repository, all rights are
-reserved by the author. Contact the maintainers before reusing the code.
+Unless a separate license file is added to this repository, all
+rights are reserved by the author. Contact the maintainers before
+reusing the code.
 
 [Back to top](#table-of-contents)
+
+---
+
+END OF DOCUMENT
+
+---
