@@ -19,7 +19,7 @@ export default function FoodImage({
 
     return (
         <img
-            src={failed || !src ? placeholderUrl : src}
+            src={failed || !src ? PLACEHOLDER_URL : src}
             alt={alt}
             loading="lazy"
             width={800}
