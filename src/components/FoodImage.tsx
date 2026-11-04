@@ -1,5 +1,5 @@
 import { useState } from "react";
-import placeholderUrl from "/placeholder.svg";
+const PLACEHOLDER_URL = "/placeholder.svg";
 
 /**
  * Food thumbnail used wherever a menu item is shown. Falls back to the
