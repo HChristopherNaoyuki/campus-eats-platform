@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useI18n } from "@/i18n";
 
 export interface TocSection
 {
@@ -12,6 +13,7 @@ export interface TocSection
  */
 export default function TableOfContents({ sections }: { sections: TocSection[] })
 {
+    const { t } = useI18n();
     const [activeId, setActiveId] = useState<string>(sections[0]?.id ?? "");
 
     useEffect(() =>
@@ -37,8 +39,8 @@ export default function TableOfContents({ sections }: { sections: TocSection[] }
     }, [sections]);
 
     return (
-        <nav aria-label="Table of contents" className="ce-toc">
-            <h2 className="ce-toc-title">{useTocTitle()}</h2>
+        <nav aria-label={t("mkt.polish.contents")} className="ce-toc">
+            <h2 className="ce-toc-title">{t("mkt.polish.contents")}</h2>
             <ul>
                 {sections.map((section) => (
                     <li key={section.id}>
@@ -54,17 +56,4 @@ export default function TableOfContents({ sections }: { sections: TocSection[] }
             </ul>
         </nav>
     );
-}
-
-function useTocTitle()
-{
-    return useI18nToc();
-}
-
-// Small indirection keeps the hook call order stable regardless of section count.
-import { useI18n } from "@/i18n";
-function useI18nToc()
-{
-    const { t } = useI18n();
-    return t("mkt.polish.contents");
 }
