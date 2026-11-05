@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Bitcoin, Copy, Check, HeartHandshake } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import WalletTable from "@/components/public/WalletTable";
 import { toast } from "@/hooks/use-toast";
 import { useI18n } from "@/i18n";
 
@@ -102,6 +103,10 @@ export default function CryptoDonations({ withHeading = true }: CryptoDonationsP
                         </CardContent>
                     </Card>
                 ))}
+            </div>
+
+            <div className="mt-8">
+                <WalletTable wallets={cryptoWallets} />
             </div>
 
             <p className="mt-6 text-xs text-muted-foreground max-w-2xl">
