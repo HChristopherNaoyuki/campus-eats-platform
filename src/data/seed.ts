@@ -13,6 +13,19 @@
  */
 import type { Feedback, MenuItem, Order, SecurityLog, User, Vendor } from "@/types/campus";
 
+// Seeded food photography, one image per dish family. Live catalogue items
+// keep the photo URL supplied by the restaurant API instead.
+import papChakalaka from "@/assets/food/pap-chakalaka.jpg";
+import grilledChicken from "@/assets/food/grilled-chicken.jpg";
+import boereworsRoll from "@/assets/food/boerewors-roll.jpg";
+import vegSkewers from "@/assets/food/veg-skewers.jpg";
+import flatWhite from "@/assets/food/flat-white.jpg";
+import koeksister from "@/assets/food/koeksister.jpg";
+import bunnyChow from "@/assets/food/bunny-chow.jpg";
+import harvestSalad from "@/assets/food/harvest-salad.jpg";
+import gatsby from "@/assets/food/gatsby.jpg";
+import samoosas from "@/assets/food/samoosas.jpg";
+
 /** Normalises a supplied unique ID to the 16-character campus format. */
 const toCampusId = (raw: string): string =>
   raw.replace(/[^A-Z0-9]/gi, "").toUpperCase().slice(0, 16).padEnd(16, "0");
@@ -138,26 +151,28 @@ const item = (
   name: string,
   price: number,
   description: string,
-  stock: number
-): MenuItem => ({ id, vendorId, name, price, description, stock, available: true });
+  stock: number,
+  imageUrl?: string
+): MenuItem => ({ id, vendorId, name, price, description, stock, available: true, imageUrl });
 
+/** Photo for each seeded dish; several dishes share a family photo. */
 export const SEED_MENU: MenuItem[] = [
-  item("seed-i1", "seed-v1", "Pap and Chakalaka", 48, "Maize pap with spicy vegetable relish.", 40),
-  item("seed-i2", "seed-v1", "Grilled Chicken Quarter", 72, "Flame-grilled chicken with a side salad.", 30),
-  item("seed-i3", "seed-v1", "Morogo and Rice", 45, "Wild spinach stew served with steamed rice.", 25),
-  item("seed-i4", "seed-v2", "Boerewors Roll", 55, "Farm-style sausage on a fresh roll with onion relish.", 50),
-  item("seed-i5", "seed-v2", "Vegetarian Skewers", 60, "Char-grilled peppers, mushroom and halloumi.", 20),
-  item("seed-i6", "seed-v2", "Lamb Sosatie", 95, "Marinated lamb skewers with apricot glaze.", 18),
-  item("seed-i7", "seed-v3", "Flat White", 32, "Double shot with silky steamed milk.", 60),
-  item("seed-i8", "seed-v3", "Koeksister", 18, "Plaited syrup pastry, baked each morning.", 80),
-  item("seed-i9", "seed-v3", "Rusk and Coffee Combo", 40, "Buttermilk rusk with a filter coffee.", 45),
-  item("seed-i10", "seed-v4", "Quarter Bunny Chow", 65, "Durban curry served in a hollowed loaf.", 22),
-  item("seed-i11", "seed-v5", "Harvest Salad Bowl", 58, "Seasonal greens, feta, seeds and citrus dressing.", 26),
-  item("seed-i12", "seed-v6", "Pap and Steak", 89, "Grilled rump with pap and gravy.", 15),
-  item("seed-i13", "seed-v7", "Full House Gatsby", 110, "Shared roll with chips, steak and masala.", 12),
-  item("seed-i14", "seed-v8", "Beef Samoosa (4)", 36, "Hand-folded pastry with spiced beef.", 70),
-  item("seed-i15", "seed-v9", "Milk Tart Slice", 28, "Cinnamon-dusted classic melktert.", 35),
-  item("seed-i16", "seed-v10", "Vetkoek with Mince", 52, "Fried dough filled with savoury mince.", 40),
+  item("seed-i1", "seed-v1", "Pap and Chakalaka", 48, "Maize pap with spicy vegetable relish.", 40, papChakalaka),
+  item("seed-i2", "seed-v1", "Grilled Chicken Quarter", 72, "Flame-grilled chicken with a side salad.", 30, grilledChicken),
+  item("seed-i3", "seed-v1", "Morogo and Rice", 45, "Wild spinach stew served with steamed rice.", 25, papChakalaka),
+  item("seed-i4", "seed-v2", "Boerewors Roll", 55, "Farm-style sausage on a fresh roll with onion relish.", 50, boereworsRoll),
+  item("seed-i5", "seed-v2", "Vegetarian Skewers", 60, "Char-grilled peppers, mushroom and halloumi.", 20, vegSkewers),
+  item("seed-i6", "seed-v2", "Lamb Sosatie", 95, "Marinated lamb skewers with apricot glaze.", 18, boereworsRoll),
+  item("seed-i7", "seed-v3", "Flat White", 32, "Double shot with silky steamed milk.", 60, flatWhite),
+  item("seed-i8", "seed-v3", "Koeksister", 18, "Plaited syrup pastry, baked each morning.", 80, koeksister),
+  item("seed-i9", "seed-v3", "Rusk and Coffee Combo", 40, "Buttermilk rusk with a filter coffee.", 45, flatWhite),
+  item("seed-i10", "seed-v4", "Quarter Bunny Chow", 65, "Durban curry served in a hollowed loaf.", 22, bunnyChow),
+  item("seed-i11", "seed-v5", "Harvest Salad Bowl", 58, "Seasonal greens, feta, seeds and citrus dressing.", 26, harvestSalad),
+  item("seed-i12", "seed-v6", "Pap and Steak", 89, "Grilled rump with pap and gravy.", 15, papChakalaka),
+  item("seed-i13", "seed-v7", "Full House Gatsby", 110, "Shared roll with chips, steak and masala.", 12, gatsby),
+  item("seed-i14", "seed-v8", "Beef Samoosa (4)", 36, "Hand-folded pastry with spiced beef.", 70, samoosas),
+  item("seed-i15", "seed-v9", "Milk Tart Slice", 28, "Cinnamon-dusted classic melktert.", 35, koeksister),
+  item("seed-i16", "seed-v10", "Vetkoek with Mince", 52, "Fried dough filled with savoury mince.", 40, bunnyChow),
 ];
 
 const day = (offset: number, hour: number): string =>
