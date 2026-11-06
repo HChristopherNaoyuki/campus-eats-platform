@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { AuthShell } from "./Login";
+import PasswordInput from "@/components/PasswordInput";
 import { useI18n } from "@/i18n";
 
 export default function ForgotPassword() {
@@ -35,11 +36,11 @@ export default function ForgotPassword() {
         </div>
         <div className="space-y-2">
           <Label>{t("authx.newPassword")}</Label>
-          <Input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+          <PasswordInput required value={password} onChange={(e) => setPassword(e.target.value)} />
         </div>
         <div className="space-y-2">
           <Label>{t("authx.confirmNewPassword")}</Label>
-          <Input type="password" required value={confirm} onChange={(e) => setConfirm(e.target.value)} />
+          <PasswordInput required value={confirm} onChange={(e) => setConfirm(e.target.value)} />
         </div>
         <Button type="submit" className="w-full">{t("authx.resetPassword")}</Button>
         <p className="text-sm text-center text-muted-foreground">

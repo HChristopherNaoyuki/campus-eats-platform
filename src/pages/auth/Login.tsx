@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { toast } from "sonner";
+import PasswordInput from "@/components/PasswordInput";
 import { useI18n } from "@/i18n";
 
 export default function Login() {
@@ -55,7 +56,7 @@ export default function Login() {
             <Label>{t("authx.password")}</Label>
             <Link to="/forgot-password" className="text-xs text-primary hover:underline">{t("authx.recoverAccount")}</Link>
           </div>
-          <Input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+          <PasswordInput required value={password} onChange={(e) => setPassword(e.target.value)} />
         </div>
         <Button type="submit" className="w-full" disabled={busy}>{busy ? t("authx.signingIn") : t("authx.signIn")}</Button>
         <div className="relative py-1 text-center">

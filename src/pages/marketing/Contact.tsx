@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { Mail, MapPin, Clock, Loader2 } from "lucide-react";
+import { useAutosave } from "@/hooks/useAutosave";
 import { useI18n } from "@/i18n";
 
 interface ContactErrors
