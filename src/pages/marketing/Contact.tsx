@@ -27,9 +27,14 @@ const businessHours =
 export default function Contact()
 {
     const { t } = useI18n();
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [message, setMessage] = useState("");
+    // Autosaved draft: restored on return, cleared after a successful send.
+    const draft = useAutosave("campus-eats-contact-draft", { name: "", email: "", message: "" });
+    const name = draft.values.name;
+    const email = draft.values.email;
+    const message = draft.values.message;
+    const setName = (value: string) => draft.setField("name", value);
+    const setEmail = (value: string) => draft.setField("email", value);
+    const setMessage = (value: string) => draft.setField("message", value);
     const [errors, setErrors] = useState<ContactErrors>({});
     const [submitting, setSubmitting] = useState(false);
     const [sent, setSent] = useState(false);
@@ -72,9 +77,7 @@ export default function Contact()
         await new Promise((resolve) => window.setTimeout(resolve, 600));
         setSubmitting(false);
         setSent(true);
-        setName("");
-        setEmail("");
-        setMessage("");
+        draft.clear();
         toast({ title: t("mkt.contact.toastReceivedTitle"), description: t("mkt.contact.toastReceivedDesc") });
     };
 
@@ -141,7 +144,15 @@ export default function Contact()
                             </div>
                         )}
 
+                        {draft.restored && (
+                            <div role="status" className="mb-4 flex items-center justify-between gap-3 rounded-lg border bg-muted/40 px-4 py-3 text-sm">
+                                <span>{t("mkt.polish.draftRestored")}</span>
+                                <Button type="button" variant="ghost" size="sm" onClick={draft.clear}>{t("mkt.polish.clearDraft")}</Button>
+                            </div>
+                        )}
+
                         <form onSubmit={handleSubmit} noValidate className="space-y-4">
+                            <p className="text-xs text-muted-foreground">{t("mkt.polish.autosave")}</p>
                             <div className="space-y-2">
                                 <Label htmlFor="contact-name">{t("mkt.contact.fullName")}</Label>
                                 <Input

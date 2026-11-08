@@ -5,6 +5,7 @@ import { useCampus } from "@/store/campusStore";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import ThemeToggle from "@/components/ThemeToggle";
 import { useI18n } from "@/i18n";
 
 export default function AppLayout() {
@@ -26,6 +27,7 @@ export default function AppLayout() {
               <h1 className="font-semibold text-foreground">{t("shell.brand")}</h1>
             </div>
             <div className="flex items-center gap-3">
+              <ThemeToggle />
               <LanguageSwitcher />
               {user ? (
                 <>

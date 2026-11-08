@@ -12,7 +12,9 @@ import { useI18n } from "@/i18n";
  * drop-in replacement wherever a password is captured.
  */
 const PasswordInput = forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
-  ({ className, ...props }, ref) =>
+  // `type` is controlled by the visibility toggle, so any caller value is ignored.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  ({ className, type: _ignored, ...props }, ref) =>
   {
     const { t } = useI18n();
     const [visible, setVisible] = useState(false);
