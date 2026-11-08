@@ -9,6 +9,7 @@ import { useCampus } from "@/store/campusStore";
 import { toast } from "sonner";
 import { Pencil, Trash2, Check, X } from "lucide-react";
 import { useI18n } from "@/i18n";
+import FoodImage from "@/components/FoodImage";
 
 export default function MenuPage() {
   const { t } = useI18n();
@@ -80,7 +81,10 @@ export default function MenuPage() {
                     <TableRow key={m.id}>
                       <TableCell className="font-mono text-xs">{m.id}</TableCell>
                       <TableCell>
-                        {editId === m.id ? <Input value={edit.name} onChange={(e) => setEdit({ ...edit, name: e.target.value })} /> : <span className="font-medium">{m.name}</span>}
+                        <div className="flex items-center gap-3">
+                          <FoodImage src={m.imageUrl} alt={m.name} className="h-12 w-16 shrink-0 rounded-md" />
+                          {editId === m.id ? <Input value={edit.name} onChange={(e) => setEdit({ ...edit, name: e.target.value })} /> : <span className="font-medium">{m.name}</span>}
+                        </div>
                       </TableCell>
                       <TableCell>
                         {editId === m.id ? <Input type="number" step="0.01" value={edit.price} onChange={(e) => setEdit({ ...edit, price: e.target.value })} /> : `R${m.price.toFixed(2)}`}
