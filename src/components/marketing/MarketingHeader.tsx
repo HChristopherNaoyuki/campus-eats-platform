@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useI18n } from "@/i18n";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import ThemeToggle from "@/components/ThemeToggle";
+import { Button } from "@/components/ui/button";
+import { Search } from "lucide-react";
 
 /**
  * Public header, a direct port of `solution/includes/public_header.php`.
@@ -18,7 +21,7 @@ export const marketingNav =
     { to: "/help", label: "mkt.nav.help", match: "/help" },
 ];
 
-export default function MarketingHeader()
+export default function MarketingHeader({ onSearch }: { onSearch?: () => void })
 {
     const { t } = useI18n();
     const [open, setOpen] = useState(false);
@@ -59,6 +62,17 @@ export default function MarketingHeader()
                     </nav>
 
                     <div className="auth-buttons">
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            aria-label={t("mkt.polish.searchButton")}
+                            title={`${t("mkt.polish.searchButton")} (Ctrl+K)`}
+                            onClick={onSearch}
+                        >
+                            <Search className="h-4 w-4" />
+                        </Button>
+                        <ThemeToggle />
                         <LanguageSwitcher />
                         <Link to="/login" className="btn btn-outline">
                             <i className="fas fa-sign-in-alt" aria-hidden="true" /> {t("mkt.header.signIn")}
@@ -90,7 +104,13 @@ export default function MarketingHeader()
                         ))}
                         <li><Link to="/login" onClick={() => setOpen(false)}>{t("mkt.header.signIn")}</Link></li>
                         <li><Link to="/signup" onClick={() => setOpen(false)}>{t("mkt.header.createAccount")}</Link></li>
-                        <li><LanguageSwitcher /></li>
+                        <li className="flex items-center gap-2">
+                            <LanguageSwitcher />
+                            <ThemeToggle />
+                            <Button type="button" variant="ghost" size="icon" aria-label={t("mkt.polish.searchButton")} onClick={() => { setOpen(false); onSearch?.(); }}>
+                                <Search className="h-4 w-4" />
+                            </Button>
+                        </li>
                     </ul>
                 </nav>
             </div>

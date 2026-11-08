@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { AuthShell } from "./Login";
+import PasswordInput from "@/components/PasswordInput";
 import type { Role } from "@/types/campus";
 import { useI18n } from "@/i18n";
 
@@ -123,14 +124,26 @@ export default function Signup()
     const field = (k: Field, label: string, props: React.InputHTMLAttributes<HTMLInputElement> = {}) => (
         <div className="space-y-1.5">
             <Label htmlFor={k}>{label}</Label>
-            <Input
-                id={k}
-                value={form[k]}
-                onChange={set(k)}
-                aria-invalid={!!errors[k]}
-                className={`h-11 ${errors[k] ? "border-destructive focus-visible:ring-destructive" : ""}`}
-                {...props}
-            />
+            {props.type === "password" ? (
+                <PasswordInput
+                    id={k}
+                    value={form[k]}
+                    onChange={set(k)}
+                    aria-invalid={!!errors[k]}
+                    className={`h-11 ${errors[k] ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                    {...props}
+                    type={undefined}
+                />
+            ) : (
+                <Input
+                    id={k}
+                    value={form[k]}
+                    onChange={set(k)}
+                    aria-invalid={!!errors[k]}
+                    className={`h-11 ${errors[k] ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                    {...props}
+                />
+            )}
             {errors[k] && <p className="text-xs text-destructive">{errors[k]}</p>}
         </div>
     );
