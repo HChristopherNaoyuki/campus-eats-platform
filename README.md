@@ -51,6 +51,36 @@ Live application: https://campus-eats-platform.lovable.app
 - Security log recording every authentication and order action.
 - Public marketing site covering home, about, services, contact,
   questions, news, donations, privacy, and terms.
+- Food photos on every menu item: students and standard users see
+  each dish as a photo card with the name and price below it, and
+  vendors and administrators see the photo beside each item in their
+  menu tables. Items without a photo show a neutral placeholder.
+- English and Afrikaans throughout, switchable from any header.
+
+### Reader features (public site)
+
+| Feature | Where |
+| --- | --- |
+| Dark mode toggle | Public header, mobile menu, dashboard header, `D` key |
+| Language switcher | Public header and dashboard header |
+| Back-to-top button | All public pages, after scrolling down |
+| Bottom navigation | Public pages on phones |
+| Reading progress bar | Privacy, Terms, Donations |
+| Estimated reading time | Privacy and Terms |
+| Table of contents | Privacy and Terms (highlights the current section) |
+| Adjustable text size | Privacy, Terms, Donations toolbar |
+| Share page buttons | Copy link, WhatsApp, X, e-mail, device share |
+| Save for later and recently viewed | Privacy, Terms, Donations |
+| Copy buttons | Wallet addresses on the Donations page |
+| Interactive table | Wallet table: filter, sort by symbol or name, copy |
+| Searchable FAQs with filters | FAQ page: search box and category chips |
+| Smart search bar | Header search icon, `Ctrl/Cmd + K` or `/` |
+| Keyboard shortcuts | `?` shows the list |
+| Autosave forms | Contact form drafts are kept until sent |
+| Password visibility toggle | Sign in, sign up, password recovery |
+| Form success notifications | Contact, sign in, sign up, checkout |
+| Offline access | Installable app; pages already visited open offline on the published site |
+| Inspect deterrent | Right-click and devtools shortcuts are blocked on public pages. This is a deterrent only, not real protection |
 
 [Back to top](#table-of-contents)
 
