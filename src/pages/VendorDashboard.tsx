@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import type { OrderStatus } from "@/types/campus";
 import { Switch } from "@/components/ui/switch";
 import { useI18n } from "@/i18n";
+import FoodImage from "@/components/FoodImage";
 
 const STATUS_KEY: Record<string, string> = {
   Pending: "stu.statusPending",
@@ -76,6 +77,23 @@ export default function VendorDashboard() {
           <Stat label={t("stu.revenue")} value={`R${revenue.toFixed(2)}`} icon={DollarSign} />
         </div>
 
+        {myMenu.length > 0 && (
+          <Card>
+            <CardHeader><CardTitle>{t("stu.menuItems")}</CardTitle></CardHeader>
+            <CardContent className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {myMenu.map((m) => (
+                <div key={m.id} className="overflow-hidden rounded-lg border bg-card">
+                  <FoodImage src={m.imageUrl} alt={m.name} className="aspect-[4/3] w-full" />
+                  <div className="p-3">
+                    <div className="text-sm font-medium leading-snug">{m.name}</div>
+                    <div className="text-sm font-semibold">R{m.price.toFixed(2)}</div>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
+
         <div className="grid lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader><CardTitle>{t("stu.incomingOrders")}</CardTitle></CardHeader>
@@ -137,7 +155,12 @@ export default function VendorDashboard() {
                 <TableBody>
                   {myMenu.map((m) => (
                     <TableRow key={m.id}>
-                      <TableCell><Input defaultValue={m.name} onBlur={(e) => updateMenuItem(m.id, { name: e.target.value })} /></TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <FoodImage src={m.imageUrl} alt={m.name} className="h-12 w-16 shrink-0 rounded-md" />
+                          <Input defaultValue={m.name} onBlur={(e) => updateMenuItem(m.id, { name: e.target.value })} />
+                        </div>
+                      </TableCell>
                       <TableCell><Input type="number" step="0.01" defaultValue={m.price} onBlur={(e) => updateMenuItem(m.id, { price: parseFloat(e.target.value) || 0 })} /></TableCell>
                       <TableCell><Input type="number" className="w-20" defaultValue={m.stock ?? 0} onBlur={(e) => updateMenuItem(m.id, { stock: parseInt(e.target.value) || 0 })} /></TableCell>
                       <TableCell><Switch checked={m.available !== false} onCheckedChange={(v) => updateMenuItem(m.id, { available: v })} /></TableCell>

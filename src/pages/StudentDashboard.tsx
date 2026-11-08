@@ -9,6 +9,7 @@ import { Plus, Minus, ShoppingBag, Clock, CheckCircle2, ChefHat } from "lucide-r
 import { toast } from "sonner";
 import { getCouponPercentage, isSampleCoupon } from "@/lib/coupons";
 import { useI18n } from "@/i18n";
+import FoodImage from "@/components/FoodImage";
 
 const STATUS_KEY: Record<string, string> = {
   Pending: "stu.statusPending",
@@ -115,14 +116,15 @@ export default function StudentDashboard() {
                     <span className="text-xs font-normal text-muted-foreground">{v.location}</span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="grid sm:grid-cols-2 gap-3">
+                <CardContent className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                   {items.map((m) => (
-                    <div key={m.id} className="flex justify-between items-center p-3 rounded-lg border">
-                      <div>
-                        <div className="font-medium">{m.name}</div>
-                        <div className="text-sm text-muted-foreground">R{m.price.toFixed(2)}</div>
+                    <div key={m.id} className="flex flex-col overflow-hidden rounded-lg border bg-card">
+                      <FoodImage src={m.imageUrl} alt={m.name} className="aspect-[4/3] w-full" />
+                      <div className="flex flex-1 flex-col gap-1 p-3">
+                        <div className="font-medium leading-snug">{m.name}</div>
+                        <div className="text-sm font-semibold">R{m.price.toFixed(2)}</div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center justify-end gap-2 px-3 pb-3">
                         {cart[m.id] ? (
                           <>
                             <Button size="icon" variant="outline" className="h-8 w-8" onClick={() => dec(m.id)}><Minus className="h-3 w-3" /></Button>

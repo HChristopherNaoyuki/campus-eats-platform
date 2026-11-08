@@ -594,7 +594,7 @@ export const useCampus = create<State>()(
     }),
     {
       name: "campus-eats-store",
-      version: 7,
+      version: 8,
       // Never persist users (passwords), the active session id, or the API key.
       partialize: (state) =>
         ({

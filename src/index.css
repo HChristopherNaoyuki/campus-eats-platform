@@ -356,3 +356,75 @@ All colors MUST be HSL.
 @media (prefers-reduced-motion: reduce) {
   .php-site .refined-page *, .php-site .refined-page *::before, .php-site .refined-page *::after { animation: none; transition: none; scroll-behavior: auto; }
 }
+
+/* ===== Reader features and dark mode for the public reference shell ===== */
+.dark .php-site {
+  --gray-50: #1C1C1E; --gray-100: #2C2C2E; --gray-200: #3A3A3C; --gray-300: #48484A;
+  --gray-400: #636366; --gray-500: #8E8E93; --gray-600: #AEAEB2; --gray-700: #C6C6C8;
+  --gray-800: #E5E5EA; --gray-900: #F2F2F5;
+  --orange-light: #3D2A10; --success-bg: #14301F; --success-text: #7ED99B;
+  --warning-bg: #3D2A10; --warning-text: #FFB454; --error-bg: #3A1418; --error-text: #FF8A85;
+  --info-bg: #14283A; --info-text: #7CC0FF;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+.dark .php-site .card, .dark .php-site .card-header, .dark .php-site .form-control, .dark .php-site .mobile-menu { background: var(--gray-100); }
+.dark .php-site .public-header { background: rgba(28, 28, 30, 0.92); }
+.dark .php-site .public-header .logo a, .dark .php-site .public-nav a { color: var(--gray-900); }
+
+/* --- Polished reference pages (Privacy, Terms, Donate) --- */
+.php-site .polished-page {
+  --background: 240 20% 98%; --foreground: 240 6% 13%; --card: 0 0% 100%; --card-foreground: 240 6% 13%;
+  --secondary: 240 14% 96%; --muted-foreground: 240 4% 44%; --border: 240 8% 89%; --input: 240 8% 86%;
+  color: hsl(var(--foreground)); background: hsl(var(--background)); letter-spacing: 0;
+}
+.dark .php-site .polished-page {
+  --background: 240 8% 9%; --foreground: 240 5% 96%; --card: 240 5% 14%; --card-foreground: 240 5% 96%;
+  --secondary: 240 5% 16%; --muted-foreground: 240 5% 69%; --border: 240 4% 25%; --input: 240 4% 30%;
+}
+.php-site .polished-page h1, .php-site .polished-page h2, .php-site .polished-page h3 { letter-spacing: 0; color: hsl(var(--foreground)); }
+.php-site .polished-page p, .php-site .polished-page li { color: hsl(var(--muted-foreground)); line-height: 1.75; }
+.php-site .polished-page > section:first-child > div { max-width: 72rem; margin: 0 auto; padding: 3rem 1.5rem 2.25rem; }
+.php-site .polished-page > section:first-child > div > span { padding: 0.25rem 0.75rem; border-radius: 9999px; }
+.php-site .polished-page > section:first-child h1 { margin-top: 1rem; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.15; }
+.php-site .polished-page > section:first-child p { margin-top: 0.75rem; }
+.php-site .polished-page > section:first-child > div > div { margin-top: 1.5rem; }
+.php-site .polished-page section[id] { scroll-margin-top: 5.5rem; }
+.php-site .polished-page section[id] h2 { font-size: 1.375rem; margin-bottom: 0.75rem; }
+.php-site .polished-page section[id] ul { list-style: disc; padding-left: 1.5rem; display: grid; gap: 0.375rem; }
+.php-site .polished-page .space-y-8 > * + * { margin-top: 2.25rem; }
+.php-site .polished-page .legal-grid { display: grid; gap: 2.5rem; margin: 0 auto; max-width: 72rem; padding: 2.5rem 1.5rem 3rem; }
+.php-site .polished-page .legal-grid > div { max-width: 46rem; }
+@media (min-width: 1024px) { .php-site .polished-page .legal-grid { grid-template-columns: 220px 1fr; align-items: start; gap: 4rem; } }
+.php-site .polished-page > section:not(:first-child) { max-width: 72rem; padding-left: 1.5rem; padding-right: 1.5rem; }
+.php-site .polished-page > div:last-child { padding: 0 1.5rem 4rem; }
+.php-site .polished-page .ce-your-library { padding: 1.25rem; }
+.php-site .polished-page .ce-your-library h2 { font-size: 0.875rem; }
+.php-site .polished-page .ce-your-library ul { display: grid; gap: 0.25rem; }
+.php-site .polished-page button { min-height: 2rem; }
+.php-site .polished-page [role="group"].ce-text-size button { min-height: 1.75rem; }
+
+/* --- Table of contents --- */
+.php-site .ce-toc { position: sticky; top: 5.5rem; font-size: 0.875rem; }
+.php-site .ce-toc .ce-toc-title { font-weight: 600; margin-bottom: 0.75rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: hsl(var(--muted-foreground)); }
+.php-site nav.ce-toc ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.15rem; border-left: 1px solid hsl(var(--border)); }
+.php-site .ce-toc a { display: block; padding: 0.3rem 0.25rem 0.3rem 0.75rem; margin-left: -1px; border-left: 2px solid transparent; color: hsl(var(--muted-foreground)); text-decoration: none; line-height: 1.45; }
+.php-site .ce-toc a:hover { color: hsl(var(--foreground)); }
+.php-site .ce-toc a.active { border-left-color: var(--ce-primary); color: hsl(var(--foreground)); font-weight: 500; }
+@media (max-width: 1023px) {
+  .php-site .ce-toc { position: static; padding: 1rem 1.25rem; border: 1px solid hsl(var(--border)); border-radius: 0.5rem; background: hsl(var(--card)); }
+}
+
+/* --- Reading progress --- */
+.php-site .ce-reading-progress { position: fixed; top: 0; left: 0; height: 3px; background: var(--ce-primary); z-index: 70; }
+
+/* --- Mobile bottom navigation --- */
+.php-site nav.ce-bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 60; display: flex; gap: 0.25rem;
+  padding: 0.375rem 0.5rem calc(0.375rem + env(safe-area-inset-bottom));
+  background: hsl(var(--card)); border-top: 1px solid hsl(var(--border));
+}
+.php-site .ce-bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.15rem; padding: 0.35rem 0 0.3rem; border-radius: 0.5rem; font-size: 0.625rem; line-height: 1.2; color: hsl(var(--muted-foreground)); text-decoration: none; }
+.php-site .ce-bottom-nav-item.active { color: var(--ce-primary); font-weight: 600; }
+@media (min-width: 768px) { .php-site nav.ce-bottom-nav { display: none; } }
+@media (max-width: 767px) { .php-site { padding-bottom: 4.5rem; } }
