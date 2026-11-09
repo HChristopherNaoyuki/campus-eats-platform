@@ -20,25 +20,25 @@
 - [x] Language and README task group (EN/AF selector, translated app, README accounts)
 
 ## Food item images (verification report)
-- [ ] Show the food image with the name and price below it on the student and standard ordering pages
-- [ ] Show the food image with the name and price on the vendor inventory and administrator menu pages
-- [ ] Update the README with the latest application changes
+- [x] Show the food image with the name and price below it on the student and standard ordering pages
+- [x] Show the food image with the name and price on the vendor inventory and administrator menu pages
+- [x] Update the README with the latest application changes
 
 ## Website polish and feature upgrade (uploaded report)
-- [ ] Polish the Privacy Policy, Terms and Conditions, and Crypto Donations pages
-- [ ] Dark mode toggle (public site and dashboard header)
-- [ ] Back-to-top button and mobile bottom navigation
-- [ ] Reading progress bar and estimated reading time
-- [ ] Copy button and share page buttons
-- [ ] Save for later and recently viewed pages
-- [ ] Keyboard shortcuts and a smart search bar
-- [ ] Adjustable text sizes
-- [ ] Interactive table (donations page wallets)
-- [ ] Searchable and filterable FAQs
-- [ ] Autosave contact form
-- [ ] Password visibility toggles on sign in, sign up, and password recovery
-- [ ] Table of contents on the legal pages
-- [ ] Form success notifications (already present, verify)
-- [ ] Offline access (installable PWA with offline caching)
-- [ ] Right-click and devtools deterrent (deterrent only)
-- [ ] Responsive QA across mobile, tablet, and desktop breakpoints
+- [x] Polish the Privacy Policy, Terms and Conditions, and Crypto Donations pages
+- [x] Dark mode toggle (public site and dashboard header)
+- [x] Back-to-top button and mobile bottom navigation
+- [x] Reading progress bar and estimated reading time
+- [x] Copy button and share page buttons
+- [x] Save for later and recently viewed pages
+- [x] Keyboard shortcuts and a smart search bar
+- [x] Adjustable text sizes
+- [x] Interactive table (donations page wallets)
+- [x] Searchable and filterable FAQs
+- [x] Autosave contact form
+- [x] Password visibility toggles on sign in, sign up, and password recovery
+- [x] Table of contents on the legal pages
+- [x] Form success notifications (already present, verify)
+- [x] Offline access (installable PWA with offline caching)
+- [x] Right-click and devtools deterrent (deterrent only)
+- [x] Responsive QA across mobile, tablet, and desktop breakpoints
