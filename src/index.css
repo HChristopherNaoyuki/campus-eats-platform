@@ -428,3 +428,8 @@ All colors MUST be HSL.
 .php-site .ce-bottom-nav-item.active { color: var(--ce-primary); font-weight: 600; }
 @media (min-width: 768px) { .php-site nav.ce-bottom-nav { display: none; } }
 @media (max-width: 767px) { .php-site { padding-bottom: 4.5rem; } }
+.php-site .polished-page > section:first-child { max-width: none; width: 100%; }
+.php-site nav.ce-toc ul { justify-content: start; align-items: stretch; text-align: left; }
+.php-site nav.ce-toc a.active, .php-site nav.ce-toc a { border-bottom: 0; }
+.php-site nav.ce-toc a.active::after, .php-site nav.ce-toc a::after { content: none; }
+.php-site .polished-page > section:first-child button.border { padding: 0 0.75rem; gap: 0.5rem; }
